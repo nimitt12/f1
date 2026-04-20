@@ -1,6 +1,18 @@
 import React, { useMemo } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
-const Hero: React.FC = () => {
+export interface AuthUser {
+  name: string;
+  picture: string;
+}
+
+interface HeroProps {
+  user: AuthUser | null;
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
+}
+
+const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
   const { greeting, dateline } = useMemo(() => {
     const now = new Date();
     const h = now.getHours();
@@ -11,8 +23,21 @@ const Hero: React.FC = () => {
     
     const dl = `${D[now.getDay()]} · ${String(now.getDate()).padStart(2, '0')} ${M[now.getMonth()]} · ${now.getFullYear()}`;
     
-    return { greeting: `${g}, Nimitt`, dateline: dl };
-  }, []);
+    const userFirstName = user?.name ? user.name.split(' ')[0] : 'Guest';
+    return { greeting: `${g}, ${userFirstName}`, dateline: dl };
+  }, [user]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleLoginSuccess = (credentialResponse: any) => {
+    if (credentialResponse.credential) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const decoded: any = jwtDecode(credentialResponse.credential);
+      setUser({
+        name: decoded.name,
+        picture: decoded.picture
+      });
+    }
+  };
 
   return (
     <section className="hero">
@@ -27,7 +52,22 @@ const Hero: React.FC = () => {
           <span>F1 2026</span>
         </div>
         <div className="brand-right">
-          <div className="greeting">{greeting}</div>
+          {user ? (
+            <div className="greeting" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+              {greeting}
+              <img src={user.picture} alt={user.name} width="24" height="24" style={{ borderRadius: '50%', border: '1px solid var(--racing)' }} />
+            </div>
+          ) : (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+              <GoogleLogin
+                onSuccess={handleLoginSuccess}
+                onError={() => console.log('Login Failed')}
+                theme="filled_black"
+                shape="pill"
+                size="small"
+              />
+            </div>
+          )}
           <div className="dateline">{dateline}</div>
         </div>
       </div>
@@ -35,7 +75,7 @@ const Hero: React.FC = () => {
       <div className="title-wrap">
         <h1 className="hero-title">
           <span className="line1">
-            <span>Nimitt's</span>
+            <span>{user ? `${user.name.split(' ')[0]}'s` : "Your"}</span>
           </span>
           <span className="line2">
             <span>Pit Wall.</span>

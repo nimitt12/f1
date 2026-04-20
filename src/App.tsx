@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Ticker from './components/Ticker';
 import Hero from './components/Hero';
 import NextRace from './components/NextRace';
@@ -56,11 +56,14 @@ const ThemeSwitcher: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  // Import the AuthUser interface physically or loosely construct it. Let's loosely construct.
+  const [user, setUser] = useState<{name: string, picture: string} | null>(null);
+
   return (
     <>
       <ThemeSwitcher />
       <Ticker />
-      <Hero />
+      <Hero user={user} setUser={setUser} />
       <NextRace />
       <Calendar />
 
