@@ -400,6 +400,8 @@
       align-items: flex-start;
       margin-bottom: 28px;
       animation: fadeUpSlow 1s ease both 0.2s;
+      position: relative;
+      z-index: 50;
     }
 
     .brand-eyebrow {

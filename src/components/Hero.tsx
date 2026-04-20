@@ -64,19 +64,23 @@ const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
           {user ? (
             <div className="greeting" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
               {greeting}
-              <div 
-                className="profile-menu-wrap" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMenuOpen(!isMenuOpen);
-                }}
-              >
-                <img src={user.picture} alt={user.name} width="24" height="24" style={{ borderRadius: '50%', border: '1px solid var(--racing)', cursor: 'pointer' }} />
+              <div className="profile-menu-wrap" style={{ position: 'relative' }}>
+                <img 
+                  src={user.picture} 
+                  alt={user.name} 
+                  width="24" 
+                  height="24" 
+                  style={{ borderRadius: '50%', border: '1px solid var(--racing)', cursor: 'pointer' }} 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(!isMenuOpen);
+                  }}
+                />
                 {isMenuOpen && (
                   <div className="profile-dropdown">
                     <div className="dropdown-item">My Account</div>
                     <div className="dropdown-item">Settings</div>
-                    <div className="dropdown-item logout" onClick={handleLogout}>Log out</div>
+                    <div className="dropdown-item logout" onMouseDown={handleLogout}>Log out</div>
                   </div>
                 )}
               </div>
