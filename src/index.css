@@ -39,6 +39,20 @@
       --rule-light: #d4cec4;
     }
 
+    body.theme-mercedes { --racing: var(--mercedes); --racing-hot: var(--mercedes); --racing-hot-ticker: var(--mercedes); --racing-deep: var(--mercedes); }
+    body.theme-ferrari { --racing: var(--ferrari); --racing-hot: #ff2010; --racing-hot-ticker: #ffa6a0; --racing-deep: #b30400; }
+    body.theme-mclaren { --racing: var(--mclaren); --racing-hot: #ffb366; --racing-hot-ticker: #ffd9b3; --racing-deep: #cc6600; }
+    body.theme-redbull { --racing: var(--redbull); --racing-hot: #6699cc; --racing-hot-ticker: #b3ccff; --racing-deep: #1a4080; }
+    body.theme-williams { --racing: var(--williams); --racing-hot: #99d6ff; --racing-hot-ticker: #ccebff; --racing-deep: #0073e6; }
+    body.theme-haas { --racing: var(--haas); --racing-hot: #d9dbdd; --racing-hot-ticker: #f2f3f4; --racing-deep: #7c8287; }
+    body.theme-alpine { --racing: var(--alpine); --racing-hot: #4db8ff; --racing-hot-ticker: #b3e0ff; --racing-deep: #005c99; }
+    body.theme-audi { --racing: var(--audi); --racing-hot: #33e6d1; --racing-hot-ticker: #b3fff2; --racing-deep: #004d46; }
+    body.theme-racingbulls { --racing: var(--racingbulls); --racing-hot: #99bbff; --racing-hot-ticker: #ccdfff; --racing-deep: #1a53ff; }
+    body.theme-aston { --racing: var(--aston); --racing-hot: #3ddda6; --racing-hot-ticker: #b3ffe0; --racing-deep: #13664a; }
+    body.theme-cadillac { --racing: var(--cadillac); --racing-hot: #b8bdc4; --racing-hot-ticker: #e6e8eb; --racing-deep: #5e646d; }
+    body.theme-default { /* Default */ }
+
+
     @keyframes maskRevealUp {
       0% {
         clip-path: inset(100% 0 0 0);
