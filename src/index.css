@@ -558,7 +558,7 @@
 
     .race-flag-big {
       font-size: 32px;
-      animation: flagWave 2.8s ease-in-out infinite;
+      /* animation: flagWave 2.8s ease-in-out infinite; */
     }
 
     .race-name {
