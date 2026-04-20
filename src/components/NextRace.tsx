@@ -1,7 +1,22 @@
 import React, { useState, useEffect } from 'react';
 
+const Flag: React.FC<{ code: string }> = ({ code }) => {
+  if (!code || code.length !== 2) return null;
+  const lowerCode = code.toLowerCase();
+  return (
+    <img 
+      src={`https://flagcdn.com/w40/${lowerCode}.png`} 
+      srcSet={`https://flagcdn.com/w80/${lowerCode}.png 2x`}
+      width="32" 
+      alt={code}
+      style={{ verticalAlign: 'baseline', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+    />
+  );
+};
+
 const NextRace: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState({ d: '00', h: '00', m: '00', s: '00' });
+  const countryCode = 'us'; // Dynamically changeable country code
 
   useEffect(() => {
     const target = new Date('2026-05-03T20:00:00Z').getTime();
@@ -33,7 +48,7 @@ const NextRace: React.FC = () => {
           <div className="race-left">
             <div className="race-meta-row">
               <span className="race-round">◆ Round 04 · Up Next</span>
-              <span className="race-flag-big">🇺🇸</span>
+              <span className="race-flag-big"><Flag code={countryCode} /></span>
             </div>
             <h2 className="race-name">
               Miami <em>Grand Prix</em>

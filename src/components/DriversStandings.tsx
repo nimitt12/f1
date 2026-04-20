@@ -22,16 +22,16 @@ interface DriverStanding {
   Constructors: Constructor[];
 }
 
-interface ErgastResponse {
-  MRData: {
-    StandingsTable: {
-      StandingsLists: {
-        round: string;
-        DriverStandings: DriverStanding[];
-      }[];
-    };
-  };
-}
+// interface ErgastResponse {
+//   MRData: {
+//     StandingsTable: {
+//       StandingsLists: {
+//         round: string;
+//         DriverStandings: DriverStanding[];
+//       }[];
+//     };
+//   };
+// }
 
 const teamColors: Record<string, string> = {
   mercedes: 'var(--mercedes)',
