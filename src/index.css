@@ -52,6 +52,51 @@
     body.theme-cadillac { --racing: var(--cadillac); --racing-hot: #b8bdc4; --racing-hot-ticker: #e6e8eb; --racing-deep: #5e646d; }
     body.theme-default { /* Default */ }
 
+    .profile-menu-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 6px;
+      background: var(--carbon);
+      border: 1px solid var(--carbon-3);
+      border-radius: 4px;
+      padding: 6px 0;
+      min-width: 140px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 100;
+      animation: checkerFadeIn 0.2s ease forwards;
+    }
+
+    .dropdown-item {
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      text-align: left;
+      letter-spacing: 0.05em;
+      transition: all 0.15s ease;
+    }
+
+    .dropdown-item:hover {
+      background: var(--carbon-2);
+      color: var(--racing);
+    }
+    
+    .dropdown-item.logout {
+      border-top: 1px solid var(--carbon-2);
+      margin-top: 4px;
+      padding-top: 10px;
+      color: var(--racing-hot);
+    }
 
     @keyframes maskRevealUp {
       0% {

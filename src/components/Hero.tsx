@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
+import React, { useMemo, useState } from 'react';
+import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
 export interface AuthUser {
@@ -13,6 +13,8 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const { greeting, dateline } = useMemo(() => {
     const now = new Date();
     const h = now.getHours();
@@ -26,6 +28,13 @@ const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
     const userFirstName = user?.name ? user.name.split(' ')[0] : 'Guest';
     return { greeting: `${g}, ${userFirstName}`, dateline: dl };
   }, [user]);
+
+  const handleLogout = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    googleLogout();
+    setUser(null);
+    setIsMenuOpen(false);
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLoginSuccess = (credentialResponse: any) => {
@@ -55,7 +64,22 @@ const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
           {user ? (
             <div className="greeting" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
               {greeting}
-              <img src={user.picture} alt={user.name} width="24" height="24" style={{ borderRadius: '50%', border: '1px solid var(--racing)' }} />
+              <div 
+                className="profile-menu-wrap" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(!isMenuOpen);
+                }}
+              >
+                <img src={user.picture} alt={user.name} width="24" height="24" style={{ borderRadius: '50%', border: '1px solid var(--racing)', cursor: 'pointer' }} />
+                {isMenuOpen && (
+                  <div className="profile-dropdown">
+                    <div className="dropdown-item">My Account</div>
+                    <div className="dropdown-item">Settings</div>
+                    <div className="dropdown-item logout" onClick={handleLogout}>Log out</div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
