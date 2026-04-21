@@ -4,7 +4,6 @@ const ConstructorsStandings: React.FC = () => {
   return (
     <div className="col">
       <div className="col-head">
-        <div className="col-num">§ 02</div>
         <div className="col-name">
           Constructors' <em>Cup</em>
         </div>

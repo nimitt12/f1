@@ -7,6 +7,7 @@ interface Driver {
   givenName: string;
   familyName: string;
   nationality: string;
+  permanentNumber: string;
 }
 
 interface Constructor {
@@ -104,7 +105,6 @@ const DriversStandings: React.FC = () => {
   return (
     <div className="col">
       <div className="col-head">
-        <div className="col-num">§ 01</div>
         <div className="col-name">
           Drivers' <em>Championship</em>
         </div>
@@ -119,7 +119,7 @@ const DriversStandings: React.FC = () => {
         const teamColor = teamColors[constructorId] || 'var(--ink-3)';
         const delay = 4.5 + index * 0.08;
         
-        const driverName = `${item.Driver.givenName[0]}. ${item.Driver.familyName}`;
+        const driverName = `${item.Driver.givenName} ${item.Driver.familyName}`;
         const ptsDiff = leaderPoints - parseFloat(item.points);
 
         return (
@@ -139,7 +139,7 @@ const DriversStandings: React.FC = () => {
                     color: constructorId === 'mercedes' ? '#000' : '#fff' 
                   }}
                 >
-                  {item.Driver.code || item.Driver.familyName.substring(0, 3).toUpperCase()}
+                  {item.Driver.code || item.Driver.familyName.substring(0, 3).toUpperCase()} | {item.Driver.permanentNumber}
                 </span>
               </div>
               <div className="driver-team">

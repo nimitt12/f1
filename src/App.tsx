@@ -76,8 +76,11 @@ const App: React.FC = () => {
         <div className="main-grid">
           <DriversStandings />
           <ConstructorsStandings />
-          <NewsIntel />
         </div>
+      </section>
+
+      <section className="intel-section">
+        <NewsIntel />
       </section>
 
       <StatsRibbon />
