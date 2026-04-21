@@ -190,33 +190,33 @@ const Calendar: React.FC = () => {
           <div className="cal-progress-fill" style={{ width: '13.6%' }}></div>
         </div>
         <div className="cal-strip" id="calStrip" ref={stripRef}>
-          {races.map((race) => {
-            const today = new Date('2026-04-21'); // Mocking today's date for demo context
-            const raceDate = new Date(race.date);
-            const isDone = raceDate < today;
-            // A primitive way to decide if next: the earliest race that is >= today
-            const isNext = race.round === "4"; // Based on original static list, R04 Miami was NEXT
-            const displayRound = Number(race.round).toString().padStart(2, '0');
-            const countryName = race.Circuit.Location.country.trim();
-            const countryCode = COUNTRY_FLAGS[countryName];
-            const countryEmoji = <Flag code={countryCode} />;
+          {(() => {
+            const today = new Date('2026-04-21'); 
+            const nextRace = races.find(r => new Date(r.date) >= today);
+            const nextRound = nextRace?.round;
 
-            return (
-              <div key={race.round} className={`cal-round ${isDone && !isNext ? 'done' : ''} ${isNext ? 'next' : ''}`}>
-                <div className="cal-rnum">
-                  {isNext ? `R#${displayRound} · NEXT` : `R#${displayRound}`}<span className="cal-status-dot"></span>
+            return races.map((race) => {
+              const raceDate = new Date(race.date);
+              const isDone = raceDate < today;
+              const isNext = race.round === nextRound;
+              const displayRound = Number(race.round).toString().padStart(2, '0');
+              const countryName = race.Circuit.Location.country.trim();
+              const countryCode = COUNTRY_FLAGS[countryName];
+              const countryEmoji = <Flag code={countryCode} />;
+
+              return (
+                <div key={race.round} className={`cal-round ${isDone && !isNext ? 'done' : ''} ${isNext ? 'next' : ''}`}>
+                  <div className="cal-rnum">
+                    {isNext ? `R#${displayRound} · NEXT` : `R#${displayRound}`}<span className="cal-status-dot"></span>
+                  </div>
+                  <div className="cal-flag-emoji">{countryEmoji}</div>
+                  <div className="cal-country">{`${race.Circuit.Location.locality}, ${race.Circuit.Location.country}`}</div>
+                  <div className="cal-flag-name">{race.Circuit.circuitName}</div>
+                  <div className="cal-date">{formatDateRange(race.date, race.FirstPractice?.date)}</div>
                 </div>
-                <div className="cal-flag-emoji">{countryEmoji}</div>
-                <div className="cal-country">{race.Circuit.Location.country === "USA" ? "USA" : race.Circuit.Location.country}</div>
-                <div className="cal-flag-name">{race.Circuit.circuitName.replace(/ Circuit| Autodrome|Grand Prix | Park| City/gi, '').trim().split(' ')[0]}</div>
-                <div className="cal-date">{formatDateRange(race.date, race.FirstPractice?.date)}</div>
-                {/* No winners mapping in this simplified ergast data snippet, but would render if available */}
-                {isDone && race.round === "1" && <div className="cal-winner">G. Russell</div>}
-                {isDone && race.round === "2" && <div className="cal-winner">K. Antonelli</div>}
-                {isDone && race.round === "3" && <div className="cal-winner">K. Antonelli</div>}
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
         </div>
       </div>
     </section>
