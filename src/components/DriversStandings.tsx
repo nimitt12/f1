@@ -143,17 +143,13 @@ const DriversStandings: React.FC = () => {
                 </span>
               </div>
               <div className="driver-team">
-                {item.Constructors[0]?.name} · {getCountryCode(item.Driver.nationality)}
-                {!isLeader && ptsDiff > 0 && (
-                  <>
-                    {' · '}<span className="gap">−{ptsDiff}</span>
-                  </>
-                )}
+                {item.Constructors[0]?.name} · {getCountryCode(item.Driver.nationality)} · Wins: {item.wins}
               </div>
             </div>
             <div className="driver-pts-wrap">
               <div className="driver-pts">{item.points}</div>
-              <div className="driver-pts-sub">pts</div>
+              <div className="driver-pts-sub" style={{ color: 'var(--ink)' }}>pts</div>
+              <div className="driver-pts-sub">-{ptsDiff}</div>
             </div>
           </div>
         );
