@@ -22,17 +22,17 @@
       --racing-deep: #b30400;
       --gold: #d4a017;
       --gold-ticker: #ffb900;
-      --mercedes: #27F4D2;
-      --ferrari: #E8002D;
+      --mercedes: #00D2BE;
+      --ferrari: #DC0000;
       --mclaren: #FF8000;
-      --redbull: #3671C6;
-      --williams: #64C4FF;
+      --redbull: #1E41FF;
+      --williams: #005AFF;
       --haas: #B6BABD;
-      --alpine: #0093CC;
-      --audi: #00877C;
+      --alpine: #0090FF;
+      --audi: #E30613;
       --racingbulls: #6692FF;
-      --aston: #229971;
-      --cadillac: #8A9099;
+      --aston: #006F62;
+      --cadillac: #D5001C;
       --rule-light: #d4cec4;
     }
 
@@ -1188,9 +1188,11 @@
       }
       .driver-team {
         font-size: 15px;
+        color: var(--ink-2);
       }
       .driver-pts {
         font-size: 25px;
+        color: var(--ink-2);
       }
     }
 
@@ -1274,7 +1276,7 @@
     }
 
     .wins-count {
-      color: var(--ink-3);
+      color: var(--ink-2);
       font-weight: 700;
       letter-spacing: 0.05em;
     }
@@ -1341,11 +1343,16 @@
       .con-engine {
         font-size: 14px;
         margin-top: 4px;
+        color: var(--ink-2);
       }
       .con-pts {
         font-size: 28px;
         color: var(--ink);
       }
+    }
+
+    .con-row.leader:hover {
+      background: linear-gradient(90deg, var(--team-color, transparent) 0%, transparent 80%);
     }
 
     .con-row:hover {
