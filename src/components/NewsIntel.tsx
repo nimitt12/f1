@@ -1,6 +1,77 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+interface NewsItem {
+  id: string;
+  title: string;
+  link: string;
+  description: string;
+  category: string;
+  pubDate: string;
+}
 
 const NewsIntel: React.FC = () => {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        // Use AllOrigins proxy to bypass CORS
+        const rssUrl = 'https://www.fia.com/rss/press-release';
+        
+        const response = await fetch(rssUrl);
+        const xmlText = await response.text();
+        
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+        const items = xmlDoc.querySelectorAll('item');
+        
+        const parsedItems: NewsItem[] = Array.from(items).slice(0, 4).map((item, index) => {
+          const title = item.querySelector('title')?.textContent || '';
+          const link = item.querySelector('link')?.textContent || '';
+          const pubDate = item.querySelector('pubDate')?.textContent || '';
+          
+          // Clean description: extract first few words/paragraphs of text
+          const rawDescription = item.querySelector('description')?.textContent || '';
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = rawDescription;
+          
+          // Try to get first <p> or just the text
+          let description = tempDiv.querySelector('p')?.textContent || tempDiv.textContent || '';
+          
+          // Truncate to a reasonable length for the dashboard
+          if (description.length > 160) {
+            description = description.substring(0, 157) + '...';
+          }
+
+          // Determine category/kicker
+          // Check for specific keywords in title or just use a generic one
+          let category = 'FIA Official';
+          if (title.toLowerCase().includes('f1') || title.toLowerCase().includes('formula 1')) category = 'Formula 1';
+          if (title.toLowerCase().includes('wrc')) category = 'WRC';
+          if (title.toLowerCase().includes('circuit')) category = 'Circuit';
+
+          return {
+            id: `news-${index}`,
+            title,
+            link,
+            description,
+            category,
+            pubDate
+          };
+        });
+
+        setNews(parsedItems);
+      } catch (err) {
+        console.error('Failed to fetch FIA news:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
   return (
     <div className="col">
       <div className="col-head">
@@ -8,7 +79,7 @@ const NewsIntel: React.FC = () => {
         <div className="col-name">
           Paddock <em>Intel</em>
         </div>
-        <div className="col-sub">Last Race · Top Stories</div>
+        <div className="col-sub">Live FIA Feed · Press Releases</div>
       </div>
 
       <div className="podium-block">
@@ -42,51 +113,33 @@ const NewsIntel: React.FC = () => {
       </div>
 
       <div className="news-block">
-        <article className="news-item lead">
-          <div className="news-meta">
-            <span className="news-kicker">The Story</span>
-            <span className="news-num">01</span>
+        {loading && (
+          <div className="news-loading" style={{ padding: '40px', textAlign: 'center', opacity: 0.6 }}>
+            Streaming Paddock Intel...
           </div>
-          <h3 className="news-headline">Antonelli's rookie surge rewrites Mercedes' championship math</h3>
-          <p className="news-body">
-            Three rounds in, the 19-year-old Italian has back-to-back wins and sits atop the
-            drivers' table. Wolff has already shifted team orders mid-weekend. Russell now races his own teammate for
-            the title.
-          </p>
-        </article>
-        <article className="news-item neutral">
-          <div className="news-meta">
-            <span className="news-kicker">Engine Wars</span>
-            <span className="news-num">02</span>
+        )}
+
+        {!loading && news.map((item, index) => (
+          <article 
+            key={item.id} 
+            className={`news-item ${index === 0 ? 'lead' : 'neutral'}`}
+            onClick={() => window.open(item.link, '_blank')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="news-meta">
+              <span className="news-kicker">{item.category}</span>
+              <span className="news-num">{(index + 1).toString().padStart(2, '0')}</span>
+            </div>
+            <h3 className="news-headline">{item.title}</h3>
+            <p className="news-body">{item.description}</p>
+          </article>
+        ))}
+
+        {!loading && news.length === 0 && (
+          <div style={{ padding: '20px', fontSize: '12px', opacity: 0.5 }}>
+            No recent intel available from FIA.
           </div>
-          <h3 className="news-headline">Red Bull's new PU is down 15hp to Mercedes, paddock sources say</h3>
-          <p className="news-body">
-            Despite the full Ford works programme, Red Bull's 2026 power unit appears weakest on
-            the grid. Verstappen's P5 in Japan came from chassis, not pace.
-          </p>
-        </article>
-        <article className="news-item neutral">
-          <div className="news-meta">
-            <span className="news-kicker">Debut</span>
-            <span className="news-num">03</span>
-          </div>
-          <h3 className="news-headline">Cadillac goal is simple: finish races, learn fast, build for 2029</h3>
-          <p className="news-body">
-            GM's eleventh team runs Ferrari PUs until its in-house unit is ready. Herta confirmed
-            for four FP1 outings this year.
-          </p>
-        </article>
-        <article className="news-item">
-          <div className="news-meta">
-            <span className="news-kicker">Calendar</span>
-            <span className="news-num">04</span>
-          </div>
-          <h3 className="news-headline">FIA confirms Bahrain and Saudi cancellations, no replacements</h3>
-          <p className="news-body">
-            Iran war fallout leaves the season at 23 rounds, Australia to Abu Dhabi. Feeder series
-            affected too.
-          </p>
-        </article>
+        )}
       </div>
     </div>
   );
