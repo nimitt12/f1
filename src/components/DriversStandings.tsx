@@ -49,6 +49,28 @@ const teamColors: Record<string, string> = {
 };
 
 // Map constructorId to custom 3-letter team codes used in UI where applicable
+const NATIONALITY_ISO: Record<string, string> = {
+  Italian: 'it',
+  British: 'gb',
+  Monegasque: 'mc',
+  Australian: 'au',
+  French: 'fr',
+  Dutch: 'nl',
+  'New Zealander': 'nz',
+  Spanish: 'es',
+  German: 'de',
+  Canadian: 'ca',
+  Thai: 'th',
+  Finnish: 'fi',
+  Danish: 'dk',
+  Japanese: 'jp',
+  Chinese: 'cn',
+  American: 'us',
+  Mexican: 'mx',
+  Brazilian: 'br',
+  Argentine: 'ar',
+};
+
 const getCountryCode = (nationality: string): string => {
   const map: Record<string, string> = {
     Italian: 'ITA',
@@ -68,8 +90,32 @@ const getCountryCode = (nationality: string): string => {
     Chinese: 'CHN',
     American: 'USA',
     Mexican: 'MEX',
+    Brazilian: 'BRA',
+    Argentine: 'ARG',
   };
   return map[nationality] || nationality.substring(0, 3).toUpperCase();
+};
+
+const Flag: React.FC<{ code: string | undefined }> = ({ code }) => {
+  if (!code || code.length !== 2) {
+    return <span style={{ fontSize: '14px', marginRight: '6px', filter: 'grayscale(1)' }}>🏁</span>;
+  }
+  const lowerCode = code.toLowerCase();
+  return (
+    <img 
+      src={`https://flagcdn.com/w40/${lowerCode}.png`} 
+      srcSet={`https://flagcdn.com/w80/${lowerCode}.png 2x`}
+      width="16" 
+      alt={code}
+      style={{ 
+        verticalAlign: 'text-bottom', 
+        borderRadius: '1px',
+        display: 'inline-block',
+        marginRight: '6px',
+        opacity: '0.9' 
+      }}
+    />
+  );
 };
 
 const DriversStandings: React.FC = () => {
@@ -143,7 +189,18 @@ const DriversStandings: React.FC = () => {
                 </span>
               </div>
               <div className="driver-team">
-                {item.Constructors[0]?.name} · {getCountryCode(item.Driver.nationality)} · Wins: {item.wins}
+                <span className="team-name">{item.Constructors[0]?.name.toUpperCase()}</span>
+                <span className="driver-divider">|</span>
+                <span className="driver-nat">
+                  <Flag code={NATIONALITY_ISO[item.Driver.nationality]} />
+                  {getCountryCode(item.Driver.nationality)}
+                </span>
+                {parseInt(item.wins) > 0 && (
+                  <>
+                    <span className="driver-divider">|</span>
+                    <span className="wins-count">WINS: {item.wins}</span>
+                  </>
+                )}
               </div>
             </div>
             <div className="driver-pts-wrap">
