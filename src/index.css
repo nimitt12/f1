@@ -1291,6 +1291,38 @@
       animation: rowSlide 0.6s cubic-bezier(.25, .9, .3, 1) both;
     }
 
+    .con-row.leader {
+      background: linear-gradient(90deg, var(--team-color, transparent) 0%, transparent 80%);
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .con-top {
+        grid-template-columns: 32px 1fr auto; 
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .con-pos {
+        font-size: 28px;
+        color: var(--ink);
+      }
+      .con-name {
+        font-size: 28px;
+        font-weight: 700;
+        font-family: 'Playfair Display', serif;
+      }
+      .con-engine {
+        font-size: 14px;
+        margin-top: 4px;
+      }
+      .con-pts {
+        font-size: 28px;
+        color: var(--ink);
+      }
+    }
+
     .con-row:hover {
       background: var(--paper-2);
     }
