@@ -120,9 +120,15 @@ const ConstructorsStandings: React.FC = () => {
               <div className="con-pos">{item.position.padStart(2, '0')}</div>
               <div>
                 <div className="con-name">{item.Constructor.name}</div>
-                <div className="con-engine" style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="con-engine" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Flag code={NATIONALITY_ISO[item.Constructor.nationality]} />
-                  {item.Constructor.nationality.toUpperCase()}
+                  <span className="con-nat">{item.Constructor.nationality.toUpperCase()}</span>
+                  {parseInt(item.wins) > 0 && (
+                    <>
+                      <span className="con-divider">|</span>
+                      <span className="wins-count">WINS: {item.wins}</span>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="con-pts">{item.points}</div>
