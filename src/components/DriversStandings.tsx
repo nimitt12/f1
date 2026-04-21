@@ -139,7 +139,7 @@ const DriversStandings: React.FC = () => {
                     color: constructorId === 'mercedes' ? '#000' : '#fff' 
                   }}
                 >
-                  {item.Driver.code || item.Driver.familyName.substring(0, 3).toUpperCase()} | {item.Driver.permanentNumber}
+                  {item.Driver.code || item.Driver.familyName.substring(0, 3).toUpperCase()}/{item.Driver.permanentNumber}
                 </span>
               </div>
               <div className="driver-team">
