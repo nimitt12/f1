@@ -26,31 +26,59 @@ const themes = [
 
 const ThemeSwitcher: React.FC = () => {
   const [theme, setTheme] = React.useState('default');
+  const [isOpen, setIsOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     document.body.className = `theme-${theme}`;
   }, [theme]);
 
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const currentTheme = themes.find(t => t.id === theme);
+
   return (
-    <div style={{ 
-      position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000, 
-      display: 'flex', alignItems: 'center', gap: '8px', 
-      background: 'var(--carbon)', padding: '8px 12px', 
-      border: '1px solid var(--racing)', color: '#fff', 
-      fontSize: '11px', fontFamily: 'JetBrains Mono, monospace',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-    }}>
-      <span style={{ letterSpacing: '0.1em', fontWeight: 600 }}>THEME</span>
-      <select 
-        value={theme} 
-        onChange={e => setTheme(e.target.value)} 
-        style={{ 
-          background: 'var(--carbon-2)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', 
-          padding: '4px 8px', outline: 'none', cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace' 
-        }}
-      >
-        {themes.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
-      </select>
+    <div 
+      className="theme-switcher" 
+      onClick={() => setIsOpen(!isOpen)} 
+      ref={containerRef}
+    >
+      <div className="ts-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.688-1.688h1.906c3.106 0 5.64-2.534 5.64-5.64 0-4.75-4.03-8.72-8.703-8.72Z"/>
+        </svg>
+      </div>
+      <span className="ts-label">{currentTheme?.label}</span>
+      
+      {isOpen && (
+        <div className="ts-menu">
+          {themes.map(t => (
+            <div 
+              key={t.id} 
+              className={`ts-item ${theme === t.id ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setTheme(t.id);
+                setIsOpen(false);
+              }}
+            >
+              <span>{t.label}</span>
+              <div 
+                className="ts-color-dot" 
+                style={{ background: `var(--${t.id === 'default' ? 'racing' : t.id})` }}
+              ></div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -16,11 +16,9 @@ const NewsIntel: React.FC = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        // Use AllOrigins proxy to bypass CORS
         const rssUrl = 'https://www.fia.com/rss/press-release';
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
         
-        const response = await fetch(proxyUrl);
+        const response = await fetch(rssUrl);
         const xmlText = await response.text();
         
         const parser = new DOMParser();
