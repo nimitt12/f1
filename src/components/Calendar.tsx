@@ -17,13 +17,31 @@ const Calendar: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const scrollLeft = () => {
+    if (stripRef.current) {
+      stripRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (stripRef.current) {
+      stripRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="cal-section">
       <div className="cal-head">
         <div className="cal-title">
           Season <em>Calendar</em>
         </div>
-        <div className="cal-meta">23 Rounds · Mar → Dec 2026</div>
+        <div className="cal-head-right">
+          <div className="cal-meta">23 Rounds · Mar → Dec 2026</div>
+          <div className="cal-nav">
+            <button onClick={scrollLeft} className="cal-nav-btn" aria-label="Scroll Left">&#8592;</button>
+            <button onClick={scrollRight} className="cal-nav-btn" aria-label="Scroll Right">&#8594;</button>
+          </div>
+        </div>
       </div>
 
       <div className="cal-strip-wrap">

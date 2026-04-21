@@ -789,6 +789,37 @@
       font-weight: 500;
     }
 
+    .cal-head-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .cal-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .cal-nav-btn {
+      background: var(--carbon);
+      color: #fff;
+      border: 1px solid var(--carbon-3);
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .cal-nav-btn:hover {
+      background: var(--racing);
+      color: #fff;
+    }
+
     .cal-strip-wrap {
       position: relative;
       overflow: hidden;
