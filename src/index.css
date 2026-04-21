@@ -1154,6 +1154,18 @@
       bottom: 0;
       width: 4px;
       background: var(--team-color, var(--ink-3));
+      z-index: 2;
+    }
+
+    /* Dynamic Team Gradient */
+    .driver-row::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--team-color, transparent) 0%, transparent 80%);
+      opacity: 0.12;
+      z-index: 0;
+      pointer-events: none;
     }
 
     .driver-row:hover {
@@ -1274,6 +1286,18 @@
       bottom: 0;
       width: 4px;
       background: var(--team-color);
+      z-index: 2;
+    }
+
+    /* Dynamic Team Gradient */
+    .con-row::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--team-color, transparent) 0%, transparent 80%);
+      opacity: 0.12;
+      z-index: 0;
+      pointer-events: none;
     }
 
     .con-top {
