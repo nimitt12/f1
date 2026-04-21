@@ -149,7 +149,7 @@ const DriversStandings: React.FC = () => {
             <div className="driver-pts-wrap">
               <div className="driver-pts">{item.points}</div>
               <div className="driver-pts-sub" style={{ color: 'var(--ink)' }}>pts</div>
-              <div className="driver-pts-sub">-{ptsDiff}</div>
+              {ptsDiff > 0 && <div className="driver-pts-sub">-{ptsDiff}</div>}
             </div>
           </div>
         );

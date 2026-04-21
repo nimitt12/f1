@@ -1175,8 +1175,8 @@
 
     .driver-row.leader {
       background: linear-gradient(90deg, var(--team-color, transparent) 0%, transparent 80%);
-      height: 110px;
-      
+      height: 150px;
+
       .driver-pos {
         font-size: 25px;
       }
