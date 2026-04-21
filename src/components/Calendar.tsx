@@ -191,7 +191,7 @@ const Calendar: React.FC = () => {
         </div>
         <div className="cal-strip" id="calStrip" ref={stripRef}>
           {(() => {
-            const today = new Date('2026-04-21'); 
+            const today = new Date(); 
             const nextRace = races.find(r => new Date(r.date) >= today);
             const nextRound = nextRace?.round;
 
