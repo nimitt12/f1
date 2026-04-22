@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
     <div className="footer-wrap">
       <footer className="footer">
         <div className="f-note">
-          For Nimitt · eyes only<span className="f-dot"></span>Lights out and away we go
+          For My · eyes only<span className="f-dot"></span>Lights out and away we go
         </div>
         <div className="f-brand">
           The <em>Pit Wall</em>

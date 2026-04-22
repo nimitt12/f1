@@ -103,7 +103,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
       <div className="title-wrap">
         <h1 className="hero-title">
           <span className="line1">
-            <span>{user ? `${user.name.split(' ')[0]}'s` : "Your"}</span>
+            <span>{user ? `${user.name.split(' ')[0]}'s` : "My"}</span>
           </span>
           <span className="line2">
             <span>Pit Wall.</span>

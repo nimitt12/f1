@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Ticker from './components/Ticker';
 import Hero from './components/Hero';
 import NextRace from './components/NextRace';
@@ -10,7 +10,7 @@ import StatsRibbon from './components/StatsRibbon';
 import Footer from './components/Footer';
 
 const themes = [
-  { id: 'default', label: 'Default Red' },
+  { id: 'default', label: 'Default' },
   { id: 'mercedes', label: 'Mercedes' },
   { id: 'ferrari', label: 'Ferrari' },
   { id: 'mclaren', label: 'McLaren' },
@@ -85,7 +85,18 @@ const ThemeSwitcher: React.FC = () => {
 
 const App: React.FC = () => {
   // Import the AuthUser interface physically or loosely construct it. Let's loosely construct.
-  const [user, setUser] = useState<{name: string, picture: string} | null>(null);
+  const [user, setUser] = useState<{name: string, picture: string} | null>(() => {
+    const savedUser = localStorage.getItem('f1_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('f1_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('f1_user');
+    }
+  }, [user]);
 
   return (
     <>
