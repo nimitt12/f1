@@ -25,12 +25,15 @@ const themes = [
 ];
 
 const ThemeSwitcher: React.FC = () => {
-  const [theme, setTheme] = React.useState('default');
+  const [theme, setTheme] = React.useState(() => {
+    return localStorage.getItem('f1_theme') || 'default';
+  });
   const [isOpen, setIsOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     document.body.className = `theme-${theme}`;
+    localStorage.setItem('f1_theme', theme);
   }, [theme]);
 
   React.useEffect(() => {
