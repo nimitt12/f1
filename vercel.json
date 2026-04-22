@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/fia-news",
+      "destination": "https://www.fia.com/rss/press-release"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
