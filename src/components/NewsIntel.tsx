@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface NewsItem {
   id: string;
   title: string;
   link: string;
-  description: string;
+  summary: string;
+  fullContent: string;
   category: string;
   pubDate: string;
 }
@@ -12,6 +14,15 @@ interface NewsItem {
 const NewsIntel: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedNews(null);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -28,21 +39,19 @@ const NewsIntel: React.FC = () => {
           const link = item.querySelector('link')?.textContent || '';
           const pubDate = item.querySelector('pubDate')?.textContent || '';
           
-          // Clean description: extract first few words/paragraphs of text
           const rawDescription = item.querySelector('description')?.textContent || '';
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = rawDescription;
           
-          // Try to get first <p> or just the text
-          let description = tempDiv.querySelector('p')?.textContent || tempDiv.textContent || '';
+          // Full content (cleaned but not truncated)
+          const fullContent = tempDiv.querySelector('p')?.textContent || tempDiv.textContent || '';
           
-          // Truncate to a reasonable length for the dashboard
-          if (description.length > 160) {
-            description = description.substring(0, 157) + '...';
+          // Truncated summary for the list
+          let summary = fullContent;
+          if (summary.length > 160) {
+            summary = summary.substring(0, 157) + '...';
           }
 
-          // Determine category/kicker
-          // Check for specific keywords in title or just use a generic one
           let category = 'FIA Official';
           if (title.toLowerCase().includes('f1') || title.toLowerCase().includes('formula 1')) category = 'Formula 1';
           if (title.toLowerCase().includes('wrc')) category = 'WRC';
@@ -52,7 +61,8 @@ const NewsIntel: React.FC = () => {
             id: `news-${index}`,
             title,
             link,
-            description,
+            summary,
+            fullContent,
             category,
             pubDate
           };
@@ -125,7 +135,7 @@ const NewsIntel: React.FC = () => {
           <article 
             key={item.id} 
             className={`news-item ${index === 0 ? 'lead' : 'neutral'}`}
-            onClick={() => window.open(item.link, '_blank')}
+            onClick={() => setSelectedNews(item)}
             style={{ cursor: 'pointer' }}
           >
             <div className="news-meta">
@@ -134,7 +144,7 @@ const NewsIntel: React.FC = () => {
             </div>
             <span className="news-date">{formatDate(item.pubDate)}</span>
             <h3 className="news-headline">{item.title}</h3>
-            <p className="news-body">{item.description}</p>
+            <p className="news-body">{item.summary}</p>
           </article>
         ))}
 
@@ -144,6 +154,38 @@ const NewsIntel: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* News Modal - Rendered via Portal at body root */}
+      {selectedNews && createPortal(
+        <div className="news-modal-overlay" onClick={() => setSelectedNews(null)}>
+          <div className="news-modal-window" onClick={e => e.stopPropagation()}>
+            <button className="news-modal-close" onClick={() => setSelectedNews(null)}>×</button>
+            
+            <div className="news-modal-meta">
+              <span className="news-kicker">{selectedNews.category}</span>
+              <span className="news-date">{formatDate(selectedNews.pubDate)}</span>
+            </div>
+            
+            <h2 className="news-modal-title">{selectedNews.title}</h2>
+            
+            <div className="news-modal-content">
+              {selectedNews.fullContent.split('\n').map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
+
+            <div className="news-modal-footer">
+              <button 
+                className="news-modal-link-btn"
+                onClick={() => window.open(selectedNews.link, '_blank')}
+              >
+                READ ORIGINAL PRESS RELEASE ON FIA.COM
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

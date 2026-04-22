@@ -1585,7 +1585,7 @@
 
     .news-date {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 8px;
+      font-size: 11px;
       letter-spacing: .1em;
       color: var(--ink-3);
       font-weight: 600;
@@ -1602,7 +1602,7 @@
 
     .news-headline {
       font-family: 'Playfair Display', serif;
-      font-size: 15px;
+      font-size: 20px;
       font-weight: 500;
       line-height: 1.35;
       color: var(--ink);
@@ -1611,14 +1611,182 @@
     }
 
     .news-item.lead .news-headline {
-      font-size: 17px;
+      font-size: 22px;
       font-weight: 700;
     }
 
     .news-body {
-      font-size: 12px;
+      font-size: 14px;
       line-height: 1.6;
       color: var(--ink-2);
+    }
+
+    /* News Modal Premium UI */
+    .news-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(18px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0; /* Handled by window margins on mobile */
+      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    .news-modal-window {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      width: 92%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+      animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .news-modal-close {
+      position: absolute;
+      top: 0;
+      right: -40px; /* Outside on desktop */
+      background: var(--ink);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      width: 32px;
+      height: 32px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s;
+    }
+
+    .news-modal-close:hover {
+      background: var(--racing);
+      transform: scale(1.1);
+    }
+
+    .news-modal-meta {
+      padding: 32px 40px 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .news-modal-title {
+      padding: 16px 40px;
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    .news-modal-content {
+      padding: 0 40px 40px;
+      overflow-y: auto;
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--ink-2);
+      scrollbar-width: thin;
+      scrollbar-color: var(--ink-3) transparent;
+    }
+
+    .news-modal-content p {
+      margin-bottom: 24px;
+    }
+
+    .news-modal-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .news-modal-content::-webkit-scrollbar-thumb {
+      background: var(--ink-3);
+    }
+
+    .news-modal-footer {
+      padding: 24px 40px;
+      background: var(--paper-2);
+      border-top: 1px solid var(--rule-light);
+      display: flex;
+      justify-content: center;
+    }
+
+    .news-modal-link-btn {
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      padding: 16px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      text-align: center;
+    }
+
+    .news-modal-link-btn:hover {
+      background: var(--racing);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(225, 6, 0, 0.3);
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 900px) {
+      .news-modal-close {
+        right: 12px;
+        top: 12px;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        border-radius: 4px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .news-modal-window {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border: none;
+      }
+
+      .news-modal-meta {
+        padding: 64px 24px 0;
+        gap: 8px;
+      }
+
+      .news-modal-title {
+        padding: 16px 24px;
+        font-size: 26px;
+      }
+
+      .news-modal-content {
+        padding: 0 24px 40px;
+        font-size: 15px;
+      }
+
+      .news-modal-footer {
+        padding: 20px 24px;
+      }
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .stats-ribbon {
