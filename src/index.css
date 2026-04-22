@@ -192,6 +192,21 @@
       }
     }
 
+    @keyframes podiumSweep {
+      0% { transform: translateX(-100%); }
+      15%, 100% { transform: translateX(200%); }
+    }
+
+    @keyframes podiumFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes podiumPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.4); }
+      50% { box-shadow: 0 0 15px 4px rgba(212, 160, 23, 0.6); }
+    }
+
     @keyframes flagWave {
 
       0%,
@@ -1442,10 +1457,10 @@
 
     .podium-head {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      font-size: 15px;
       letter-spacing: .16em;
       text-transform: uppercase;
-      color: var(--ink-3);
+      color: var(--ink-1);
       margin-bottom: 14px;
       font-weight: 500;
     }
@@ -1463,7 +1478,25 @@
       gap: 10px;
       padding: 10px 12px;
       position: relative;
-      transition: transform 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      animation: podiumFloat 6s ease-in-out infinite;
+    }
+
+    .pod-row:nth-child(2) { animation-delay: 1s; }
+    .pod-row:nth-child(3) { animation-delay: 2s; }
+
+    .pod-row::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      skew-x: -20deg;
+      animation: podiumSweep 8s infinite linear;
+      pointer-events: none;
     }
 
     .pod-row:hover {
@@ -1484,7 +1517,7 @@
 
     .pod-badge {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 15px;
       font-weight: 700;
       text-align: center;
       padding: 6px 0;
@@ -1494,6 +1527,7 @@
 
     .p1 .pod-badge {
       background: #d4a017;
+      animation: podiumPulse 3s infinite ease-in-out;
     }
 
     .p2 .pod-badge {
@@ -1506,7 +1540,7 @@
 
     .pod-driver-name {
       font-family: 'Playfair Display', serif;
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 500;
       color: var(--ink);
       letter-spacing: -0.01em;
@@ -1514,14 +1548,14 @@
     }
 
     .pod-driver-team {
-      font-size: 10px;
+      font-size: 13px;
       color: var(--ink-3);
       margin-top: 3px;
     }
 
     .pod-time {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 20px;
       color: var(--ink-2);
       font-weight: 500;
     }
@@ -2040,7 +2074,7 @@
       margin: 56px auto 0;
     }
 
-    .col {
+    .col, .col:last-child {
       background: rgba(242, 236, 224, 0.4) !important;
       border: 2px solid var(--ink);
       backdrop-filter: blur(12px) saturate(140%);

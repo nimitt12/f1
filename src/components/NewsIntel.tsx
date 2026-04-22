@@ -11,10 +11,118 @@ interface NewsItem {
   pubDate: string;
 }
 
+interface RaceResult {
+  position: string;
+  Driver: {
+    givenName: string;
+    familyName: string;
+    permanentNumber: string;
+    code?: string;
+  };
+  Constructor: {
+    constructorId: string;
+    name: string;
+  };
+  Time?: {
+    time: string;
+  };
+}
+
 const NewsIntel: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  
+  const [podiumResults, setPodiumResults] = useState<RaceResult[]>([]);
+  const [raceInfo, setRaceInfo] = useState<{ name: string; circuit: string } | null>(null);
+  const [podiumLoading, setPodiumLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPodium = async () => {
+      try {
+        // Mock data representing the latest race results (Japanese GP)
+        const data = {
+          MRData: {
+            RaceTable: {
+              Races: [
+                {
+                  raceName: "Japanese Grand Prix",
+                  Circuit: {
+                    circuitName: "Suzuka International Racing Course"
+                  },
+                  Results: [
+                    {
+                      position: "1",
+                      Driver: {
+                        givenName: "Andrea Kimi",
+                        familyName: "Antonelli",
+                        permanentNumber: "12",
+                        code: "ANT"
+                      },
+                      Constructor: {
+                        constructorId: "mercedes",
+                        name: "Mercedes"
+                      },
+                      Time: {
+                        time: "1:28:14.802"
+                      }
+                    },
+                    {
+                      position: "2",
+                      Driver: {
+                        givenName: "George",
+                        familyName: "Russell",
+                        permanentNumber: "63",
+                        code: "RUS"
+                      },
+                      Constructor: {
+                        constructorId: "mercedes",
+                        name: "Mercedes"
+                      },
+                      Time: {
+                        time: "+3.441"
+                      }
+                    },
+                    {
+                      position: "3",
+                      Driver: {
+                        givenName: "Charles",
+                        familyName: "Leclerc",
+                        permanentNumber: "16",
+                        code: "LEC"
+                      },
+                      Constructor: {
+                        constructorId: "ferrari",
+                        name: "Ferrari"
+                      },
+                      Time: {
+                        time: "+9.127"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        };
+
+        const race = data.MRData.RaceTable.Races[0];
+        if (race) {
+          setRaceInfo({
+            name: race.raceName,
+            circuit: race.Circuit.circuitName
+          });
+          setPodiumResults(race.Results.slice(0, 3));
+        }
+      } catch (err) {
+        console.error('Failed to parse podium results', err);
+      } finally {
+        setPodiumLoading(false);
+      }
+    };
+
+    fetchPodium();
+  }, []);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -95,32 +203,24 @@ const NewsIntel: React.FC = () => {
       </div>
 
       <div className="podium-block">
-        <div className="podium-head">Japanese GP · Suzuka · Result</div>
+        <div className="podium-head">
+          {podiumLoading ? 'Fetching Results...' : `Last Race Results · ${raceInfo?.name}`}
+        </div>
         <div className="podium-list">
-          <div className="pod-row p1">
-            <div className="pod-badge">P1</div>
-            <div>
-              <div className="pod-driver-name">Kimi Antonelli</div>
-              <div className="pod-driver-team">Mercedes · #12</div>
+          {podiumLoading ? (
+            <div style={{ padding: '20px', textAlign: 'center', opacity: 0.5, fontSize: '12px' }}>
+              Updating Podium...
             </div>
-            <div className="pod-time">1:28:14.802</div>
-          </div>
-          <div className="pod-row p2">
-            <div className="pod-badge">P2</div>
-            <div>
-              <div className="pod-driver-name">George Russell</div>
-              <div className="pod-driver-team">Mercedes · #63</div>
+          ) : podiumResults.map((result) => (
+            <div key={result.position} className={`pod-row p${result.position}`}>
+              <div className="pod-badge">P{result.position}</div>
+              <div>
+                <div className="pod-driver-name">{result.Driver.givenName} {result.Driver.familyName}</div>
+                <div className="pod-driver-team">{result.Constructor.name} · #{result.Driver.permanentNumber}</div>
+              </div>
+              <div className="pod-time">{result.Time?.time || 'DNF'}</div>
             </div>
-            <div className="pod-time">+3.441</div>
-          </div>
-          <div className="pod-row p3">
-            <div className="pod-badge">P3</div>
-            <div>
-              <div className="pod-driver-name">Charles Leclerc</div>
-              <div className="pod-driver-team">Ferrari · #16</div>
-            </div>
-            <div className="pod-time">+9.127</div>
-          </div>
+          ))}
         </div>
       </div>
 
