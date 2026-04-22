@@ -23,7 +23,7 @@ const NewsIntel: React.FC = () => {
         const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
         const items = xmlDoc.querySelectorAll('item');
         
-        const parsedItems: NewsItem[] = Array.from(items).slice(0, 4).map((item, index) => {
+        const parsedItems: NewsItem[] = Array.from(items).slice(0, 10).map((item, index) => {
           const title = item.querySelector('title')?.textContent || '';
           const link = item.querySelector('link')?.textContent || '';
           const pubDate = item.querySelector('pubDate')?.textContent || '';
@@ -58,6 +58,7 @@ const NewsIntel: React.FC = () => {
           };
         });
 
+        console.log("🚀 ~ fetchNews ~ parsedItems:", parsedItems)
         setNews(parsedItems);
       } catch (err) {
         console.error('Failed to fetch FIA news:', err);
@@ -69,6 +70,10 @@ const NewsIntel: React.FC = () => {
     fetchNews();
   }, []);
 
+  const formatDate = (dateStr: string) => {
+      return dateStr.replace(/\s\+\d+$/, '').toUpperCase();
+  };
+
   return (
     <div className="col">
       <div className="col-head">
@@ -76,7 +81,7 @@ const NewsIntel: React.FC = () => {
         <div className="col-name">
           Paddock <em>Intel</em>
         </div>
-        <div className="col-sub">Live FIA Feed · Press Releases</div>
+        <div className="col-sub">Live FIA Feed · Top 10 Press Releases</div>
       </div>
 
       <div className="podium-block">
@@ -127,6 +132,7 @@ const NewsIntel: React.FC = () => {
               <span className="news-kicker">{item.category}</span>
               <span className="news-num">{(index + 1).toString().padStart(2, '0')}</span>
             </div>
+            <span className="news-date">{formatDate(item.pubDate)}</span>
             <h3 className="news-headline">{item.title}</h3>
             <p className="news-body">{item.description}</p>
           </article>
