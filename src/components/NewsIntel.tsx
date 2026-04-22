@@ -16,9 +16,7 @@ const NewsIntel: React.FC = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const rssUrl = 'https://www.fia.com/rss/press-release';
-        
-        const response = await fetch(rssUrl);
+        const response = await fetch('/fia-news');
         const xmlText = await response.text();
         
         const parser = new DOMParser();
