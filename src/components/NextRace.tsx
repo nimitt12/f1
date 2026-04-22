@@ -97,6 +97,74 @@ const NextRace: React.FC = () => {
           </div>
         </div>
       </div>
+      <div className="race-block previous">
+        <div className="race-grid">
+          <div className="race-left">
+            <div className="race-meta-row">
+              <span className="race-round">◆ Round 03 · Completed</span>
+              <span className="race-flag-big"><Flag code="jp" /></span>
+            </div>
+            <h2 className="race-name-previous">
+              Japanese <em>Grand Prix</em>
+            </h2>
+            <div className="race-circuit">
+              <strong>Suzuka International Racing Course</strong> · Suzuka
+            </div>
+            <div className="race-circuit">Round 3 of 23 · 53 laps · 307.471 km</div>
+
+            <div className="race-stats">
+              <div className="race-stat">
+                <div className="race-stat-label">Fastest Lap</div>
+                <div className="race-stat-val">1:31.540 (K. Antonelli)</div>
+              </div>
+              <div className="race-stat">
+                <div className="race-stat-label">Weather</div>
+                <div className="race-stat-val">Dry · 22°C</div>
+              </div>
+              <div className="race-stat">
+                <div className="race-stat-label">Attendance</div>
+                <div className="race-stat-val">222,000</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="race-right winner-showcase">
+            <div className="winner-label">Podium Results</div>
+            <div className="podium-cards">
+              <div className="winner-card p1-featured">
+                <div className="winner-badge">P1</div>
+                <div className="winner-info">
+                  <div className="winner-name">Andrea Kimi Antonelli</div>
+                  <div className="winner-team">Mercedes-AMG</div>
+                </div>
+                <div className="winner-stats-mini">
+                  <span className="ws-val">1:28:14.802</span>
+                  <span className="ws-pts">+25</span>
+                </div>
+              </div>
+              
+              <div className="podium-sub-grid">
+                <div className="podium-mini-card p2">
+                  <span className="pm-pos">P2</span>
+                  <div className="pm-info">
+                    <span className="pm-name">George Russell</span>
+                    <span className="pm-team">Mercedes</span>
+                  </div>
+                  <span className="pm-time">+3.441</span>
+                </div>
+                <div className="podium-mini-card p3">
+                  <span className="pm-pos">P3</span>
+                  <div className="pm-info">
+                    <span className="pm-name">Charles Leclerc</span>
+                    <span className="pm-team">Ferrari</span>
+                  </div>
+                  <span className="pm-time">+9.127</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

@@ -718,10 +718,245 @@
       margin-bottom: 16px;
     }
 
+    .race-name-previous {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(44px, 6vw, 45px);
+      font-weight: 700;
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
     .race-name em {
       font-style: italic;
       color: var(--racing-hot);
       font-weight: 500;
+    }
+
+    .race-name-previous em {
+      font-style: italic;
+      color: var(--racing-hot);
+      font-weight: 500;
+    }
+
+    .race-block.previous {
+      margin-top: 32px;
+      background: linear-gradient(135deg, var(--carbon-2) 0%, #1a1a1a 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .race-block.previous::before {
+      content: 'COMPLETED';
+      position: absolute;
+      top: 20px;
+      right: -40px;
+      bottom: auto;
+      left: auto;
+      width: 160px;
+      background: var(--racing);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 6px 0;
+      transform: rotate(45deg);
+      z-index: 10;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    .race-block.previous::after {
+      display: none;
+    }
+
+    .winner-showcase {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .winner-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .winner-card {
+      background: rgba(212, 160, 23, 0.08);
+      border: 1px solid rgba(212, 160, 23, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.3s ease;
+      animation: fadeUpSlow 0.8s ease-out both 0.5s;
+    }
+
+    .winner-card:hover {
+      background: rgba(212, 160, 23, 0.12);
+      border-color: rgba(212, 160, 23, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+
+    .winner-badge {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--gold);
+      color: #000;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 800;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(212, 160, 23, 0.4);
+      animation: podiumPulse 3s infinite ease-in-out;
+    }
+
+    .winner-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .winner-team {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .winner-stats {
+      display: flex;
+      gap: 24px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .winner-stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ws-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+    }
+
+    .ws-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .podium-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .winner-stats-mini {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .ws-pts {
+      background: var(--gold);
+      color: #000;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .podium-sub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .podium-mini-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .podium-mini-card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    .pm-pos {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-3);
+    }
+
+    .p2 .pm-pos { color: #c0c0c0; }
+    .p3 .pm-pos { color: #cd7f32; }
+
+    .pm-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pm-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .pm-team {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    .pm-time {
+      grid-column: 2;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-top: 4px;
     }
 
     .race-circuit {
@@ -1987,6 +2222,10 @@
       }
 
       .race-name {
+        font-size: clamp(34px, 8vw, 52px);
+      }
+
+      .race-name-previous {
         font-size: clamp(34px, 8vw, 52px);
       }
 
