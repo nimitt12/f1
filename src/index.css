@@ -1432,18 +1432,43 @@ body {
 .main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: #000;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 32px;
-  overflow: hidden;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+  gap: 32px;
+  background: transparent;
 }
 
 .col {
   background: #000 !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
+  height: 800px; /* Fixed height to match constructors */
+}
+
+.standings-list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.standings-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.standings-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.standings-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.standings-list::-webkit-scrollbar-thumb:hover {
+  background: var(--racing);
 }
 
 .col-head {
@@ -2422,8 +2447,9 @@ body {
 .col:last-child {
   background: #000 !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
   backdrop-filter: none;
-  box-shadow: none;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
 }
 
 /* Theme Switcher Premium UI */

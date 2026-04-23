@@ -100,7 +100,9 @@ const ConstructorsStandings: React.FC = () => {
 
       {loading && <div style={{ padding: '24px' }}>Loading team standings...</div>}
 
-      {!loading && standings.map((item, index) => {
+      {!loading && (
+        <div className="standings-list">
+          {standings.map((item, index) => {
         const isLeader = index === 0;
         const teamColor = teamColors[item.Constructor.constructorId] || 'var(--ink-3)';
         const percentage = (parseFloat(item.points) / maxPoints) * 100;
@@ -145,6 +147,8 @@ const ConstructorsStandings: React.FC = () => {
           </div>
         );
       })}
+        </div>
+      )}
     </div>
   );
 };

@@ -159,7 +159,9 @@ const DriversStandings: React.FC = () => {
 
       {loading && <div style={{ padding: '24px' }}>Loading real-time standings...</div>}
 
-      {!loading && standings.map((item, index) => {
+      {!loading && (
+        <div className="standings-list">
+          {standings.map((item, index) => {
         const isLeader = index === 0;
         const constructorId = item.Constructors[0]?.constructorId || 'unknown';
         const teamColor = teamColors[constructorId] || 'var(--ink-3)';
@@ -211,6 +213,8 @@ const DriversStandings: React.FC = () => {
           </div>
         );
       })}
+        </div>
+      )}
     </div>
   );
 };
