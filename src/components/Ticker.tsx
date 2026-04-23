@@ -5,10 +5,8 @@ const Ticker: React.FC = () => {
     { id: 1, sym: 'WDC', val: 'ANTONELLI', pts: '72 pts' },
     { id: 2, sym: 'WCC', val: 'MERCEDES', pts: '135 pts' },
     { id: 3, sym: 'NEXT', val: 'MIAMI GP', pts: 'MAY 3' },
-    { id: 4, sym: 'WINNER', val: 'ANTONELLI', pts: 'JAPAN' },
-    { id: 5, sym: 'FL', val: 'RUSSELL', pts: '1:28.411' },
-    { id: 6, sym: 'FAST PIT', val: 'MCLAREN', pts: '1.94s' },
-    { id: 7, sym: 'VER', val: '−60', pts: 'P9' },
+    { id: 4, sym: 'LAST RACE WINNER', val: 'ANTONELLI', pts: 'JAPAN' },
+    { id: 6, sym: 'FASTEST PIT', val: 'MCLAREN', pts: '1.94s' },
     { id: 8, sym: 'ROOKIE', val: 'LINDBLAD', pts: '4 pts' },
   ];
 

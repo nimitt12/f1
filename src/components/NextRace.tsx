@@ -17,7 +17,7 @@ const Flag: React.FC<{ code: string }> = ({ code }) => {
 const NextRace: React.FC = () => {
 
   const totalGPs = 22;
-  const completedGPs = 4;
+  const completedGPs = 3;
   const percentage = Math.round((completedGPs / totalGPs) * 100);
 
   const [timeLeft, setTimeLeft] = useState({ d: '00', h: '00', m: '00', s: '00' });
@@ -102,6 +102,30 @@ const NextRace: React.FC = () => {
           </div>
         </div>
       </div>
+      <div className="season-progress-container">
+        <div className="sp-card">
+          <div className="sp-header">
+            <div className="sp-percent">
+              {percentage}<span>%</span>
+            </div>
+            <div className="sp-meta">
+              <div className="sp-count">
+                <strong>{completedGPs}</strong>/{totalGPs}
+              </div>
+              <div className="sp-label">Grand Prix Completed</div>
+            </div>
+          </div>
+          <div className="sp-bar">
+            {Array.from({ length: totalGPs }).map((_, i) => (
+              <div 
+                key={i} 
+                className={`sp-tick ${i < completedGPs ? 'active' : ''}`}
+                style={{ animationDelay: `${i * 0.05}s` }}
+              ></div>
+            ))}
+          </div>
+        </div>
+      </div>
       <div className="race-block previous" style={{
         marginTop: '0px',
       }}>
@@ -122,10 +146,6 @@ const NextRace: React.FC = () => {
               <div className="race-stat">
                 <div className="race-stat-label">Fastest Lap</div>
                 <div className="race-stat-val">1:31.540 (K. Antonelli)</div>
-              </div>
-              <div className="race-stat">
-                <div className="race-stat-label">Weather</div>
-                <div className="race-stat-val">Dry · 22°C</div>
               </div>
             </div>
           </div>
@@ -166,30 +186,6 @@ const NextRace: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="season-progress-container">
-      <div className="sp-card">
-        <div className="sp-header">
-          <div className="sp-percent">
-            {percentage}<span>%</span>
-          </div>
-          <div className="sp-meta">
-            <div className="sp-count">
-              <strong>{completedGPs}</strong>/{totalGPs}
-            </div>
-            <div className="sp-label">Grand Prix Completed</div>
-          </div>
-        </div>
-        <div className="sp-bar">
-          {Array.from({ length: totalGPs }).map((_, i) => (
-            <div 
-              key={i} 
-              className={`sp-tick ${i < completedGPs ? 'active' : ''}`}
-              style={{ animationDelay: `${i * 0.05}s` }}
-            ></div>
-          ))}
-        </div>
-      </div>
-    </div>
     </section>
   );
 };

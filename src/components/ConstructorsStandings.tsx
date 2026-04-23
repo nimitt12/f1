@@ -95,7 +95,7 @@ const ConstructorsStandings: React.FC = () => {
         <div className="col-name">
           Constructors' <em>Cup</em>
         </div>
-        <div className="col-sub">All {standings.length} Teams · Round {round}</div>
+        <div className="col-sub">All {standings.length} Teams · After {round} Rounds</div>
       </div>
 
       {loading && <div style={{ padding: '24px' }}>Loading team standings...</div>}

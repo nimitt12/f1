@@ -154,7 +154,7 @@ const DriversStandings: React.FC = () => {
         <div className="col-name">
           Drivers' <em>Championship</em>
         </div>
-        <div className="col-sub">Top 10 · After {round} Rounds</div>
+        <div className="col-sub">After {round} Rounds</div>
       </div>
 
       {loading && <div style={{ padding: '24px' }}>Loading real-time standings...</div>}
