@@ -1437,9 +1437,24 @@ body {
 }
 
 .col {
-  border-right: 1px solid var(--rule-light);
+  background: #000 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
+}
+
+.col-head {
+  padding: 32px 36px;
+  background: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.col-name {
+  color: #fff;
+}
+
+.col-sub {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .col:last-child {
@@ -1447,9 +1462,9 @@ body {
 }
 
 .col-head {
-  padding: 22px 24px 20px;
-  border-bottom: 2px solid var(--ink);
-  background: var(--paper);
+  padding: 24px 36px;
+  background: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 5;
@@ -1490,75 +1505,41 @@ body {
 
 .driver-row {
   display: grid;
-  grid-template-columns: 32px 1fr auto;
+  grid-template-columns: 40px 1fr auto;
   align-items: center;
-  gap: 12px;
-  padding: 14px 24px;
-  border-bottom: 1px solid var(--rule-light);
+  gap: 16px;
+  padding: 24px 36px;
+  background: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
-  transition:
-    background 0.2s,
-    transform 0.2s;
-  opacity: 0;
-  animation: rowSlide 0.6s cubic-bezier(0.25, 0.9, 0.3, 1) both;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .driver-row::before {
   content: "";
   position: absolute;
-  left: 0;
   top: 0;
+  left: 0;
   bottom: 0;
-  width: 4px;
-  background: var(--team-color, var(--ink-3));
-  z-index: 2;
-}
-
-/* Dynamic Team Gradient */
-.driver-row::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    var(--team-color, transparent) 0%,
-    transparent 80%
-  );
-  opacity: 0.12;
+  width: 400px;
+  background: linear-gradient(90deg, var(--team-color) 0%, transparent 100%);
+  opacity: 0.45;
   z-index: 0;
-  pointer-events: none;
 }
 
 .driver-row:hover {
-  background: var(--paper-2);
-  transform: translateX(3px);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateX(4px);
 }
 
 .driver-row.leader {
-  background: linear-gradient(
-    90deg,
-    var(--team-color, transparent) 0%,
-    transparent 80%
-  );
-  height: 150px;
+  background: linear-gradient(90deg, var(--team-color) -20%, #000 70%);
+  padding: 48px 36px;
+}
 
-  .driver-pos {
-    font-size: 25px;
-  }
-  .driver-name {
-    font-size: 25px;
-  }
-  .driver-code {
-    font-size: 15px;
-  }
-  .driver-team {
-    font-size: 15px;
-    color: var(--ink-2);
-  }
-  .driver-pts {
-    font-size: 25px;
-    color: var(--ink-2);
-  }
+.driver-row.leader::before {
+  display: none;
 }
 
 .driver-row.leader::after {
@@ -1596,11 +1577,15 @@ body {
 }
 
 .driver-name {
-  font-family: "Playfair Display", serif;
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--ink);
-  letter-spacing: -0.01em;
+  font-family: "Inter", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.leader .driver-name {
+  font-size: 32px;
 }
 
 .driver-code {
@@ -1618,9 +1603,11 @@ body {
   align-items: center;
   gap: 10px;
   margin-top: 6px;
-  color: var(--ink-3);
+  color: rgba(255, 255, 255, 0.4);
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .driver-divider,
@@ -1632,7 +1619,7 @@ body {
 .team-name {
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: var(--ink-2);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .driver-nat {
@@ -1660,158 +1647,123 @@ body {
 
 .driver-pts {
   font-family: "JetBrains Mono", monospace;
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
+  color: #fff;
   line-height: 1;
+}
+
+.leader .driver-pts {
+  font-size: 40px;
 }
 
 .driver-pts-sub {
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
-  color: var(--ink-3);
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
 .con-row {
-  padding: 15px 24px;
-  border-bottom: 1px solid var(--rule-light);
+  padding: 24px 36px;
+  background: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
-  transition: background 0.2s;
-  opacity: 0;
-  animation: rowSlide 0.6s cubic-bezier(0.25, 0.9, 0.3, 1) both;
-}
-
-.con-row.leader {
-  background: linear-gradient(
-    90deg,
-    var(--team-color, transparent) 0%,
-    transparent 80%
-  );
-  height: 150px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  .con-top {
-    grid-template-columns: 32px 1fr auto;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-
-  .con-pos {
-    font-size: 28px;
-    color: var(--ink);
-  }
-  .con-name {
-    font-size: 28px;
-    font-family: "Playfair Display", serif;
-  }
-  .con-engine {
-    font-size: 14px;
-    margin-top: 4px;
-    color: var(--ink-2);
-  }
-  .con-pts {
-    font-size: 28px;
-    color: var(--ink);
-  }
-}
-
-.con-row.leader:hover {
-  background: linear-gradient(
-    90deg,
-    var(--team-color, transparent) 0%,
-    transparent 80%
-  );
-}
-
-.con-row:hover {
-  background: var(--paper-2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .con-row::before {
   content: "";
   position: absolute;
-  left: 0;
   top: 0;
+  left: 0;
   bottom: 0;
-  width: 4px;
-  background: var(--team-color);
-  z-index: 2;
+  width: 400px;
+  background: linear-gradient(90deg, var(--team-color) 0%, transparent 100%);
+  opacity: 0.45;
+  z-index: 0;
 }
 
-/* Dynamic Team Gradient */
-.con-row::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    var(--team-color, transparent) 0%,
-    transparent 80%
-  );
-  opacity: 0.12;
-  z-index: 0;
-  pointer-events: none;
+.con-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateX(4px);
+}
+
+.con-row.leader {
+  background: linear-gradient(90deg, var(--team-color) -20%, #000 70%);
+  padding: 48px 36px;
 }
 
 .con-top {
-  display: grid;
-  grid-template-columns: 26px 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 9px;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .con-pos {
   font-family: "JetBrains Mono", monospace;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
-  color: var(--ink-2);
-  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.3);
+  width: 40px;
 }
 
 .con-name {
-  font-family: "Playfair Display", serif;
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--ink);
-  letter-spacing: -0.01em;
+  font-family: "Inter", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.leader .con-name {
+  font-size: 32px;
 }
 
 .con-engine {
-  font-size: 12px;
-  color: var(--ink-3);
-  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+  font-family: "JetBrains Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .con-pts {
+  flex: 1;
+  text-align: right;
   font-family: "JetBrains Mono", monospace;
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 700;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.leader .con-pts {
+  font-size: 40px;
 }
 
 .con-bar {
+  margin-top: 12px;
   height: 4px;
-  background: var(--paper-3);
-  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
   position: relative;
-  overflow: hidden;
+  z-index: 1;
 }
 
 .con-bar-fill {
   height: 100%;
   background: var(--team-color);
+  border-radius: 2px;
   transform-origin: left;
-  transform: scaleX(0);
-  animation: barGrowSlow 1.4s cubic-bezier(0.3, 0.9, 0.3, 1) both;
 }
+
+
 
 .podium-block {
   padding: 22px 24px;
@@ -2463,10 +2415,10 @@ body {
 
 .col,
 .col:last-child {
-  background: rgba(242, 236, 224, 0.4) !important;
-  border: 1px solid var(--ink);
-  backdrop-filter: blur(12px) saturate(140%);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  background: #000 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
 /* Theme Switcher Premium UI */
