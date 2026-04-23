@@ -97,15 +97,16 @@ const NextRace: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="race-block previous">
+      <div className="race-block previous" style={{
+        marginTop: '0px',
+      }}>
         <div className="race-grid">
           <div className="race-left">
             <div className="race-meta-row">
               <span className="race-round">◆ Round 03 · Completed</span>
-              <span className="race-flag-big"><Flag code="jp" /></span>
             </div>
             <h2 className="race-name-previous">
-              Japanese <em>Grand Prix</em>
+              <span className="race-flag-big"><Flag code="jp" /></span> Japanese <em>Grand Prix</em> 
             </h2>
             <div className="race-circuit">
               <strong>Suzuka International Racing Course</strong> · Suzuka
@@ -121,15 +122,10 @@ const NextRace: React.FC = () => {
                 <div className="race-stat-label">Weather</div>
                 <div className="race-stat-val">Dry · 22°C</div>
               </div>
-              <div className="race-stat">
-                <div className="race-stat-label">Attendance</div>
-                <div className="race-stat-val">222,000</div>
-              </div>
             </div>
           </div>
 
           <div className="race-right winner-showcase">
-            <div className="winner-label">Podium Results</div>
             <div className="podium-cards">
               <div className="winner-card p1-featured">
                 <div className="winner-badge">P1</div>

@@ -741,31 +741,10 @@
     }
 
     .race-block.previous {
-      margin-top: 32px;
       background: linear-gradient(135deg, var(--carbon-2) 0%, #1a1a1a 100%);
       border: 1px solid rgba(255,255,255,0.05);
       position: relative;
       overflow: hidden;
-    }
-
-    .race-block.previous::before {
-      content: 'COMPLETED';
-      position: absolute;
-      top: 20px;
-      right: -40px;
-      bottom: auto;
-      left: auto;
-      width: 160px;
-      background: var(--racing);
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 6px 0;
-      transform: rotate(45deg);
-      z-index: 10;
-      letter-spacing: 0.1em;
-      text-align: center;
     }
 
     .race-block.previous::after {
