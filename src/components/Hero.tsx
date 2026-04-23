@@ -10,9 +10,10 @@ export interface AuthUser {
 interface HeroProps {
   user: AuthUser | null;
   setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
+  onOpenSettings: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
+const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { greeting, dateline } = useMemo(() => {
@@ -78,8 +79,8 @@ const Hero: React.FC<HeroProps> = ({ user, setUser }) => {
                 />
                 {isMenuOpen && (
                   <div className="profile-dropdown">
-                    <div className="dropdown-item">My Account</div>
-                    <div className="dropdown-item">Settings</div>
+                    <div className="dropdown-item" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>My Account</div>
+                    <div className="dropdown-item" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>Settings</div>
                     <div className="dropdown-item logout" onMouseDown={handleLogout}>Log out</div>
                   </div>
                 )}

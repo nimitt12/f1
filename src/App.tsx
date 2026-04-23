@@ -9,6 +9,7 @@ import NewsIntel from './components/NewsIntel';
 import StatsRibbon from './components/StatsRibbon';
 import Footer from './components/Footer';
 import DriverBattle from './components/DriverBattle';
+import AccountPage from './components/AccountPage';
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -93,6 +94,7 @@ const App: React.FC = () => {
     const savedUser = localStorage.getItem('f1_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+  const [view, setView] = useState<'dashboard' | 'account'>('dashboard');
 
   useEffect(() => {
     if (user) {
@@ -109,26 +111,40 @@ const App: React.FC = () => {
         <div className="bg-orb orb-2"></div>
         <div className="bg-orb orb-3"></div>
       </div>
-      <ThemeSwitcher />
-      <Ticker />
-      <Hero user={user} setUser={setUser} />
-      <NextRace />
-      <Calendar />
-      <DriverBattle />
+      
+      {view === 'dashboard' ? (
+        <>
+          <ThemeSwitcher />
+          <Ticker />
+          <Hero 
+            user={user} 
+            setUser={setUser} 
+            onOpenSettings={() => setView('account')} 
+          />
+          <NextRace />
+          <Calendar />
+          <DriverBattle />
 
-      <section className="main-section">
-        <div className="main-grid">
-          <DriversStandings />
-          <ConstructorsStandings />
-        </div>
-      </section>
+          <section className="main-section">
+            <div className="main-grid">
+              <DriversStandings />
+              <ConstructorsStandings />
+            </div>
+          </section>
 
-      <section className="intel-section">
-        <NewsIntel />
-      </section>
+          <section className="intel-section">
+            <NewsIntel />
+          </section>
 
-      <StatsRibbon />
-      <Footer />
+          <StatsRibbon />
+          <Footer />
+        </>
+      ) : (
+        <AccountPage 
+          user={user} 
+          onClose={() => setView('dashboard')} 
+        />
+      )}
     </>
   );
 };
