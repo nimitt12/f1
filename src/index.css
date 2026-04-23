@@ -2258,7 +2258,6 @@ body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
-  margin-bottom: 13px;
 }
 
 .stat-big {
@@ -2758,8 +2757,9 @@ body {
   position: absolute;
   top: 20px;
   font-family: "Inter", sans-serif;
-  font-size: 100px;
+  font-size: 250px;
   font-weight: 900;
+  opacity: 25%;
   color: var(--racing);
   letter-spacing: -0.05em;
   line-height: 1;
@@ -2768,11 +2768,11 @@ body {
 }
 
 .p1 .battle-bg-name {
-  left: 20px;
+  left: 400px;
   text-align: left;
 }
 .p2 .battle-bg-name {
-  right: 20px;
+  right: 368px;
   text-align: right;
 }
 
@@ -2817,6 +2817,7 @@ body {
   font-size: 32px;
   font-weight: 700;
   color: #fff;
+  font-style: italic;
   line-height: 1;
   letter-spacing: -0.01em;
 }
@@ -2888,7 +2889,7 @@ body {
 
 .stat-label {
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
+  font-size: 18px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.15em;
