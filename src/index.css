@@ -1432,8 +1432,11 @@ body {
 .main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border: 1px solid var(--ink);
-  background: var(--paper);
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
 }
 
 .col {
@@ -1484,7 +1487,7 @@ body {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.015em;
-  color: var(--ink);
+  color: var(--paper);
   line-height: 1;
 }
 
@@ -1499,7 +1502,7 @@ body {
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-2);
+  color: var(--paper-2);
   margin-top: 9px;
 }
 
@@ -1559,9 +1562,9 @@ body {
 
 .driver-pos {
   font-family: "JetBrains Mono", monospace;
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 700;
-  color: var(--ink-2);
+  color: var(--paper);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1619,19 +1622,23 @@ body {
 .team-name {
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  color: var(--paper);
 }
 
 .driver-nat {
   display: flex;
   align-items: center;
   letter-spacing: 0.05em;
+  color: var(--paper);
+  font-size: 14px;
 }
 
 .wins-count {
-  color: var(--ink-2);
+  color: var(--paper);
   font-weight: 700;
   letter-spacing: 0.05em;
+  font-size: 14px;
 }
 
 .driver-team .gap {
@@ -1660,7 +1667,7 @@ body {
 .driver-pts-sub {
   font-family: "JetBrains Mono", monospace;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--paper);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-top: 4px;
@@ -1709,7 +1716,7 @@ body {
   font-family: "JetBrains Mono", monospace;
   font-size: 18px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--paper);
   width: 40px;
 }
 
@@ -1726,8 +1733,8 @@ body {
 }
 
 .con-engine {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  color: var(--paper);
   margin-top: 4px;
   font-family: "JetBrains Mono", monospace;
   text-transform: uppercase;
@@ -1762,8 +1769,6 @@ body {
   border-radius: 2px;
   transform-origin: left;
 }
-
-
 
 .podium-block {
   padding: 22px 24px;
