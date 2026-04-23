@@ -45,6 +45,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ isOpen, onClose, user
     const saved = localStorage.getItem('f1_user_prefs');
     if (saved) {
       const prefs = JSON.parse(saved);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFavConstructor(prefs.constructor || '');
       setFavDrivers(prefs.drivers || []);
     }
