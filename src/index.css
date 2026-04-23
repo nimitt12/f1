@@ -2669,3 +2669,270 @@ body {
     border-radius: 3px;
   }
 }
+
+.driver-battle-section {
+  max-width: 1440px;
+  margin: 64px auto;
+  padding: 0 36px;
+}
+
+.battle-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.battle-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--racing);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.battle-title {
+  font-family: "Playfair Display", serif;
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.battle-title em {
+  font-style: italic;
+  font-weight: 800;
+  color: var(--racing);
+}
+
+.battle-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #050505;
+  border: 1px solid var(--ink);
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  height: 520px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+}
+
+.battle-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.battle-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+  z-index: 2;
+}
+
+.battle-card.p1 {
+  background: linear-gradient(135deg, #111 0%, #000 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.battle-card.p2 {
+  background: linear-gradient(225deg, #111 0%, #000 100%);
+}
+
+.battle-image-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.battle-bg-name {
+  position: absolute;
+  top: 20px;
+  font-family: "Inter", sans-serif;
+  font-size: 100px;
+  font-weight: 900;
+  color: var(--racing);
+  letter-spacing: -0.05em;
+  line-height: 1;
+  z-index: 0;
+  text-transform: uppercase;
+}
+
+.p1 .battle-bg-name {
+  left: 20px;
+  text-align: left;
+}
+.p2 .battle-bg-name {
+  right: 20px;
+  text-align: right;
+}
+
+.battle-driver-img {
+  position: absolute;
+  top: 0;
+  height: 180%;
+  width: 100%;
+  object-fit: contain;
+  z-index: 1;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.p1 .battle-driver-img {
+  left: 50%;
+  transform: translateX(-50%);
+  object-position: center 15%;
+}
+.p2 .battle-driver-img {
+  right: 50%;
+  transform: translateX(50%);
+  object-position: center 15%;
+}
+
+.battle-info {
+  position: relative;
+  z-index: 10;
+}
+
+.battle-pos {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 110px;
+  font-weight: 800;
+  color: var(--team-color);
+  background: rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.battle-name {
+  font-family: "Playfair Display", serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.battle-team {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--ink-1);
+  letter-spacing: 0.15em;
+  opacity: 0.8;
+}
+
+.p1 .battle-info {
+  text-align: left;
+}
+.p2 .battle-info {
+  text-align: right;
+}
+
+.battle-vs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+}
+
+.vs-circle {
+  width: 50px;
+  height: 50px;
+  background: var(--racing);
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(225, 6, 0, 0.6);
+  border: 4px solid #000;
+}
+
+.battle-stats-overlay {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 460px;
+  z-index: 30;
+  background: rgba(15, 15, 15, 0.8);
+  backdrop-filter: blur(30px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.battle-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.15em;
+  text-align: center;
+  flex: 1;
+}
+
+.stat-val {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  width: 60px;
+  text-align: center;
+}
+
+.stat-val.v1 {
+  color: #00d2be;
+  text-shadow: 0 0 10px rgba(0, 210, 190, 0.3);
+}
+.stat-val.v2 {
+  color: #00d2be;
+  text-shadow: 0 0 10px rgba(0, 210, 190, 0.3);
+}
+
+@media (max-width: 1100px) {
+  .battle-container {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+  .battle-vs {
+    width: 100%;
+    height: 60px;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .battle-stats-overlay {
+    position: static;
+    transform: none;
+    max-width: 100%;
+    border-radius: 0;
+  }
+  .battle-card {
+    height: 400px;
+  }
+}

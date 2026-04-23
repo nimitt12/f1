@@ -8,6 +8,7 @@ import ConstructorsStandings from './components/ConstructorsStandings';
 import NewsIntel from './components/NewsIntel';
 import StatsRibbon from './components/StatsRibbon';
 import Footer from './components/Footer';
+import DriverBattle from './components/DriverBattle';
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -113,6 +114,7 @@ const App: React.FC = () => {
       <Hero user={user} setUser={setUser} />
       <NextRace />
       <Calendar />
+      <DriverBattle />
 
       <section className="main-section">
         <div className="main-grid">
