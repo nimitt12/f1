@@ -1896,21 +1896,21 @@ body {
   font-family: "Playfair Display", serif;
   font-size: 18px;
   font-weight: 500;
-  color: var(--ink);
+  color: #fff; /* Force white for visibility */
   letter-spacing: -0.01em;
   line-height: 1;
 }
 
 .pod-driver-team {
   font-size: 13px;
-  color: var(--ink-3);
+  color: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
   margin-top: 3px;
 }
 
 .pod-time {
   font-family: "JetBrains Mono", monospace;
   font-size: 20px;
-  color: var(--ink-2);
+  color: rgba(255, 255, 255, 0.8); /* Light gray */
   font-weight: 500;
 }
 
@@ -1943,7 +1943,7 @@ body {
 }
 
 .news-item:hover {
-  background: var(--paper-2);
+  background: rgba(255, 255, 255, 0.05);
   padding-left: 28px;
 }
 
@@ -1995,7 +1995,7 @@ body {
   font-size: 20px;
   font-weight: 500;
   line-height: 1.35;
-  color: var(--ink);
+  color: #fff; /* Force white for visibility */
   letter-spacing: -0.01em;
   margin-bottom: 7px;
 }
@@ -2008,7 +2008,7 @@ body {
 .news-body {
   font-size: 14px;
   line-height: 1.6;
-  color: var(--ink-2);
+  color: rgba(255, 255, 255, 0.7); /* Force light color */
 }
 
 /* News Modal Premium UI */
@@ -2440,7 +2440,11 @@ body {
   background: transparent !important;
   padding: 0 36px 64px;
   max-width: 1440px;
-  margin: 56px auto 0;
+  margin: 0px auto 0;
+}
+
+.intel-section .col {
+  height: auto;
 }
 
 .col,
@@ -2935,8 +2939,14 @@ body {
 }
 
 @keyframes accountFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .account-hero {
@@ -2952,7 +2962,11 @@ body {
 .account-hero-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 70% 30%, rgba(225, 6, 0, 0.1) 0%, transparent 50%);
+  background: radial-gradient(
+    circle at 70% 30%,
+    rgba(225, 6, 0, 0.1) 0%,
+    transparent 50%
+  );
   z-index: 0;
 }
 
@@ -3156,7 +3170,9 @@ body {
 .team-select-card.active {
   background: rgba(255, 255, 255, 0.08);
   border-color: var(--team-color);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(var(--team-color), 0.2);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(var(--team-color), 0.2);
 }
 
 .team-card-content {

@@ -112,7 +112,7 @@ const NewsIntel: React.FC = () => {
             name: race.raceName,
             circuit: race.Circuit.circuitName
           });
-          setPodiumResults(race.Results.slice(0, 3));
+          setPodiumResults(race.Results.slice(0, 10));
         }
       } catch (err) {
         console.error('Failed to parse podium results', err);
@@ -195,7 +195,6 @@ const NewsIntel: React.FC = () => {
   return (
     <div className="col">
       <div className="col-head">
-        <div className="col-num">§ 03</div>
         <div className="col-name">
           Paddock <em>Intel</em>
         </div>
