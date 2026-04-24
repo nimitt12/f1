@@ -133,9 +133,10 @@ const NextRace: React.FC = () => {
           <div className="race-left">
             <div className="race-meta-row">
               <span className="race-round">◆ Round 03 · Completed</span>
+              <span className="race-flag-big"><Flag code="jp" /></span> 
             </div>
             <h2 className="race-name-previous">
-              <span className="race-flag-big"><Flag code="jp" /></span> Japanese <em>Grand Prix</em> 
+              Japanese <em>Grand Prix</em> 
             </h2>
             <div className="race-circuit">
               <strong>Suzuka International Racing Course</strong> · Suzuka
