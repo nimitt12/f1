@@ -485,6 +485,7 @@ body {
   height: 75vw;
   background: radial-gradient(circle, var(--racing) 0%, transparent 70%);
   animation: float1 25s ease-in-out infinite alternate;
+  translate: 0 calc(var(--scroll-y, 0px) * -0.15); /* Parallax layer 1 */
 }
 
 .orb-2 {
@@ -494,6 +495,7 @@ body {
   height: 65vw;
   background: radial-gradient(circle, var(--racing-hot) 0%, transparent 70%);
   animation: float2 30s ease-in-out infinite alternate-reverse;
+  translate: 0 calc(var(--scroll-y, 0px) * -0.3); /* Parallax layer 2 */
 }
 
 .orb-3 {
@@ -504,6 +506,7 @@ body {
   background: radial-gradient(circle, var(--racing-deep) 0%, transparent 70%);
   opacity: 0.25;
   animation: float3 22s ease-in-out infinite alternate;
+  translate: 0 calc(var(--scroll-y, 0px) * -0.05); /* Parallax layer 3 */
 }
 
 @keyframes float1 {
@@ -602,6 +605,7 @@ body {
   );
 
   transform: rotate(-22deg);
+  translate: 0 calc(var(--scroll-y, 0px) * -0.4); /* Intense parallax layer */
   opacity: 0.95; /* High intensity */
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3)); /* 3D depth */
 }
@@ -661,6 +665,7 @@ body {
   );
 
   transform: rotate(15deg);
+  translate: 0 calc(var(--scroll-y, 0px) * -0.2); /* Medium parallax layer */
   opacity: 0.85;
   filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
 }
@@ -704,6 +709,7 @@ body {
   );
 
   transform: rotate(-18deg);
+  translate: 0 calc(var(--scroll-y, 0px) * -0.6); /* Deep parallax layer */
   opacity: 0.7;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
 }

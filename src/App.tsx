@@ -109,6 +109,25 @@ const App: React.FC = () => {
   });
   const [view, setView] = useState<'dashboard' | 'account'>('dashboard');
 
+  // Performant scroll tracking for parallax background
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          document.documentElement.style.setProperty('--scroll-y', `${window.scrollY}px`);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Set initial position
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     if (user && user.id) {
       localStorage.setItem('f1_user', JSON.stringify(user));
