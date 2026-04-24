@@ -149,7 +149,7 @@ const DriversStandings: React.FC = () => {
   const leaderPoints = standings.length > 0 ? parseFloat(standings[0].points) : 0;
 
   return (
-    <div className="col">
+    <div id="drivers" className="col">
       <div className="col-head">
         <div className="col-name">
           Drivers' <em>Championship</em>

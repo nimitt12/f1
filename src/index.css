@@ -858,6 +858,16 @@ body {
   animation: fadeUpSlow 1s ease both 2.8s;
 }
 
+.nav-links a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-links a:hover {
+  color: var(--racing);
+}
+
 .live-badge {
   display: inline-flex;
   align-items: center;
@@ -1690,7 +1700,7 @@ body {
   grid-template-columns: 40px 1fr auto;
   align-items: center;
   gap: 16px;
-  padding: 24px 36px;
+  padding: 10px 36px;
   background: #000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
@@ -1853,7 +1863,7 @@ body {
 }
 
 .con-row {
-  padding: 24px 36px;
+  padding: 20px 36px;
   background: #000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;

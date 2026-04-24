@@ -171,7 +171,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <section className="cal-section">
+    <section id="calendar" className="cal-section">
       <div className="cal-head">
         <div className="cal-title">
           Season <em>Calendar</em>

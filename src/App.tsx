@@ -184,7 +184,7 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          <section className="intel-section">
+          <section id="paddock" className="intel-section">
             <NewsIntel />
           </section>
 

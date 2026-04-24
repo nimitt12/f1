@@ -84,7 +84,6 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
                 {isMenuOpen && (
                   <div className="profile-dropdown">
                     <div className="dropdown-item" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>My Account</div>
-                    <div className="dropdown-item" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>Settings</div>
                     <div className="dropdown-item logout" onMouseDown={handleLogout}>Log out</div>
                   </div>
                 )}
@@ -119,7 +118,9 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
 
       <div className="hero-sub">
         <span className="live-badge">Season 2026</span>
-        <span>Drivers · Constructors · Paddock · Calendar</span>
+        <span className="nav-links">
+          <a href="#drivers">Drivers</a> · <a href="#constructors">Constructors</a> · <a href="#paddock">Paddock</a> · <a href="#calendar">Calendar</a>
+        </span>
       </div>
     </section>
   );

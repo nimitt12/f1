@@ -90,7 +90,7 @@ const ConstructorsStandings: React.FC = () => {
   const maxPoints = standings.length > 0 ? parseFloat(standings[0].points) : 1;
 
   return (
-    <div className="col">
+    <div id="constructors" className="col">
       <div className="col-head">
         <div className="col-name">
           Constructors' <em>Cup</em>
