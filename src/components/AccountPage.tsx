@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 
 interface AccountSettingsProps {
   onClose: () => void;
-  user: { name: string; picture: string } | null;
+  user: { id: string, name: string; picture: string, email: string } | null;
 }
 
 const CONSTRUCTORS = [
@@ -41,15 +42,22 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('f1_user_prefs');
-    if (saved) {
-      const prefs = JSON.parse(saved);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFavConstructor(prefs.constructor || '');
-      setFavDrivers(prefs.drivers || []);
-    }
+    const fetchPrefs = async () => {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('fav_constructor, fav_drivers')
+        .eq('id', user.id)
+        .single();
+      
+      if (data && !error) {
+        setFavConstructor(data.fav_constructor || '');
+        setFavDrivers(data.fav_drivers || []);
+      }
+    };
+    fetchPrefs();
     window.scrollTo(0, 0);
-  }, []);
+  }, [user]);
 
   const toggleDriver = (id: string) => {
     if (favDrivers.includes(id)) {
@@ -59,16 +67,26 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!user) return;
     setIsSaving(true);
-    setTimeout(() => {
-      localStorage.setItem('f1_user_prefs', JSON.stringify({
-        constructor: favConstructor,
-        drivers: favDrivers
-      }));
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        fav_constructor: favConstructor,
+        fav_drivers: favDrivers,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      console.error('Error saving preferences:', error);
+      alert('Failed to save preferences. Please try again.');
+    } else {
       setIsSaving(false);
       onClose();
-    }, 1200);
+    }
   };
 
   return (

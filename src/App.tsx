@@ -10,6 +10,7 @@ import StatsRibbon from './components/StatsRibbon';
 import Footer from './components/Footer';
 import DriverBattle from './components/DriverBattle';
 import AccountPage from './components/AccountPage';
+import { supabase } from './supabaseClient';
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -89,16 +90,42 @@ const ThemeSwitcher: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  // Import the AuthUser interface physically or loosely construct it. Let's loosely construct.
-  const [user, setUser] = useState<{name: string, picture: string} | null>(() => {
+  const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     const savedUser = localStorage.getItem('f1_user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    if (!savedUser) return null;
+    try {
+      const parsed = JSON.parse(savedUser);
+      // If legacy session missing ID, clear it
+      if (!parsed.id) {
+        localStorage.removeItem('f1_user');
+        return null;
+      }
+      return parsed;
+    } catch (e) {
+      console.error("Error parsing user data:", e);
+      localStorage.removeItem('f1_user');
+      return null;
+    }
   });
   const [view, setView] = useState<'dashboard' | 'account'>('dashboard');
 
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       localStorage.setItem('f1_user', JSON.stringify(user));
+      // Sync with Supabase
+      const syncProfile = async () => {
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            email: user.email,
+            full_name: user.name,
+            avatar_url: user.picture,
+            updated_at: new Date().toISOString()
+          });
+        if (error) console.error('Error syncing profile:', error);
+      };
+      syncProfile();
     } else {
       localStorage.removeItem('f1_user');
     }

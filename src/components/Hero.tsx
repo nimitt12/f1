@@ -3,8 +3,10 @@ import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
 export interface AuthUser {
+  id: string;
   name: string;
   picture: string;
+  email: string;
 }
 
 interface HeroProps {
@@ -43,8 +45,10 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const decoded: any = jwtDecode(credentialResponse.credential);
       setUser({
+        id: decoded.sub,
         name: decoded.name,
-        picture: decoded.picture
+        picture: decoded.picture,
+        email: decoded.email
       });
     }
   };
