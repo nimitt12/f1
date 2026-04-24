@@ -137,6 +137,12 @@ const App: React.FC = () => {
         <div className="bg-orb orb-1"></div>
         <div className="bg-orb orb-2"></div>
         <div className="bg-orb orb-3"></div>
+        
+        <div className="racing-ribbon-container">
+          <div className="speed-line main"></div>
+          <div className="speed-line sec"></div>
+          <div className="speed-line ter"></div>
+        </div>
       </div>
       
       {view === 'dashboard' ? (

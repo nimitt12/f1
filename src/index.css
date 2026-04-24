@@ -24,8 +24,8 @@
   --gold-ticker: #ffb900;
   --mercedes: #00d2be;
   --ferrari: #dc0000;
-  --mclaren: #ff8000;
-  --redbull: #1e41ff;
+  --mclaren: #b45301;
+  --redbull: #2b5eae;
   --williams: #005aff;
   --haas: #b6babd;
   --alpine: #de5397;
@@ -45,37 +45,37 @@ body.theme-mercedes {
   --racing: var(--mercedes);
   --racing-hot: var(--mercedes);
   --racing-hot-ticker: var(--mercedes);
-  --racing-deep: var(--mercedes);
+  --racing-deep: var(--ink);
 }
 body.theme-ferrari {
   --racing: var(--ferrari);
   --racing-hot: #ff2010;
   --racing-hot-ticker: #ffa6a0;
-  --racing-deep: #b30400;
+  --racing-deep: #d5c93e;
 }
 body.theme-mclaren {
   --racing: var(--mclaren);
   --racing-hot: #ffb366;
   --racing-hot-ticker: #ffd9b3;
-  --racing-deep: #cc6600;
+  --racing-deep: var(--ink);
 }
 body.theme-redbull {
   --racing: var(--redbull);
   --racing-hot: #6699cc;
   --racing-hot-ticker: #b3ccff;
-  --racing-deep: #1a4080;
+  --racing-deep: #f8be1c;
 }
 body.theme-williams {
   --racing: var(--williams);
   --racing-hot: #99d6ff;
   --racing-hot-ticker: #ccebff;
-  --racing-deep: #0073e6;
+  --racing-deep: #c6c9c8;
 }
 body.theme-haas {
   --racing: var(--haas);
   --racing-hot: #d9dbdd;
   --racing-hot-ticker: #f2f3f4;
-  --racing-deep: #7c8287;
+  --racing-deep: #ad302d;
 }
 body.theme-alpine {
   --racing: var(--alpine);
@@ -85,9 +85,9 @@ body.theme-alpine {
 }
 body.theme-audi {
   --racing: var(--audi);
-  --racing-hot: #33e6d1;
-  --racing-hot-ticker: #b3fff2;
-  --racing-deep: #004d46;
+  --racing-hot: var(--paper);
+  --racing-hot-ticker: var(--ink);
+  --racing-deep: var(--ink);
 }
 body.theme-racingbulls {
   --racing: var(--racingbulls);
@@ -99,16 +99,13 @@ body.theme-aston {
   --racing: var(--aston);
   --racing-hot: #3ddda6;
   --racing-hot-ticker: #b3ffe0;
-  --racing-deep: #13664a;
+  --racing-deep: #dcdc4b;
 }
 body.theme-cadillac {
   --racing: var(--cadillac);
   --racing-hot: #b8bdc4;
   --racing-hot-ticker: #e6e8eb;
-  --racing-deep: #5e646d;
-}
-body.theme-default {
-  /* Default */
+  --racing-deep: var(--ink);
 }
 
 .profile-menu-wrap {
@@ -536,37 +533,188 @@ body {
   }
 }
 
-.speed-line {
+.racing-ribbon-container {
   position: absolute;
   top: 0;
   left: 0;
-  height: 1px;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.speed-line {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: left center;
+}
+
+/* Main thick ribbon */
+.speed-line.main {
+  top: 15%;
+  left: -20%;
+  width: 150%;
+  height: 280px; /* Much thicker for presence */
+
+  /* Rich color flow */
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    var(--racing) 50%,
+    var(--racing-deep) 0%,
+    var(--racing) 20%,
+    var(--racing-hot) 50%,
+    var(--racing) 80%,
+    var(--racing-deep) 100%
+  );
+  background-size: 200% 100%;
+  animation: ribbonFlow 12s linear infinite;
+
+  /* Anti-aliased track masking for perfectly sharp edges */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black calc(50% - 1px),
+    transparent calc(50% + 1px),
+    transparent calc(54% - 1px),
+    black calc(54% + 1px),
+    black calc(72% - 1px),
+    transparent calc(72% + 1px),
+    transparent calc(75% - 1px),
+    black calc(75% + 1px),
+    black calc(82% - 1px),
+    transparent calc(82% + 1px),
     transparent 100%
   );
-  animation: speedLineSlow 5.5s ease-out infinite;
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black calc(50% - 1px),
+    transparent calc(50% + 1px),
+    transparent calc(54% - 1px),
+    black calc(54% + 1px),
+    black calc(72% - 1px),
+    transparent calc(72% + 1px),
+    transparent calc(75% - 1px),
+    black calc(75% + 1px),
+    black calc(82% - 1px),
+    transparent calc(82% + 1px),
+    transparent 100%
+  );
+
+  transform: rotate(-22deg);
+  opacity: 0.95; /* High intensity */
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3)); /* 3D depth */
+}
+
+/* Glossy sheen overlay for main ribbon */
+.speed-line.main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 0.15) 100%
+  );
   pointer-events: none;
 }
 
-.speed-line:nth-child(1) {
-  top: 18%;
-  width: 160px;
-  animation-delay: 1.8s;
+/* Secondary ribbon - opposing flow */
+.speed-line.sec {
+  top: 55%;
+  left: -20%;
+  width: 150%;
+  height: 120px;
+  background: linear-gradient(
+    90deg,
+    var(--racing-deep) 0%,
+    var(--racing) 30%,
+    var(--racing-hot) 70%,
+    var(--racing) 100%
+  );
+  background-size: 200% 100%;
+  animation: ribbonFlow 18s linear infinite reverse;
+
+  -webkit-mask-image: linear-gradient(
+    to top,
+    black 0%,
+    black calc(40% - 1px),
+    transparent calc(40% + 1px),
+    transparent calc(45% - 1px),
+    black calc(45% + 1px),
+    black calc(65% - 1px),
+    transparent calc(65% + 1px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to top,
+    black 0%,
+    black calc(40% - 1px),
+    transparent calc(40% + 1px),
+    transparent calc(45% - 1px),
+    black calc(45% + 1px),
+    black calc(65% - 1px),
+    transparent calc(65% + 1px),
+    transparent 100%
+  );
+
+  transform: rotate(15deg);
+  opacity: 0.85;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
 }
 
-.speed-line:nth-child(2) {
-  top: 42%;
-  width: 220px;
-  animation-delay: 3.2s;
+/* Third ribbon - subtle lower detail */
+.speed-line.ter {
+  top: 85%;
+  left: -20%;
+  width: 150%;
+  height: 80px;
+  background: linear-gradient(
+    90deg,
+    var(--racing-hot) 0%,
+    var(--racing) 50%,
+    var(--racing-deep) 100%
+  );
+  background-size: 200% 100%;
+  animation: ribbonFlow 25s linear infinite;
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black calc(30% - 1px),
+    transparent calc(30% + 1px),
+    transparent calc(40% - 1px),
+    black calc(40% + 1px),
+    black calc(60% - 1px),
+    transparent calc(60% + 1px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black calc(30% - 1px),
+    transparent calc(30% + 1px),
+    transparent calc(40% - 1px),
+    black calc(40% + 1px),
+    black calc(60% - 1px),
+    transparent calc(60% + 1px),
+    transparent 100%
+  );
+
+  transform: rotate(-18deg);
+  opacity: 0.7;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
 }
 
-.speed-line:nth-child(3) {
-  top: 68%;
-  width: 120px;
-  animation-delay: 2.4s;
+@keyframes ribbonFlow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .hero-top {
@@ -1848,7 +1996,6 @@ body {
     rgba(255, 255, 255, 0.2),
     transparent
   );
-  skew-x: -20deg;
   animation: podiumSweep 8s infinite linear;
   pointer-events: none;
 }
