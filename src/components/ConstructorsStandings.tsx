@@ -13,7 +13,47 @@ interface ConstructorStanding {
   points: string;
   wins: string;
   Constructor: Constructor;
+  rounds?: string;
 }
+
+interface ApiConstructorRanking {
+  id: string;
+  constructors_id: number;
+  season: number;
+  rounds: number;
+  wins: number;
+  points: number;
+  updated_at: string;
+  name: string;
+}
+
+const NAME_TO_SLUG: Record<string, string> = {
+  'Mercedes': 'mercedes',
+  'Ferrari': 'ferrari',
+  'McLaren': 'mclaren',
+  'Haas F1 Team': 'haas',
+  'Alpine F1 Team': 'alpine',
+  'Red Bull': 'red_bull',
+  'RB F1 Team': 'rb',
+  'Audi': 'audi',
+  'Williams': 'williams',
+  'Cadillac F1 Team': 'cadillac',
+  'Aston Martin': 'aston_martin',
+};
+
+const NAME_TO_NAT: Record<string, string> = {
+  'Mercedes': 'German',
+  'Ferrari': 'Italian',
+  'McLaren': 'British',
+  'Haas F1 Team': 'American',
+  'Alpine F1 Team': 'French',
+  'Red Bull': 'Austrian',
+  'RB F1 Team': 'Italian',
+  'Audi': 'German',
+  'Williams': 'British',
+  'Cadillac F1 Team': 'American',
+  'Aston Martin': 'British',
+};
 
 const teamColors: Record<string, string> = {
   mercedes: 'var(--mercedes)',
@@ -69,13 +109,26 @@ const ConstructorsStandings: React.FC = () => {
   useEffect(() => {
     const fetchStandings = async () => {
       try {
-        // Mock data from user request
-        const data = {"MRData":{"xmlns":"","series":"f1","url":"https://api.jolpi.ca/ergast/f1/2026/constructorstandings/","limit":"30","offset":"0","total":"11","StandingsTable":{"season":"2026","round":"3","StandingsLists":[{"season":"2026","round":"3","ConstructorStandings":[{"position":"1","positionText":"1","points":"135","wins":"3","Constructor":{"constructorId":"mercedes","url":"https://en.wikipedia.org/wiki/Mercedes-Benz_in_Formula_One","name":"Mercedes","nationality":"German"}},{"position":"2","positionText":"2","points":"90","wins":"0","Constructor":{"constructorId":"ferrari","url":"https://en.wikipedia.org/wiki/Scuderia_Ferrari","name":"Ferrari","nationality":"Italian"}},{"position":"3","positionText":"3","points":"46","wins":"0","Constructor":{"constructorId":"mclaren","url":"https://en.wikipedia.org/wiki/McLaren","name":"McLaren","nationality":"British"}},{"position":"4","positionText":"4","points":"18","wins":"0","Constructor":{"constructorId":"haas","url":"https://en.wikipedia.org/wiki/Haas_F1_Team","name":"Haas F1 Team","nationality":"American"}},{"position":"5","positionText":"5","points":"16","wins":"0","Constructor":{"constructorId":"alpine","url":"https://en.wikipedia.org/wiki/Alpine_F1_Team","name":"Alpine F1 Team","nationality":"French"}},{"position":"6","positionText":"6","points":"16","wins":"0","Constructor":{"constructorId":"red_bull","url":"https://en.wikipedia.org/wiki/Red_Bull_Racing","name":"Red Bull","nationality":"Austrian"}},{"position":"7","positionText":"7","points":"14","wins":"0","Constructor":{"constructorId":"rb","url":"https://en.wikipedia.org/wiki/Racing_Bulls","name":"RB F1 Team","nationality":"Italian"}},{"position":"8","positionText":"8","points":"2","wins":"0","Constructor":{"constructorId":"audi","url":"https://en.wikipedia.org/wiki/Audi_in_Formula_One","name":"Audi","nationality":"German"}},{"position":"9","positionText":"9","points":"2","wins":"0","Constructor":{"constructorId":"williams","url":"https://en.wikipedia.org/wiki/Williams_Racing","name":"Williams","nationality":"British"}},{"position":"10","positionText":"10","points":"0","wins":"0","Constructor":{"constructorId":"cadillac","url":"https://en.wikipedia.org/wiki/Cadillac_in_Formula_One","name":"Cadillac F1 Team","nationality":"American"}},{"position":"11","positionText":"11","points":"0","wins":"0","Constructor":{"constructorId":"aston_martin","url":"https://en.wikipedia.org/wiki/Aston_Martin_in_Formula_One","name":"Aston Martin","nationality":"British"}}]}]}}};
+        const response = await fetch('https://pitwall-backend-dq9r.onrender.com/constructors/get-all-constructors-season-rankings');
+        const data: ApiConstructorRanking[] = await response.json();
         
-        const list = data.MRData.StandingsTable.StandingsLists[0];
-        if (list) {
-          setRound(list.round);
-          setStandings(list.ConstructorStandings);
+        // Map the flat API response to the nested structure the component expects
+        const mappedStandings: ConstructorStanding[] = data.map((item: ApiConstructorRanking, index: number) => ({
+          position: (index + 1).toString(),
+          points: item.points.toString(),
+          wins: item.wins.toString(),
+          rounds: item.rounds.toString(),
+          Constructor: {
+            constructorId: NAME_TO_SLUG[item.name] || 'unknown',
+            name: item.name,
+            nationality: NAME_TO_NAT[item.name] || 'Unknown',
+            url: ''
+          }
+        }));
+
+        setStandings(mappedStandings);
+        if (data.length > 0) {
+          setRound(data[0].rounds.toString());
         }
       } catch (err) {
         console.error('Failed to parse standings', err);
