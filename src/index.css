@@ -2859,6 +2859,64 @@ body {
   color: var(--racing);
 }
 
+.battle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.battle-switcher {
+  display: flex;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.switch-btn {
+  background: transparent;
+  border: none;
+  color: rgba(0, 0, 0, 0.4);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.switch-btn:hover {
+  color: #000;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.switch-btn.active {
+  background: var(--racing);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(225, 6, 0, 0.35);
+}
+
+.loading-clash {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: var(--racing);
+  text-transform: uppercase;
+  font-weight: 800;
+  animation: clashSync 1.5s infinite;
+}
+
+@keyframes clashSync {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.98); }
+}
+
 .battle-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2879,6 +2937,27 @@ body {
   justify-content: flex-end;
   padding: 40px;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.driver-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Syne", sans-serif;
+  font-size: 64px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.1);
+  letter-spacing: -0.05em;
+  z-index: 1;
 }
 
 .battle-card::before {

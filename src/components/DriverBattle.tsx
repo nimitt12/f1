@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 import antonelliImg from '../assets/ant.png';
 import russellImg from '../assets/rus.png';
 
@@ -63,31 +64,101 @@ const NAME_TO_SLUG: Record<string, string> = {
   'Cadillac F1 Team': 'cadillac',
 };
 
-const DriverBattle: React.FC = () => {
+const FAVORITE_MAP: Record<string, string> = {
+  'hamilton': 'HAM',
+  'russell': 'RUS',
+  'leclerc': 'LEC',
+  'sainz': 'SAI',
+  'verstappen': 'VER',
+  'norris': 'NOR',
+  'piastri': 'PIA',
+  'alonso': 'ALO',
+  'gasly': 'GAS',
+  'antonelli': 'ANT',
+  'bearman': 'BEA',
+  'hadjar': 'HAD',
+  'bortoleto': 'BOR',
+};
+
+interface DriverBattleProps {
+  user: { id: string } | null;
+}
+
+const DriverBattle: React.FC<DriverBattleProps> = ({ user }) => {
   const [drivers, setDrivers] = useState<BattleDriver[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'championship' | 'favorites'>('championship');
 
   useEffect(() => {
     const fetchBattleData = async () => {
+      setLoading(true);
       try {
         const response = await fetch('https://pitwall-backend-dq9r.onrender.com/drivers/get-all-drivers-season-rankings');
-        const data: ApiDriverRanking[] = await response.json();
+        const allStandings: ApiDriverRanking[] = await response.json();
         
-        const top2 = data.slice(0, 2).map((d, idx) => {
+        let targetDrivers: ApiDriverRanking[] = [];
+
+        if (viewMode === 'favorites' && user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('fav_drivers')
+            .eq('id', user.id)
+            .single();
+
+          if (profile?.fav_drivers && profile.fav_drivers.length > 0) {
+            const favCodes = profile.fav_drivers.map((id: string) => FAVORITE_MAP[id] || id.toUpperCase());
+            
+            // Filter and sort by user's preference order
+            targetDrivers = favCodes.map(code => 
+              allStandings.find(d => d.code.toUpperCase() === code.toUpperCase())
+            ).filter(Boolean) as ApiDriverRanking[];
+            
+            if (targetDrivers.length < 2) {
+              const missing = 2 - targetDrivers.length;
+              const fillers = allStandings.filter(d => !targetDrivers.find(td => td.driver_id === d.driver_id)).slice(0, missing);
+              targetDrivers = [...targetDrivers, ...fillers];
+            }
+          } else {
+            targetDrivers = allStandings.slice(0, 2);
+          }
+        } else {
+          targetDrivers = allStandings.slice(0, 2);
+        }
+
+        const battleData = targetDrivers.slice(0, 2).map((d) => {
           const teamId = NAME_TO_SLUG[d.constructor_name] || d.constructor_name.toLowerCase().replace(/ /g, '_');
+          const isP1 = d.position === "1";
+          const isP2 = d.position === "2";
+          
           return {
+            id: isP1 ? 'P1' : (isP2 ? 'P2' : d.position === "3" ? 'P3' : `P${d.position}`),
+            number: d.number,
+            name: `${d.given_name} ${d.family_name}`,
+            team: d.constructor_name.toUpperCase(),
+            pts: parseInt(d.points),
+            wins: parseInt(d.wins),
+            podiums: parseInt(d.wins) + 1,
+            color: TEAM_COLORS[teamId] || '#ffffff',
+            image: DRIVER_IMAGES[d.code] || null // No fallback to other drivers
+          };
+        });
+        
+        // Final safety: ensure we have 2 drivers
+        if (battleData.length < 2) {
+          setDrivers(allStandings.slice(0, 2).map((d, idx) => ({
             id: `P${idx + 1}`,
             number: d.number,
             name: `${d.given_name} ${d.family_name}`,
             team: d.constructor_name.toUpperCase(),
             pts: parseInt(d.points),
             wins: parseInt(d.wins),
-            podiums: parseInt(d.wins) + 1, // Mocking podiums as wins + 1 for visual flair
-            color: TEAM_COLORS[teamId] || '#ffffff',
-            image: DRIVER_IMAGES[d.code] || (idx === 0 ? antonelliImg : russellImg) // Fallback to current assets
-          };
-        });
-        setDrivers(top2);
+            podiums: parseInt(d.wins) + 1,
+            color: TEAM_COLORS[NAME_TO_SLUG[d.constructor_name]] || '#ffffff',
+            image: DRIVER_IMAGES[d.code] || null
+          })));
+        } else {
+          setDrivers(battleData);
+        }
       } catch (err) {
         console.error('Battle data fetch failed', err);
       } finally {
@@ -95,10 +166,19 @@ const DriverBattle: React.FC = () => {
       }
     };
     fetchBattleData();
-  }, []);
+  }, [viewMode, user]);
 
   if (loading || drivers.length < 2) {
-    return <div className="driver-battle-section" style={{ opacity: 0.5 }}>Loading Clash...</div>;
+    return (
+      <section className="driver-battle-section">
+        <div className="battle-header">
+           <h2 className="battle-title">Driver's <em>Clash</em></h2>
+        </div>
+        <div className="battle-container" style={{ opacity: 0.5, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="loading-clash">Synchronizing Data...</div>
+        </div>
+      </section>
+    );
   }
 
   const stats = [
@@ -111,6 +191,27 @@ const DriverBattle: React.FC = () => {
     <section className="driver-battle-section">
       <div className="battle-header">
         <h2 className="battle-title">Driver's <em>Clash</em></h2>
+        
+        <div className="battle-switcher">
+          <button 
+            className={`switch-btn ${viewMode === 'championship' ? 'active' : ''}`}
+            onClick={() => setViewMode('championship')}
+          >
+            Championship Leaders
+          </button>
+          <button 
+            className={`switch-btn ${viewMode === 'favorites' ? 'active' : ''}`}
+            onClick={() => {
+              if (!user) {
+                alert("Please log in to see your favorite drivers clash!");
+                return;
+              }
+              setViewMode('favorites');
+            }}
+          >
+            My Favorites
+          </button>
+        </div>
       </div>
 
       <div className="battle-container">
@@ -118,7 +219,11 @@ const DriverBattle: React.FC = () => {
         <div className="battle-card p1" style={{ '--team-color': drivers[0].color } as React.CSSProperties}>
           <div className="battle-image-wrap">
              <div className="battle-bg-name">{drivers[0].id.toUpperCase()}</div>
-             <img src={drivers[0].image} alt={drivers[0].name} className="battle-driver-img" />
+             {drivers[0].image ? (
+               <img src={drivers[0].image} alt={drivers[0].name} className="battle-driver-img" />
+             ) : (
+               <div className="driver-placeholder">{drivers[0].name.split(' ').map(n => n[0]).join('')}</div>
+             )}
           </div>
           <div className="battle-info">
             <div className="battle-pos">{drivers[0].number}</div>
@@ -136,7 +241,11 @@ const DriverBattle: React.FC = () => {
         <div className="battle-card p2" style={{ '--team-color': drivers[1].color } as React.CSSProperties}>
           <div className="battle-image-wrap">
              <div className="battle-bg-name">{drivers[1].id.toUpperCase()}</div>
-             <img src={drivers[1].image} alt={drivers[1].name} className="battle-driver-img" />
+             {drivers[1].image ? (
+               <img src={drivers[1].image} alt={drivers[1].name} className="battle-driver-img" />
+             ) : (
+               <div className="driver-placeholder">{drivers[1].name.split(' ').map(n => n[0]).join('')}</div>
+             )}
           </div>
           <div className="battle-info">
             <div className="battle-pos">{drivers[1].number}</div>

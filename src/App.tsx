@@ -175,7 +175,7 @@ const App: React.FC = () => {
           />
           <NextRace />
           <Calendar />
-          <DriverBattle />
+          <DriverBattle user={user} />
 
           <section className="main-section">
             <div className="main-grid">
