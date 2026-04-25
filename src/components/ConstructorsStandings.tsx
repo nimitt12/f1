@@ -101,6 +101,20 @@ const Flag: React.FC<{ code: string | undefined }> = ({ code }) => {
   );
 };
 
+const ConstructorSkeleton: React.FC = () => (
+  <div className="con-row skeleton" style={{ borderLeft: '3px solid rgba(255,255,255,0.05)' }}>
+    <div className="con-top">
+      <div className="con-pos skeleton-box" style={{ width: '28px', height: '24px' }}></div>
+      <div style={{ flex: 1, paddingLeft: '12px' }}>
+        <div className="skeleton-box" style={{ width: '140px', height: '18px', marginBottom: '8px' }}></div>
+        <div className="skeleton-box" style={{ width: '90px', height: '12px' }}></div>
+      </div>
+      <div className="skeleton-box" style={{ width: '45px', height: '24px' }}></div>
+    </div>
+    <div className="con-bar skeleton-box" style={{ height: '4px', marginTop: '14px', width: '100%', opacity: 0.3 }}></div>
+  </div>
+);
+
 const ConstructorsStandings: React.FC = () => {
   const [standings, setStandings] = useState<ConstructorStanding[]>([]);
   const [round, setRound] = useState<string>('0');
@@ -151,7 +165,13 @@ const ConstructorsStandings: React.FC = () => {
         <div className="col-sub">All {standings.length} Teams · After {round} Rounds</div>
       </div>
 
-      {loading && <div style={{ padding: '24px' }}>Loading team standings...</div>}
+      {loading && (
+        <div className="standings-list">
+          {[...Array(10)].map((_, i) => (
+            <ConstructorSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
       {!loading && (
         <div className="standings-list">

@@ -3551,3 +3551,42 @@ body {
     display: none;
   }
 }
+
+/* --- SKELETON LOADER SYSTEM --- */
+.skeleton-box {
+  background-color: rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.skeleton-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.02) 20%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.02) 80%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.con-row.skeleton {
+  opacity: 0.7;
+  animation: none !important;
+  transform: none !important;
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 8px;
+}
