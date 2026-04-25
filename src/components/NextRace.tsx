@@ -82,6 +82,18 @@ interface Race {
   SprintQualifying?: { date: string; time: string };
 }
 
+interface RaceResult {
+  id: string;
+  position: string;
+  points: string;
+  time: string;
+  given_name: string;
+  family_name: string;
+  team_name: string;
+  fastest_lap_time: string;
+  fastest_lap_rank: string;
+}
+
 const NextRace: React.FC = () => {
   const today = new Date();
   const nextRace = RACES.find(r => new Date(r.date) >= today) || RACES[RACES.length - 1];
@@ -90,9 +102,23 @@ const NextRace: React.FC = () => {
   const totalGPs = RACES.length;
   const completedGPs = RACES.filter(r => new Date(r.date) < today).length;
   const percentage = Math.round((completedGPs / totalGPs) * 100);
-
+  
+  const [results, setResults] = useState<RaceResult[]>([]);
   const [timeLeft, setTimeLeft] = useState({ d: '00', h: '00', m: '00', s: '00' });
   const countryCode = COUNTRY_FLAGS[nextRace.Circuit.Location.country] || '🏁';
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const res = await fetch(`https://pitwall-backend-dq9r.onrender.com/results/get-all-results/${prevRace.season}/${prevRace.round}`);
+        const data = await res.json();
+        setResults(data);
+      } catch (e) {
+        console.error("Failed to fetch results", e);
+      }
+    };
+    fetchResults();
+  }, [prevRace]);
 
   useEffect(() => {
     const target = new Date(`${nextRace.date}T${nextRace.time || '15:00:00Z'}`).getTime();
@@ -116,6 +142,8 @@ const NextRace: React.FC = () => {
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, [nextRace]);
+
+  const fastestLapDriver = results.find(r => r.fastest_lap_rank === "1");
 
   const formatDateRange = (race: Race) => {
     const d = new Date(race.date);
@@ -241,43 +269,55 @@ const NextRace: React.FC = () => {
             <div className="race-stats">
               <div className="race-stat">
                 <div className="race-stat-label">Fastest Lap</div>
-                <div className="race-stat-val">1:31.540 (K. Antonelli)</div>
+                <div className="race-stat-val">
+                  {fastestLapDriver 
+                    ? `${fastestLapDriver.fastest_lap_time} (${fastestLapDriver.family_name})`
+                    : 'Fetching...'}
+                </div>
               </div>
             </div>
           </div>
 
           <div className="race-right winner-showcase">
             <div className="podium-cards">
-              <div className="winner-card p1-featured">
-                <div className="winner-badge">P1</div>
-                <div className="winner-info">
-                  <div className="winner-name">Andrea Kimi Antonelli</div>
-                  <div className="winner-team">Mercedes-AMG</div>
-                </div>
-                <div className="winner-stats-mini">
-                  <span className="ws-val">1:28:14.802</span>
-                  <span className="ws-pts">+25</span>
-                </div>
-              </div>
-              
-              <div className="podium-sub-grid">
-                <div className="podium-mini-card p2">
-                  <span className="pm-pos">P2</span>
-                  <div className="pm-info">
-                    <span className="pm-name">George Russell</span>
-                    <span className="pm-team">Mercedes</span>
+              {results.length > 0 ? (
+                <>
+                  {/* P1 Winner */}
+                  {results.slice(0, 1).map(winner => (
+                    <div key={winner.id} className="winner-card p1-featured">
+                      <div className="winner-badge">P1</div>
+                      <div className="winner-info">
+                        <div className="winner-name">{winner.given_name} {winner.family_name}</div>
+                        <div className="winner-team">{winner.team_name}</div>
+                      </div>
+                      <div className="winner-stats-mini">
+                        <span className="ws-val">{winner.time}</span>
+                        <span className="ws-pts">+{winner.points}</span>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <div className="podium-sub-grid">
+                    {/* P2 & P3 */}
+                    {results.slice(1, 3).map((podium, idx) => (
+                      <div key={podium.id} className={`podium-mini-card p${idx + 2}`}>
+                        <span className="pm-pos">P{idx + 2}</span>
+                        <div className="pm-info">
+                          <span className="pm-name">{podium.family_name}</span>
+                          <span className="pm-team">{podium.team_name}</span>
+                        </div>
+                        <span className="pm-time">{podium.time}</span>
+                      </div>
+                    ))}
                   </div>
-                  <span className="pm-time">+3.441</span>
-                </div>
-                <div className="podium-mini-card p3">
-                  <span className="pm-pos">P3</span>
-                  <div className="pm-info">
-                    <span className="pm-name">Charles Leclerc</span>
-                    <span className="pm-team">Ferrari</span>
+                </>
+              ) : (
+                <div className="winner-card p1-featured" style={{ opacity: 0.5 }}>
+                  <div className="winner-info">
+                    <div className="winner-name">Loading Results...</div>
                   </div>
-                  <span className="pm-time">+9.127</span>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
