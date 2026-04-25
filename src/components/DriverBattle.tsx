@@ -28,7 +28,7 @@ interface BattleDriver {
   wins: number;
   podiums: number;
   color: string;
-  image: string;
+  image: string | null;
 }
 
 const DRIVER_IMAGES: Record<string, string> = {
@@ -109,7 +109,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user }) => {
             const favCodes = profile.fav_drivers.map((id: string) => FAVORITE_MAP[id] || id.toUpperCase());
             
             // Filter and sort by user's preference order
-            targetDrivers = favCodes.map(code => 
+            targetDrivers = favCodes.map((code: string) => 
               allStandings.find(d => d.code.toUpperCase() === code.toUpperCase())
             ).filter(Boolean) as ApiDriverRanking[];
             
@@ -145,7 +145,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user }) => {
         
         // Final safety: ensure we have 2 drivers
         if (battleData.length < 2) {
-          setDrivers(allStandings.slice(0, 2).map((d, idx) => ({
+          setDrivers(allStandings.slice(0, 2).map((d: ApiDriverRanking, idx: number) => ({
             id: `P${idx + 1}`,
             number: d.number,
             name: `${d.given_name} ${d.family_name}`,
