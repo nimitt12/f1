@@ -1969,7 +1969,7 @@ body {
   font-size: 15px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-1);
+  color: var(--paper);
   margin-bottom: 14px;
   font-weight: 500;
 }
@@ -3579,8 +3579,12 @@ body {
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .con-row.skeleton {

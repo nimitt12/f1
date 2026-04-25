@@ -28,6 +28,22 @@ interface RaceResult {
   };
 }
 
+interface ApiDriverRanking {
+  id: string;
+  driver_id: string;
+  season: string;
+  rounds: string;
+  wins: string;
+  points: string;
+  position: string;
+  given_name: string;
+  family_name: string;
+  code: string;
+  number: string;
+  nationality: string;
+  constructor_name: string;
+}
+
 const NewsIntel: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,82 +56,34 @@ const NewsIntel: React.FC = () => {
   useEffect(() => {
     const fetchPodium = async () => {
       try {
-        // Mock data representing the latest race results (Japanese GP)
-        const data = {
-          MRData: {
-            RaceTable: {
-              Races: [
-                {
-                  raceName: "Japanese Grand Prix",
-                  Circuit: {
-                    circuitName: "Suzuka International Racing Course"
-                  },
-                  Results: [
-                    {
-                      position: "1",
-                      Driver: {
-                        givenName: "Andrea Kimi",
-                        familyName: "Antonelli",
-                        permanentNumber: "12",
-                        code: "ANT"
-                      },
-                      Constructor: {
-                        constructorId: "mercedes",
-                        name: "Mercedes"
-                      },
-                      Time: {
-                        time: "1:28:14.802"
-                      }
-                    },
-                    {
-                      position: "2",
-                      Driver: {
-                        givenName: "George",
-                        familyName: "Russell",
-                        permanentNumber: "63",
-                        code: "RUS"
-                      },
-                      Constructor: {
-                        constructorId: "mercedes",
-                        name: "Mercedes"
-                      },
-                      Time: {
-                        time: "+3.441"
-                      }
-                    },
-                    {
-                      position: "3",
-                      Driver: {
-                        givenName: "Charles",
-                        familyName: "Leclerc",
-                        permanentNumber: "16",
-                        code: "LEC"
-                      },
-                      Constructor: {
-                        constructorId: "ferrari",
-                        name: "Ferrari"
-                      },
-                      Time: {
-                        time: "+9.127"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
+        const response = await fetch('https://pitwall-backend-dq9r.onrender.com/drivers/get-all-drivers-season-rankings');
+        const data: ApiDriverRanking[] = await response.json();
+        
+        // Map top 3 from season rankings to the podium display
+        const top3 = data.slice(0, 3).map((item: ApiDriverRanking) => ({
+          position: item.position,
+          Driver: {
+            givenName: item.given_name,
+            familyName: item.family_name,
+            permanentNumber: item.number,
+            code: item.code
+          },
+          Constructor: {
+            constructorId: item.code, 
+            name: item.constructor_name
+          },
+          Time: {
+            time: `${item.points} PTS`
           }
-        };
+        }));
 
-        const race = data.MRData.RaceTable.Races[0];
-        if (race) {
-          setRaceInfo({
-            name: race.raceName,
-            circuit: race.Circuit.circuitName
-          });
-          setPodiumResults(race.Results.slice(0, 10));
-        }
+        setRaceInfo({
+          name: "Top 3 Championship Contenders",
+          circuit: "Season 2026"
+        });
+        setPodiumResults(top3);
       } catch (err) {
-        console.error('Failed to parse podium results', err);
+        console.error('Failed to fetch dynamic podium', err);
       } finally {
         setPodiumLoading(false);
       }
@@ -203,7 +171,7 @@ const NewsIntel: React.FC = () => {
 
       <div className="podium-block">
         <div className="podium-head">
-          {podiumLoading ? 'Fetching Results...' : `Last Race Results · ${raceInfo?.name}`}
+          {podiumLoading ? 'Fetching Intel...' : `Season Intel · ${raceInfo?.name}`}
         </div>
         <div className="podium-list">
           {podiumLoading ? (

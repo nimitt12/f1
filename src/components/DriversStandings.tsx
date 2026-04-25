@@ -37,30 +37,21 @@ interface ApiDriverRanking {
   code: string;
   number: string;
   nationality: string;
+  constructor_name: string;
 }
 
-const DRIVER_TO_TEAM: Record<string, { id: string; name: string }> = {
-  ANT: { id: 'mercedes', name: 'Mercedes' },
-  RUS: { id: 'mercedes', name: 'Mercedes' },
-  LEC: { id: 'ferrari', name: 'Ferrari' },
-  HAM: { id: 'ferrari', name: 'Ferrari' },
-  NOR: { id: 'mclaren', name: 'McLaren' },
-  PIA: { id: 'mclaren', name: 'McLaren' },
-  BEA: { id: 'haas', name: 'Haas F1 Team' },
-  GAS: { id: 'alpine', name: 'Alpine F1 Team' },
-  VER: { id: 'red_bull', name: 'Red Bull' },
-  LAW: { id: 'rb', name: 'RB F1 Team' },
-  LIN: { id: 'rb', name: 'RB F1 Team' },
-  HAD: { id: 'red_bull', name: 'Red Bull' },
-  BOR: { id: 'audi', name: 'Audi' },
-  SAI: { id: 'williams', name: 'Williams' },
-  OCO: { id: 'haas', name: 'Haas F1 Team' },
-  COL: { id: 'alpine', name: 'Alpine F1 Team' },
-  ALB: { id: 'williams', name: 'Williams' },
-  BOT: { id: 'cadillac', name: 'Cadillac F1 Team' },
-  PER: { id: 'cadillac', name: 'Cadillac F1 Team' },
-  ALO: { id: 'aston_martin', name: 'Aston Martin' },
-  STR: { id: 'aston_martin', name: 'Aston Martin' },
+const NAME_TO_SLUG: Record<string, string> = {
+  'Mercedes': 'mercedes',
+  'Ferrari': 'ferrari',
+  'McLaren': 'mclaren',
+  'Haas F1 Team': 'haas',
+  'Red Bull': 'red_bull',
+  'Alpine F1 Team': 'alpine',
+  'RB F1 Team': 'rb',
+  'Audi': 'audi',
+  'Williams': 'williams',
+  'Aston Martin': 'aston_martin',
+  'Cadillac F1 Team': 'cadillac',
 };
 
 const teamColors: Record<string, string> = {
@@ -176,7 +167,7 @@ const DriversStandings: React.FC = () => {
         const data: ApiDriverRanking[] = await response.json();
         
         const mappedStandings: DriverStanding[] = data.map((item) => {
-          const teamInfo = DRIVER_TO_TEAM[item.code] || { id: 'unknown', name: 'Unknown' };
+          const constructorId = NAME_TO_SLUG[item.constructor_name] || item.constructor_name.toLowerCase().replace(/ /g, '_');
           return {
             position: item.position,
             points: item.points,
@@ -190,8 +181,8 @@ const DriversStandings: React.FC = () => {
               permanentNumber: item.number
             },
             Constructors: [{
-              constructorId: teamInfo.id,
-              name: teamInfo.name
+              constructorId: constructorId,
+              name: item.constructor_name
             }]
           };
         });
