@@ -2917,6 +2917,111 @@ body {
   50% { opacity: 0.5; transform: scale(0.98); }
 }
 
+/* --- BATTLE MODAL SYSTEM --- */
+.battle-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.battle-modal-card {
+  background: #111;
+  width: 90%;
+  max-width: 440px;
+  border-radius: 32px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 50px 150px rgba(0, 0, 0, 0.8);
+  animation: modalScale 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-checker {
+  height: 60px;
+  background: repeating-linear-gradient(
+    45deg,
+    #222,
+    #222 20px,
+    #111 20px,
+    #111 40px
+  );
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: var(--racing);
+  transform: rotate(90deg);
+}
+
+.modal-content {
+  padding: 40px;
+  text-align: center;
+}
+
+.modal-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--racing);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-weight: 800;
+}
+
+.modal-title {
+  font-family: "Syne", sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+
+.modal-title em {
+  font-style: italic;
+  color: var(--racing);
+}
+
+.modal-text {
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 32px;
+}
+
+.modal-action {
+  display: flex;
+  justify-content: center;
+}
+
 .battle-container {
   display: grid;
   grid-template-columns: 1fr 1fr;

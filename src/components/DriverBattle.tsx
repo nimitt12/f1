@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 import antonelliImg from '../assets/ant.png';
 import russellImg from '../assets/rus.png';
 
@@ -80,14 +82,39 @@ const FAVORITE_MAP: Record<string, string> = {
   'bortoleto': 'BOR',
 };
 
-interface DriverBattleProps {
-  user: { id: string } | null;
+interface AuthUser {
+  id: string;
+  name: string;
+  picture: string;
+  email: string;
 }
 
-const DriverBattle: React.FC<DriverBattleProps> = ({ user }) => {
+interface DriverBattleProps {
+  user: AuthUser | null;
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
+}
+
+const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
   const [drivers, setDrivers] = useState<BattleDriver[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'championship' | 'favorites'>('championship');
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleLoginSuccess = (credentialResponse: any) => {
+    if (credentialResponse.credential) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const decoded: any = jwtDecode(credentialResponse.credential);
+      setUser({
+        id: decoded.sub,
+        name: decoded.name,
+        picture: decoded.picture,
+        email: decoded.email
+      });
+      setShowLoginModal(false);
+      setViewMode('favorites');
+    }
+  };
 
   useEffect(() => {
     const fetchBattleData = async () => {
@@ -203,7 +230,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user }) => {
             className={`switch-btn ${viewMode === 'favorites' ? 'active' : ''}`}
             onClick={() => {
               if (!user) {
-                alert("Please log in to see your favorite drivers clash!");
+                setShowLoginModal(true);
                 return;
               }
               setViewMode('favorites');
@@ -213,6 +240,32 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user }) => {
           </button>
         </div>
       </div>
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="battle-modal-overlay" onClick={() => setShowLoginModal(false)}>
+          <div className="battle-modal-card" onClick={e => e.stopPropagation()}>
+            <div className="modal-checker"></div>
+            <button className="modal-close" onClick={() => setShowLoginModal(false)}>×</button>
+            <div className="modal-content">
+              <div className="modal-eyebrow">Personalized Insight</div>
+              <h3 className="modal-title">Track Your <em>Rivals</em></h3>
+              <p className="modal-text">
+                Sign in to select your favorite drivers from your account and see their live telemetry clash side-by-side.
+              </p>
+              <div className="modal-action">
+                <GoogleLogin 
+                  onSuccess={handleLoginSuccess}
+                  onError={() => console.log('Login Failed')}
+                  theme="filled_black"
+                  shape="pill"
+                  width="250"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="battle-container">
         {/* Driver 1 */}
