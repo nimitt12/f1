@@ -909,6 +909,10 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.race-block.upcoming {
+  border-radius: 20px 20px 0px 0px;
+}
+
 .race-block::before {
   content: "";
   position: absolute;

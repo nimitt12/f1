@@ -48,7 +48,7 @@ const NextRace: React.FC = () => {
 
   return (
     <section className="race-hero">
-      <div className="race-block">
+      <div className="race-block upcoming">
         <div className="race-grid">
           <div className="race-left">
             <div className="race-meta-row">
