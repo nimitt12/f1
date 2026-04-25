@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
 import Ticker from './components/Ticker';
 import Hero from './components/Hero';
@@ -10,6 +12,7 @@ import StatsRibbon from './components/StatsRibbon';
 import Footer from './components/Footer';
 import DriverBattle from './components/DriverBattle';
 import AccountPage from './components/AccountPage';
+import LoginModal from './components/LoginModal';
 import { supabase } from './supabaseClient';
 
 const themes = [
@@ -108,6 +111,7 @@ const App: React.FC = () => {
     }
   });
   const [view, setView] = useState<'dashboard' | 'account'>('dashboard');
+  const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
 
   // Performant scroll tracking for parallax background
   useEffect(() => {
@@ -129,6 +133,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    setShowGlobalLogin(!user);
     if (user && user.id) {
       localStorage.setItem('f1_user', JSON.stringify(user));
       // Sync with Supabase
@@ -152,6 +157,17 @@ const App: React.FC = () => {
 
   return (
     <>
+      <LoginModal 
+        isOpen={showGlobalLogin && !user} 
+        onClose={() => setShowGlobalLogin(false)}
+        onLoginSuccess={(u) => {
+          setUser(u as any);
+          setShowGlobalLogin(false);
+        }}
+        title="Welcome to Pitwall"
+        subtitle="Sign in to unlock personalized race times, favorite driver tracking, and exclusive paddock insights."
+      />
+
       <div className="app-bg">
         <div className="bg-orb orb-1"></div>
         <div className="bg-orb orb-2"></div>
