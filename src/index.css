@@ -2939,6 +2939,81 @@ body {
   .driver-pts-sub {
     font-size: 8px;
   }
+
+  .con-row.leader {
+    padding: 18px 10px;
+  }
+
+  .con-row {
+    padding: 10px 10px;
+    gap: 0px;
+  }
+
+  .leader .con-name {
+    font-size: 20px;
+  }
+
+  .leader .con-pts {
+    font-size: 28px;
+  }
+
+  .con-top {
+    gap: 8px;
+  }
+
+  .con-engine {
+    font-size: 10px;
+    margin-top: 0px;
+    gap: 4px !important;
+  }
+
+  .con-name {
+    font-size: 14px;
+  }
+
+  .con-pts {
+    font-size: 17px;
+  }
+
+  .col-sub {
+    font-size: 10px;
+  }
+
+  .podium-head {
+    font-size: 12px;
+  }
+
+  .pod-time {
+    font-size: 12px;
+  }
+
+  .pod-driver-name {
+    font-size: 12px;
+  }
+
+  .pod-driver-team {
+    font-size: 10px;
+  }
+
+  .news-kicker {
+    font-size: 8px;
+  }
+
+  .news-date {
+    font-size: 8px;
+  }
+
+  .news-item.lead .news-headline {
+    font-size: 15px;
+  }
+
+  .news-body {
+    font-size: 10px;
+  }
+
+  .news-headline {
+    font-size: 12px;
+  }
 }
 
 .battle-header {
@@ -4099,8 +4174,12 @@ body {
 }
 
 @keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .menu-header {
@@ -4113,7 +4192,7 @@ body {
 .close-menu-btn {
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 36px;
   cursor: pointer;
   line-height: 1;
@@ -4191,4 +4270,3 @@ body {
   border-color: rgba(225, 6, 0, 0.3);
   color: var(--racing-hot);
 }
-
