@@ -442,7 +442,7 @@ body {
 
 .hero {
   background: rgba(242, 236, 224, 0.45); /* Translucent paper */
-  padding: 56px 36px 32px;
+  padding: 56px 36px 20px;
   max-width: 1440px;
   margin: 0 auto;
   position: relative;
@@ -807,7 +807,7 @@ body {
 
 .hero-title .line1 {
   display: block;
-  font-size: clamp(56px, 9vw, 66px);
+  font-size: clamp(56px, 9vw, 60px);
   line-height: 1.2;
   overflow: hidden;
   padding-bottom: 0.05em;
@@ -820,7 +820,7 @@ body {
 
 .hero-title .line2 {
   display: block;
-  font-size: clamp(56px, 9vw, 106px);
+  font-size: clamp(56px, 9vw, 85px);
   font-style: italic;
   color: var(--racing);
   line-height: 1.1;
@@ -985,7 +985,7 @@ body {
 
 .race-name {
   font-family: "Orbitron", sans-serif;
-  font-size: clamp(44px, 6vw, 76px);
+  font-size: clamp(44px, 6vw, 60px);
   font-weight: 700;
   line-height: 0.92;
   letter-spacing: -0.025em;
@@ -995,7 +995,7 @@ body {
 
 .race-name-previous {
   font-family: "Orbitron", sans-serif;
-  font-size: clamp(44px, 6vw, 45px);
+  font-size: clamp(44px, 6vw, 40px);
   font-weight: 700;
   line-height: 0.92;
   letter-spacing: -0.025em;
@@ -1118,7 +1118,7 @@ body {
 }
 
 .ws-val {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Orbitron", sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: var(--gold);
@@ -1209,7 +1209,7 @@ body {
 
 .pm-time {
   grid-column: 2;
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Orbitron", sans-serif;
   font-size: 11px;
   color: var(--ink-3);
   margin-top: 4px;
@@ -1251,7 +1251,7 @@ body {
 }
 
 .race-stat-val {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Orbitron", sans-serif;
   font-size: 15px;
   font-weight: 500;
   color: #fff;
@@ -1736,21 +1736,6 @@ body {
   display: none;
 }
 
-.driver-row.leader::after {
-  content: "P1";
-  position: absolute;
-  right: 90px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: "JetBrains Mono", monospace;
-  font-size: 8px;
-  font-weight: 700;
-  color: var(--gold);
-  letter-spacing: 0.1em;
-  background: rgba(212, 160, 23, 0.15);
-  padding: 2px 6px;
-}
-
 .driver-pos {
   font-family: "JetBrains Mono", monospace;
   font-size: 18px;
@@ -1772,14 +1757,14 @@ body {
 
 .driver-name {
   font-family: "Orbitron", sans-serif;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.02em;
 }
 
 .leader .driver-name {
-  font-size: 32px;
+  font-size: 25px;
 }
 
 .driver-code {
@@ -1813,7 +1798,7 @@ body {
 .team-name {
   font-weight: 700;
   letter-spacing: 0.05em;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--paper);
 }
 
@@ -1829,7 +1814,7 @@ body {
   color: var(--paper);
   font-weight: 700;
   letter-spacing: 0.05em;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .driver-team .gap {
@@ -1845,7 +1830,7 @@ body {
 
 .driver-pts {
   font-family: "Orbitron", sans-serif;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
   color: #fff;
   line-height: 1;
@@ -1913,36 +1898,35 @@ body {
 
 .con-name {
   font-family: "Orbitron", sans-serif;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.02em;
 }
 
 .leader .con-name {
-  font-size: 32px;
+  font-size: 25px;
 }
 
 .con-engine {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--paper);
   margin-top: 4px;
   font-family: "JetBrains Mono", monospace;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
 .con-pts {
   flex: 1;
   text-align: right;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 28px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 22px;
   font-weight: 700;
   color: #fff;
 }
 
 .leader .con-pts {
-  font-size: 40px;
+  font-size: 32px;
 }
 
 .con-bar {
@@ -2035,8 +2019,8 @@ body {
 }
 
 .pod-badge {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 15px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 12px;
   font-weight: 700;
   text-align: center;
   padding: 6px 0;
@@ -2073,7 +2057,7 @@ body {
 }
 
 .pod-time {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Orbitron", sans-serif;
   font-size: 20px;
   color: rgba(255, 255, 255, 0.8); /* Light gray */
   font-weight: 500;
@@ -2168,7 +2152,7 @@ body {
 
 .news-headline {
   font-family: "Orbitron", sans-serif;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1.35;
   color: #fff;
@@ -2177,7 +2161,7 @@ body {
 }
 
 .news-item.lead .news-headline {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--racing-hot-ticker);
 }
@@ -2579,10 +2563,6 @@ body {
     border-right: none;
   }
 
-  .driver-row.leader::after {
-    display: none;
-  }
-
   .hero-sub {
     flex-direction: column;
     align-items: flex-start;
@@ -2749,8 +2729,8 @@ body {
 }
 
 .sp-percent {
-  font-family: "Inter", sans-serif;
-  font-size: 65px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 50px;
   font-weight: 400;
   line-height: 1;
   color: var(--racing);
@@ -2790,7 +2770,7 @@ body {
 .sp-bar {
   display: flex;
   gap: 8px;
-  height: 48px;
+  height: 40px;
 }
 
 .sp-tick {
@@ -2845,12 +2825,29 @@ body {
 
 @media (max-width: 768px) {
   .driver-battle-section {
-    padding: 0 20px;
-    margin: 40px auto;
+    padding: 0 12px;
+    margin: 30px auto;
   }
 
   .main-section {
-    padding: 0 12px 64px;
+    padding: 0 12px 30px;
+  }
+
+  .intel-section {
+    padding: 0 12px 30px;
+  }
+
+  .stats-ribbon {
+    padding: 0 12px 30px;
+  }
+
+  .cal-section {
+    padding: 30px 12px 0;
+  }
+
+  .race-hero {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 

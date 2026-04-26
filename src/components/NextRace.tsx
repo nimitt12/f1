@@ -233,7 +233,7 @@ const NextRace: React.FC = () => {
             </div>
             <div className="sp-meta">
               <div className="sp-count">
-                <strong>{completedGPs}</strong>/{totalGPs}
+                <strong>{completedGPs}</strong> / {totalGPs}
               </div>
               <div className="sp-label">Grand Prix Completed</div>
             </div>
@@ -271,7 +271,7 @@ const NextRace: React.FC = () => {
                 <div className="race-stat-label">Fastest Lap</div>
                 <div className="race-stat-val">
                   {fastestLapDriver 
-                    ? `${fastestLapDriver.fastest_lap_time} (${fastestLapDriver.family_name})`
+                    ? `${fastestLapDriver.fastest_lap_time} | ${fastestLapDriver.family_name}`
                     : 'Fetching...'}
                 </div>
               </div>
