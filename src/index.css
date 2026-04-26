@@ -2377,7 +2377,7 @@ body {
 .stats-ribbon {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 48px 36px 0;
+  padding: 0px 36px 0;
 }
 
 .stats-grid {
@@ -2385,6 +2385,7 @@ body {
   grid-template-columns: repeat(4, 1fr);
   border: 2px solid var(--ink);
   background: var(--carbon);
+  border-radius: 20px;
 }
 
 .stat {
@@ -2435,10 +2436,11 @@ body {
   line-height: 1;
   letter-spacing: -0.02em;
   margin-bottom: 9px;
+  text-align: center;
+  margin-top: 9px;
 }
 
-.stat-big em {
-  font-style: italic;
+.stat-big span {
   color: var(--racing-hot);
   font-weight: 500;
 }
@@ -2448,6 +2450,7 @@ body {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.58);
   font-weight: 400;
+  text-align: center;
 }
 
 .footer-wrap {
@@ -2854,6 +2857,10 @@ body {
 }
 
 @media (max-width: 768px) {
+  .stat-label {
+    font-size: 10px !important;
+  }
+
   .driver-battle-section {
     padding: 0 12px;
     margin: 30px auto;
