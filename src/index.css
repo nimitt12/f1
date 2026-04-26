@@ -1844,7 +1844,7 @@ body {
 }
 
 .driver-pts {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Orbitron", sans-serif;
   font-size: 28px;
   font-weight: 700;
   color: #fff;
@@ -3122,7 +3122,7 @@ body {
   position: absolute;
   top: 20px;
   font-family: "Inter", sans-serif;
-  font-size: 250px;
+  font-size: 200px;
   font-weight: 900;
   opacity: 25%;
   color: var(--racing);
@@ -3168,7 +3168,7 @@ body {
 }
 
 .battle-pos {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Orbitron", sans-serif;
   font-size: 110px;
   font-weight: 800;
   color: var(--team-color);
