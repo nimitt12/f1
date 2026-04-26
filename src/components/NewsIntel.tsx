@@ -207,11 +207,13 @@ const NewsIntel: React.FC = () => {
           >
             <div className="news-meta">
               <span className="news-kicker">{item.category}</span>
+              <span className="news-date">{formatDate(item.pubDate)}</span>
               <span className="news-num">{(index + 1).toString().padStart(2, '0')}</span>
             </div>
-            <span className="news-date">{formatDate(item.pubDate)}</span>
-            <h3 className="news-headline">{item.title}</h3>
-            <p className="news-body">{item.summary}</p>
+            <div className="news-content-wrap">
+              <h3 className="news-headline">{item.title}</h3>
+              <p className="news-body">{item.summary}</p>
+            </div>
           </article>
         ))}
 
