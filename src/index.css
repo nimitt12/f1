@@ -770,17 +770,37 @@ body {
 }
 
 .brand-right {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 24px;
   animation: fadeUpSlow 1s ease both 0.7s;
 }
 
-.greeting {
+.greeting-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.greeting-text {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.greeting-main {
   font-family: "Orbitron", sans-serif;
   font-style: italic;
-  font-size: 18px;
-  letter-spacing: 0;
+  font-size: 15px;
   color: var(--ink);
-  margin-bottom: 4px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--racing);
 }
 
 .dateline {
@@ -2492,12 +2512,19 @@ body {
   }
 
   .hero-top {
-    flex-direction: column;
-    gap: 18px;
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   .brand-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .greeting-text {
     text-align: left;
   }
 
@@ -4004,3 +4031,164 @@ body {
   color: rgba(255, 255, 255, 0.4);
   font-weight: 800;
 }
+
+/* --- HAMBURGER MENU & OVERLAY --- */
+.hamburger-btn {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 20px;
+  position: relative;
+  cursor: pointer;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left center;
+}
+
+.hamburger-btn.open span:nth-child(1) {
+  transform: rotate(45deg) translate(2px, -2px);
+  background: var(--racing);
+}
+.hamburger-btn.open span:nth-child(2) {
+  opacity: 0;
+  transform: translateX(10px);
+}
+.hamburger-btn.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(2px, 2px);
+  background: var(--racing);
+}
+.hamburger-btn:hover span {
+  background: var(--racing);
+}
+
+.glass-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(15px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.3s ease;
+}
+
+.glass-menu-panel {
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(30px) saturate(150%);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.close-menu-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 36px;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.3s ease;
+  font-family: "Syne", sans-serif;
+  font-weight: 300;
+}
+
+.close-menu-btn:hover {
+  color: var(--racing);
+  transform: rotate(90deg);
+}
+
+.menu-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: auto;
+}
+
+.menu-nav-links a {
+  font-family: "Orbitron", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left;
+}
+
+.menu-nav-links a:hover {
+  color: var(--racing);
+  transform: translateX(10px);
+}
+
+.menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 40px 0;
+}
+
+.menu-user-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menu-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 20px;
+  border-radius: 12px;
+  color: #fff;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.menu-action-btn.logout:hover {
+  background: rgba(225, 6, 0, 0.1);
+  border-color: rgba(225, 6, 0, 0.3);
+  color: var(--racing-hot);
+}
+

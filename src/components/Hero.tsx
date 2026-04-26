@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
@@ -64,42 +65,33 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
           <span className="checker-flag"></span>
           <span className="live-badge">Live Edition</span>
         </div>
+        
         <div className="brand-right">
           {user ? (
-            <div className="greeting" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-              {greeting}
-              <div className="profile-menu-wrap" style={{ position: 'relative' }}>
-                <img 
-                  src={user.picture} 
-                  alt={user.name} 
-                  width="24" 
-                  height="24" 
-                  style={{ borderRadius: '50%', border: '1px solid var(--racing)', cursor: 'pointer' }} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsMenuOpen(!isMenuOpen);
-                  }}
-                />
-                {isMenuOpen && (
-                  <div className="profile-dropdown">
-                    <div className="dropdown-item" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>My Account</div>
-                    <div className="dropdown-item logout" onMouseDown={handleLogout}>Log out</div>
-                  </div>
-                )}
+            <div className="greeting-box">
+              <div className="greeting-text">
+                <span className="greeting-main">{greeting}</span>
+                <span className="dateline">{dateline}</span>
               </div>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-              <GoogleLogin
-                onSuccess={handleLoginSuccess}
-                onError={() => console.log('Login Failed')}
-                theme="filled_black"
-                shape="pill"
-                size="small"
+              <img 
+                src={user.picture} 
+                alt={user.name} 
+                className="user-avatar"
               />
             </div>
+          ) : (
+            <div className="dateline">{dateline}</div>
           )}
-          <div className="dateline">{dateline}</div>
+
+          <button 
+            className={`hamburger-btn ${isMenuOpen ? 'open' : ''}`}
+            onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+            aria-label="Toggle Menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </div>
       </div>
 
@@ -117,10 +109,53 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
 
       <div className="hero-sub">
         <span className="live-badge">Season 2026</span>
-        <span className="nav-links">
-          <a href="#drivers">Drivers</a> · <a href="#constructors">Constructors</a> · <a href="#paddock">Paddock</a> · <a href="#calendar">Calendar</a>
-        </span>
       </div>
+
+      {isMenuOpen && createPortal(
+        <div className="glass-menu-overlay" onClick={() => setIsMenuOpen(false)}>
+          <div className="glass-menu-panel" onClick={e => e.stopPropagation()}>
+            <div className="menu-header">
+              <span className="brand-eyebrow" style={{ color: '#fff', marginBottom: 0 }}>PITWALL MENU</span>
+              <button className="close-menu-btn" onClick={() => setIsMenuOpen(false)}>×</button>
+            </div>
+
+            <nav className="menu-nav-links">
+              <a href="#drivers" onClick={() => setIsMenuOpen(false)}>Drivers</a>
+              <a href="#constructors" onClick={() => setIsMenuOpen(false)}>Constructors</a>
+              <a href="#paddock" onClick={() => setIsMenuOpen(false)}>Paddock Intel</a>
+              <a href="#calendar" onClick={() => setIsMenuOpen(false)}>Calendar</a>
+            </nav>
+
+            <div className="menu-divider"></div>
+
+            <div className="menu-user-section">
+              {user ? (
+                <>
+                  <button className="menu-action-btn" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    My Account
+                  </button>
+                  <button className="menu-action-btn logout" onClick={handleLogout}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <div className="menu-login-wrap">
+                  <div style={{ marginBottom: '16px', fontFamily: '"JetBrains Mono", monospace', fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>SIGN IN TO PITWALL</div>
+                  <GoogleLogin
+                    onSuccess={handleLoginSuccess}
+                    onError={() => console.log('Login Failed')}
+                    theme="filled_black"
+                    shape="pill"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 };
