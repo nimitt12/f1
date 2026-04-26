@@ -2803,10 +2803,13 @@ body {
     padding: 24px;
   }
   .sp-percent {
-    font-size: 64px;
+    font-size: 35px;
   }
   .sp-count {
-    font-size: 32px;
+    font-size: 18px;
+  }
+  .sp-label {
+    font-size: 10px;
   }
   .sp-bar {
     gap: 4px;
@@ -2848,6 +2851,23 @@ body {
   .race-hero {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .race-stat-val {
+    font-size: 10px;
+  }
+
+  .race-stat-label {
+    font-size: 8px;
+  }
+
+  .race-round {
+    font-size: 8px;
+    padding: 7px 8px;
+  }
+
+  .cd-num {
+    font-size: 20px;
   }
 }
 
