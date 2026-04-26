@@ -4418,3 +4418,7 @@ body {
   border-color: rgba(225, 6, 0, 0.3);
   color: var(--racing-hot);
 }
+
+.ts-icon {
+  color: var(--paper);
+}
