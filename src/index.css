@@ -3782,3 +3782,82 @@ body {
   background: rgba(255, 255, 255, 0.02);
   margin-bottom: 8px;
 }
+
+/* --- BOOT LOADER SYSTEM --- */
+.boot-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.boot-loader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.boot-content {
+  text-align: center;
+}
+
+.boot-title {
+  font-family: "Syne", sans-serif;
+  font-size: 64px;
+  color: #fff;
+  margin-bottom: 40px;
+  letter-spacing: -0.02em;
+}
+
+.boot-title span:not(.dot) {
+  font-style: italic;
+  font-weight: 800;
+  color: var(--racing);
+}
+
+.boot-title .dot {
+  color: var(--racing);
+}
+
+.starting-lights {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.light-box {
+  width: 40px;
+  height: 40px;
+  background: #111;
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.light {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #222;
+  transition: background 0.1s;
+}
+
+.light.on {
+  background: #ff1801;
+  box-shadow: 0 0 20px #ff1801, inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.boot-status {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 800;
+}
+

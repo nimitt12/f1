@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 import DriverBattle from './components/DriverBattle';
 import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
+import BootLoader from './components/BootLoader';
 import { supabase } from './supabaseClient';
 
 const themes = [
@@ -112,6 +113,7 @@ const App: React.FC = () => {
   });
   const [view, setView] = useState<'dashboard' | 'account'>('dashboard');
   const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
+  const [showBoot, setShowBoot] = useState(true);
 
   // Performant scroll tracking for parallax background
   useEffect(() => {
@@ -157,8 +159,10 @@ const App: React.FC = () => {
 
   return (
     <>
+      {showBoot && <BootLoader onComplete={() => setShowBoot(false)} />}
+      
       <LoginModal 
-        isOpen={showGlobalLogin && !user} 
+        isOpen={showGlobalLogin && !user && !showBoot} 
         onClose={() => setShowGlobalLogin(false)}
         onLoginSuccess={(u) => {
           setUser(u as any);
