@@ -17,18 +17,18 @@ import BootLoader from './components/BootLoader';
 import { supabase } from './supabaseClient';
 
 const themes = [
+  { id: 'alpine', label: 'Alpine' },
+  { id: 'aston', label: 'Aston Martin' },
+  { id: 'audi', label: 'Audi' },
+  { id: 'cadillac', label: 'Cadillac' },
   { id: 'default', label: 'Default' },
-  { id: 'mercedes', label: 'Mercedes' },
   { id: 'ferrari', label: 'Ferrari' },
+  { id: 'haas', label: 'Haas' },
   { id: 'mclaren', label: 'McLaren' },
+  { id: 'mercedes', label: 'Mercedes' },
+  { id: 'racingbulls', label: 'Racing Bulls' },
   { id: 'redbull', label: 'Red Bull' },
   { id: 'williams', label: 'Williams' },
-  { id: 'haas', label: 'Haas' },
-  { id: 'alpine', label: 'Alpine' },
-  { id: 'audi', label: 'Audi' },
-  { id: 'racingbulls', label: 'Racing Bulls' },
-  { id: 'aston', label: 'Aston Martin' },
-  { id: 'cadillac', label: 'Cadillac' },
 ];
 
 const ThemeSwitcher: React.FC = () => {
