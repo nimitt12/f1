@@ -175,7 +175,7 @@ const NextRace: React.FC = () => {
               <span className="race-flag-big"><Flag code={countryCode} /></span>
             </div>
             <h2 className="race-name">
-              {nextRace.raceName.replace(' Grand Prix', '')} <em>Grand Prix</em>
+              {nextRace.raceName.replace(' Grand Prix', '')} <span>Grand Prix</span>
             </h2>
             <div className="race-circuit">
               <strong>{nextRace.Circuit.circuitName}</strong> · {nextRace.Circuit.Location.locality}
@@ -259,7 +259,7 @@ const NextRace: React.FC = () => {
               <span className="race-flag-big"><Flag code={COUNTRY_FLAGS[prevRace.Circuit.Location.country] || '🏁'} /></span> 
             </div>
             <h2 className="race-name-previous">
-              {prevRace.raceName.replace(' Grand Prix', '')} <em>Grand Prix</em> 
+              {prevRace.raceName.replace(' Grand Prix', '')} <span>Grand Prix</span> 
             </h2>
             <div className="race-circuit">
               <strong>{prevRace.Circuit.circuitName}</strong> · {prevRace.Circuit.Location.locality}

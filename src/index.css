@@ -775,7 +775,7 @@ body {
 }
 
 .greeting {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-style: italic;
   font-size: 18px;
   letter-spacing: 0;
@@ -798,7 +798,7 @@ body {
 }
 
 .hero-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.03em;
@@ -984,7 +984,7 @@ body {
 }
 
 .race-name {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: clamp(44px, 6vw, 76px);
   font-weight: 700;
   line-height: 0.92;
@@ -994,7 +994,7 @@ body {
 }
 
 .race-name-previous {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: clamp(44px, 6vw, 45px);
   font-weight: 700;
   line-height: 0.92;
@@ -1003,14 +1003,12 @@ body {
   margin-bottom: 16px;
 }
 
-.race-name em {
-  font-style: italic;
+.race-name span {
   color: var(--racing);
   font-weight: 600;
 }
 
-.race-name-previous em {
-  font-style: italic;
+.race-name-previous span {
   color: var(--racing);
   font-weight: 600;
 }
@@ -1082,7 +1080,7 @@ body {
 }
 
 .winner-name {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 24px;
   font-weight: 700;
   color: #fff;
@@ -1195,7 +1193,7 @@ body {
 }
 
 .pm-name {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: #fff;
@@ -1346,7 +1344,7 @@ body {
 }
 
 .cal-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 28px;
   font-weight: 500;
   letter-spacing: -0.015em;
@@ -1541,11 +1539,11 @@ body {
 }
 
 .cal-flag-name {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 18px;
   font-weight: 500;
   color: var(--ink);
-  letter-spacing: -0.01em;
+  /* letter-spacing: -0.01em; */
   line-height: 1.1;
   margin-bottom: auto;
 }
@@ -1676,7 +1674,7 @@ body {
 }
 
 .col-name {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -1773,7 +1771,7 @@ body {
 }
 
 .driver-name {
-  font-family: "Inter", sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 22px;
   font-weight: 700;
   color: #fff;
@@ -1914,7 +1912,7 @@ body {
 }
 
 .con-name {
-  font-family: "Inter", sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 22px;
   font-weight: 700;
   color: #fff;
@@ -2060,7 +2058,7 @@ body {
 }
 
 .pod-driver-name {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 18px;
   font-weight: 500;
   color: #fff; /* Force white for visibility */
@@ -2158,7 +2156,7 @@ body {
 }
 
 .news-headline {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 20px;
   font-weight: 500;
   line-height: 1.35;
@@ -2238,7 +2236,7 @@ body {
 
 .news-modal-title {
   padding: 16px 40px;
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 32px;
   font-weight: 700;
   color: var(--ink);
@@ -2410,7 +2408,7 @@ body {
 }
 
 .stat-big {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: clamp(28px, 3vw, 38px);
   font-weight: 700;
   color: #fff;
@@ -2467,7 +2465,7 @@ body {
 }
 
 .f-brand {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 15px;
   font-style: italic;
   color: var(--ink-2);
@@ -2846,7 +2844,7 @@ body {
 }
 
 .battle-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 48px;
   font-weight: 800;
   color: var(--ink);
@@ -2913,8 +2911,15 @@ body {
 }
 
 @keyframes clashSync {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.98); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.98);
+  }
 }
 
 /* --- BATTLE MODAL SYSTEM --- */
@@ -2943,8 +2948,14 @@ body {
 }
 
 @keyframes modalScale {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modal-checker {
@@ -3151,7 +3162,7 @@ body {
 }
 
 .battle-name {
-  font-family: "Playfair Display", serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 32px;
   font-weight: 700;
   color: #fff;
@@ -3792,7 +3803,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+  transition:
+    opacity 0.5s ease-in-out,
+    visibility 0.5s ease-in-out;
 }
 
 .boot-loader.fade-out {
@@ -3836,8 +3849,8 @@ body {
   background: #111;
   border-radius: 50%;
   padding: 4px;
-  box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
-  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .light {
@@ -3850,7 +3863,9 @@ body {
 
 .light.on {
   background: #ff1801;
-  box-shadow: 0 0 20px #ff1801, inset 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 0 20px #ff1801,
+    inset 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .boot-status {
@@ -3860,4 +3875,3 @@ body {
   color: rgba(255, 255, 255, 0.4);
   font-weight: 800;
 }
-
