@@ -2649,7 +2649,7 @@ body {
   }
 
   .hero {
-    padding-top: 36px;
+    padding-top: 15px;
   }
 
   .hero-top {
@@ -2660,7 +2660,14 @@ body {
     gap: 20px;
   }
 
+  .brand-eyebrow {
+    order: 2;
+    width: 100%;
+    margin-left: 10px;
+  }
+
   .brand-right {
+    order: 1;
     width: 100%;
     justify-content: space-between;
   }
