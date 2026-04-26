@@ -2869,6 +2869,49 @@ body {
   .cd-num {
     font-size: 20px;
   }
+
+  .leader .driver-name {
+    font-size: 15px;
+  }
+
+  .driver-row.leader {
+    padding: 30px 10px;
+  }
+
+  .driver-team {
+    margin-top: 0px;
+    letter-spacing: 0px;
+    gap: 4px;
+  }
+
+  .team-name {
+    font-size: 10px;
+  }
+
+  .driver-row {
+    padding: 20px 10px;
+    gap: 0px;
+  }
+
+  .driver-nat {
+    font-size: 11px;
+  }
+
+  .wins-count {
+    font-size: 11px;
+  }
+
+  .leader .driver-pts {
+    font-size: 28px;
+  }
+
+  .driver-code {
+    font-size: 8px;
+  }
+
+  .driver-pts-sub {
+    font-size: 8px;
+  }
 }
 
 .battle-header {
