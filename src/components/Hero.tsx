@@ -26,7 +26,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
     const D = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     const M = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     
-    const dl = `${D[now.getDay()]} · ${String(now.getDate()).padStart(2, '0')} ${M[now.getMonth()]} · ${now.getFullYear()}`;
+    const dl = `${D[now.getDay()]} · ${String(now.getDate()).padStart(2, '0')} ${M[now.getMonth()]}`;
     
     const userFirstName = user?.name ? user.name.split(' ')[0] : 'Guest';
     return { greeting: `${g}, ${userFirstName}`, dateline: dl };
@@ -63,7 +63,6 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
         <div className="brand-eyebrow">
           <span className="checker-flag"></span>
           <span className="live-badge">Live Edition</span>
-          <span>F1 2026</span>
         </div>
         <div className="brand-right">
           {user ? (
