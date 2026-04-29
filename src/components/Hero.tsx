@@ -1,7 +1,7 @@
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { GoogleLogin, googleLogout, useGoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
 
 export interface AuthUser {
   id: string;
