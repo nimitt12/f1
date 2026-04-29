@@ -1,7 +1,7 @@
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-// import { jwtDecode } from 'jwt-decode';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { GoogleLogin, googleLogout } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 export interface AuthUser {
   id: string;
@@ -40,45 +40,18 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
     setIsMenuOpen(false);
   };
 
-  // Handle Google redirect callback — when Google sends us back with the token
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash && hash.includes('access_token')) {
-      // Parse the access_token from the URL hash (#access_token=xxx&token_type=Bearer&...)
-      const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get('access_token');
-      
-      if (accessToken) {
-        // Fetch user info from Google
-        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        })
-          .then(res => res.json())
-          .then(userInfo => {
-            setUser({
-              id: userInfo.sub,
-              name: userInfo.name,
-              picture: userInfo.picture,
-              email: userInfo.email,
-            });
-            // Clean the URL hash so it doesn't persist
-            window.history.replaceState(null, '', window.location.pathname);
-          })
-          .catch(err => console.error('Failed to fetch user info:', err));
-      }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleLoginSuccess = (credentialResponse: any) => {
+    if (credentialResponse.credential) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const decoded: any = jwtDecode(credentialResponse.credential);
+      setUser({
+        id: decoded.sub,
+        name: decoded.name,
+        picture: decoded.picture,
+        email: decoded.email
+      });
     }
-  }, [setUser]);
-
-  const handleLogin = () => {
-    const clientId = '655415968159-6jlri2ogvddecbok3u11kdk9qucg619g.apps.googleusercontent.com';
-    const redirectUri = 'https://f1-ashen-seven.vercel.app';
-    const scope = encodeURIComponent('email profile openid');
-    const responseType = 'token';
-    
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}`;
-    
-    // Direct top-level navigation — works perfectly in any WebView
-    window.location.href = authUrl;
   };
 
   return (
@@ -170,8 +143,12 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
               ) : (
                 <div className="menu-login-wrap">
                   <div style={{ marginBottom: '16px', fontFamily: '"JetBrains Mono", monospace', fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>SIGN IN TO PITWALL</div>
-
-                  <button onClick={handleLogin}>Sign in with Google</button>
+                  <GoogleLogin
+                    onSuccess={handleLoginSuccess}
+                    onError={() => console.log('Login Failed')}
+                    theme="filled_black"
+                    shape="pill"
+                  />
                 </div>
               )}
             </div>
