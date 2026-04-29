@@ -1,6 +1,6 @@
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 // import { jwtDecode } from 'jwt-decode';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface AuthUser {
@@ -40,29 +40,38 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
     setIsMenuOpen(false);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const handleLoginSuccess = (credentialResponse: any) => {
-  //   if (credentialResponse.credential) {
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     const decoded: any = jwtDecode(credentialResponse.credential);
-  //     setUser({
-  //       id: decoded.sub,
-  //       name: decoded.name,
-  //       picture: decoded.picture,
-  //       email: decoded.email
-  //     });
-  //   }
-  // };
+  // Handle Google redirect callback — when Google sends us back with the token
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token')) {
+      // Parse the access_token from the URL hash (#access_token=xxx&token_type=Bearer&...)
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get('access_token');
+      
+      if (accessToken) {
+        // Fetch user info from Google
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+          .then(res => res.json())
+          .then(userInfo => {
+            setUser({
+              id: userInfo.sub,
+              name: userInfo.name,
+              picture: userInfo.picture,
+              email: userInfo.email,
+            });
+            // Clean the URL hash so it doesn't persist
+            window.history.replaceState(null, '', window.location.pathname);
+          })
+          .catch(err => console.error('Failed to fetch user info:', err));
+      }
+    }
+  }, [setUser]);
 
   const login = useGoogleLogin({
-    onSuccess: async (codeResponse) => {
-      // Note: In 'redirect' mode, this callback is typically not executed on the initiating page.
-      // The browser redirects to Google, then back to your redirect_uri with the code in the URL.
-      console.log('Auth code received:', codeResponse.code);
-    },
-    flow: 'auth-code',
     ux_mode: 'redirect',
-    redirect_uri: 'https://f1-ashen-seven.vercel.app'
+    redirect_uri: 'https://f1-ashen-seven.vercel.app',
   });
 
   return (
