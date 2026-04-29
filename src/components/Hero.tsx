@@ -69,10 +69,17 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
     }
   }, [setUser]);
 
-  const login = useGoogleLogin({
-    ux_mode: 'redirect',
-    redirect_uri: 'https://f1-ashen-seven.vercel.app',
-  });
+  const handleLogin = () => {
+    const clientId = '655415968159-6jlri2ogvddecbok3u11kdk9qucg619g.apps.googleusercontent.com';
+    const redirectUri = 'https://f1-ashen-seven.vercel.app';
+    const scope = encodeURIComponent('email profile openid');
+    const responseType = 'token';
+    
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}`;
+    
+    // Direct top-level navigation — works perfectly in any WebView
+    window.location.href = authUrl;
+  };
 
   return (
     <section className="hero">
@@ -164,7 +171,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
                 <div className="menu-login-wrap">
                   <div style={{ marginBottom: '16px', fontFamily: '"JetBrains Mono", monospace', fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>SIGN IN TO PITWALL</div>
 
-                  <button onClick={() => login()}>Sign in with Google</button>
+                  <button onClick={handleLogin}>Sign in with Google</button>
                 </div>
               )}
             </div>
