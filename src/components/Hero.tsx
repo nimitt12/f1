@@ -55,10 +55,14 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
   // };
 
   const login = useGoogleLogin({
-    onSuccess: tokenResponse => console.log(tokenResponse),
+    onSuccess: async (codeResponse) => {
+      // Note: In 'redirect' mode, this callback is typically not executed on the initiating page.
+      // The browser redirects to Google, then back to your redirect_uri with the code in the URL.
+      console.log('Auth code received:', codeResponse.code);
+    },
     flow: 'auth-code',
-    ux_mode: 'redirect', // THIS IS THE CRITICAL CHANGE
-    redirect_uri: 'https://f1-ashen-seven.vercel.app/' // Or your specific callback URL
+    ux_mode: 'redirect',
+    redirect_uri: 'https://f1-ashen-seven.vercel.app'
   });
 
   return (
