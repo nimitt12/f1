@@ -3,20 +3,108 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ======================================================
+       PRIMARY SEO
+  ====================================================== -->
+  <title>My PitWall | Live F1 Dashboard – Standings, Race Calendar & Driver Stats</title>
+  <meta name="description"
+    content="My PitWall is your ultimate Formula 1 companion. Follow live driver standings, constructor rankings, race calendars, next race countdowns, and detailed driver battle stats — all in one premium dashboard." />
+  <meta name="keywords"
+    content="F1 dashboard, Formula 1, F1 standings 2025, F1 driver standings, F1 constructor standings, F1 race calendar, F1 live data, Formula One stats, F1 news, pitwall" />
+  <link rel="canonical" href="https://mypitwall.in/" />
+
+  <!-- Indexing — ENABLED -->
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+  <!-- ======================================================
+       OPEN GRAPH (Facebook, WhatsApp, LinkedIn)
+  ====================================================== -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="My PitWall" />
+  <meta property="og:title" content="My PitWall | Live F1 Dashboard" />
+  <meta property="og:description"
+    content="Your ultimate Formula 1 companion. Live standings, race calendar, driver battles, and more — all in one premium dashboard." />
+  <meta property="og:url" content="https://mypitwall.in/" />
+  <meta property="og:image" content="https://mypitwall.in/screenshot-desktop.png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="800" />
+  <meta property="og:image:alt" content="My PitWall F1 Dashboard showing driver standings and race calendar" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ======================================================
+       TWITTER / X CARD
+  ====================================================== -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="My PitWall | Live F1 Dashboard" />
+  <meta name="twitter:description"
+    content="Your ultimate Formula 1 companion. Live standings, race calendar, driver battles, and more." />
+  <meta name="twitter:image" content="https://mypitwall.in/screenshot-desktop.png" />
+  <meta name="twitter:image:alt" content="My PitWall F1 Dashboard" />
+
+  <!-- ======================================================
+       STRUCTURED DATA (JSON-LD) — helps Google understand content
+  ====================================================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "My PitWall",
+    "url": "https://mypitwall.in/",
+    "description": "A premium Formula 1 live dashboard providing real-time driver standings, constructor rankings, race calendar, next race countdowns, and driver battle statistics.",
+    "applicationCategory": "SportsApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "PitWall Dev"
+    },
+    "keywords": "Formula 1, F1 standings, F1 race calendar, F1 dashboard, driver stats",
+    "screenshot": "https://mypitwall.in/screenshot-desktop.png",
+    "featureList": [
+      "Live F1 driver standings",
+      "Constructor championship rankings",
+      "Race calendar and schedule",
+      "Next race countdown timer",
+      "Driver vs Driver battle stats",
+      "F1 news feed",
+      "Team theme switcher"
+    ]
+  }
+  </script>
+
+  <!-- ======================================================
+       PWA & THEME
+  ====================================================== -->
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="manifest" href="/manifest.json" />
-  <title>My PitWall</title>
-  <meta name="robots" content="noindex, nofollow">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <!-- ======================================================
+       PERFORMANCE — preconnect & font loading
+  ====================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://pitwall-backend-dq9r.onrender.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;700&display=swap"
-    rel="stylesheet">
+    rel="stylesheet" />
 </head>
 
 <body>
+  <!-- Semantic landmark for screen readers & SEO crawlers -->
+  <noscript>
+    <p>My PitWall requires JavaScript to display live Formula 1 standings, race calendars, and driver statistics. Please
+      enable JavaScript in your browser.</p>
+  </noscript>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
