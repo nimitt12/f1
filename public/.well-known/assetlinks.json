@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mypitwall.app",
+      "sha256_cert_fingerprints": [
+        "FD:DC:DF:71:46:36:8D:83:B8:3D:E0:C9:9D:47:14:E8:C9:FF:6D:1D:1A:57:7C:56:EA:CD:5E:81:88:12:E1:CA"
+      ]
+    }
+  }
+]

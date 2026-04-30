@@ -23,12 +23,12 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
     const now = new Date();
     const h = now.getHours();
     const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-    
+
     const D = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     const M = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    
+
     const dl = `${D[now.getDay()]} · ${String(now.getDate()).padStart(2, '0')} ${M[now.getMonth()]}`;
-    
+
     const userFirstName = user?.name ? user.name.split(' ')[0] : 'Guest';
     return { greeting: `${g}, ${userFirstName}`, dateline: dl };
   }, [user]);
@@ -65,7 +65,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
           <span className="checker-flag"></span>
           <span className="live-badge">Live Edition</span>
         </div>
-        
+
         <div className="brand-right">
           {user ? (
             <div className="greeting-box">
@@ -73,9 +73,9 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
                 <span className="greeting-main">{greeting}</span>
                 <span className="dateline">{dateline}</span>
               </div>
-              <img 
-                src={user.picture} 
-                alt={user.name} 
+              <img
+                src={user.picture}
+                alt={user.name}
                 className="user-avatar"
               />
             </div>
@@ -83,7 +83,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
             <div className="dateline">{dateline}</div>
           )}
 
-          <button 
+          <button
             className={`hamburger-btn ${isMenuOpen ? 'open' : ''}`}
             onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
             aria-label="Toggle Menu"
@@ -132,11 +132,11 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
               {user ? (
                 <>
                   <button className="menu-action-btn" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                     My Account
                   </button>
                   <button className="menu-action-btn logout" onClick={handleLogout}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                     Log out
                   </button>
                 </>
