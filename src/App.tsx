@@ -17,11 +17,11 @@ import BootLoader from './components/BootLoader';
 import { supabase } from './supabaseClient';
 
 const themes = [
+  { id: 'default', label: 'Default' },
   { id: 'alpine', label: 'Alpine' },
   { id: 'aston', label: 'Aston Martin' },
   { id: 'audi', label: 'Audi' },
   { id: 'cadillac', label: 'Cadillac' },
-  { id: 'default', label: 'Default' },
   { id: 'ferrari', label: 'Ferrari' },
   { id: 'haas', label: 'Haas' },
   { id: 'mclaren', label: 'McLaren' },
