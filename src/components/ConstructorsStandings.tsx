@@ -162,7 +162,7 @@ const ConstructorsStandings: React.FC = () => {
         <div className="col-name">
           Constructors' <em>Cup</em>
         </div>
-        <div className="col-sub">All {standings.length} Teams · After {round} Rounds</div>
+        <div className="col-sub">After {round} Rounds</div>
       </div>
 
       {loading && (

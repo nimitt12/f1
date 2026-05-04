@@ -738,7 +738,7 @@ body {
   align-items: center;
   gap: 18px;
   font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -988,7 +988,7 @@ body {
 
 .race-round {
   font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -1109,7 +1109,7 @@ body {
 
 .winner-team {
   font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
+  font-size: 13px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.05em;
@@ -1221,7 +1221,7 @@ body {
 
 .pm-team {
   font-family: "JetBrains Mono", monospace;
-  font-size: 9px;
+  font-size: 11px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
   margin-top: 2px;
@@ -1263,7 +1263,7 @@ body {
 
 .race-stat-label {
   font-family: "JetBrains Mono", monospace;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
@@ -1275,6 +1275,7 @@ body {
   font-size: 15px;
   font-weight: 500;
   color: #fff;
+  letter-spacing: 0.1rem;
 }
 
 .race-right {
@@ -1285,7 +1286,7 @@ body {
 
 .countdown-label {
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
@@ -2010,7 +2011,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 60px;
+  width: 100%;
   height: 100%;
   background: linear-gradient(
     90deg,
@@ -2315,7 +2316,6 @@ body {
   box-shadow: 0 8px 25px rgba(225, 6, 0, 0.3);
 }
 
-
 @keyframes modalFadeIn {
   from {
     opacity: 0;
@@ -2455,7 +2455,7 @@ body {
 
 .f-h {
   font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.2em;
   color: var(--racing);
@@ -2475,7 +2475,7 @@ body {
 
 .f-col ul li a {
   font-family: "Orbitron", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--ink);
   text-decoration: none;
@@ -2496,7 +2496,7 @@ body {
 
 .source-label {
   font-family: "JetBrains Mono", monospace;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--ink-3);
   text-transform: uppercase;
   margin-bottom: 6px;
@@ -2505,13 +2505,13 @@ body {
 
 .source-val {
   font-family: "Orbitron", sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink);
 }
 
 .f-legal-text {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--ink-3);
   font-style: italic;
@@ -2537,7 +2537,6 @@ body {
   color: var(--racing);
   margin: 0 10px;
 }
-
 
 .f-note {
   font-family: "JetBrains Mono", monospace;
@@ -2570,7 +2569,6 @@ body {
   color: var(--racing);
   font-weight: 500;
 }
-
 
 .main-section,
 .intel-section {
@@ -2774,13 +2772,11 @@ body {
   }
 }
 
-
 .driver-battle-section {
   max-width: 1440px;
   margin: 64px auto;
   padding: 0 36px;
 }
-
 
 .battle-header {
   margin-bottom: 32px;
@@ -2818,7 +2814,6 @@ body {
   align-items: flex-end;
   margin-bottom: 24px;
 }
-
 
 .battle-switcher {
   display: flex;
@@ -3117,7 +3112,6 @@ body {
   border-radius: 4px;
 }
 
-
 .battle-name {
   font-family: "Orbitron", sans-serif;
   font-size: 32px;
@@ -3220,7 +3214,6 @@ body {
   color: #00d2be;
   text-shadow: 0 0 10px rgba(0, 210, 190, 0.3);
 }
-
 
 /* ==========================================================================
    ACCOUNT PAGE STYLES
@@ -3657,7 +3650,6 @@ body {
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.4);
 }
-
 
 /* --- SKELETON LOADER SYSTEM --- */
 .skeleton-box {

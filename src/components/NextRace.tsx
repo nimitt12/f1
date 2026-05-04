@@ -188,7 +188,7 @@ const NextRace: React.FC = () => {
                 <div className="race-stat-val">{nextRace.Circuit.Location.country}</div>
               </div>
               <div className="race-stat">
-                <div className="race-stat-label">Local Venue</div>
+                <div className="race-stat-label">Local</div>
                 <div className="race-stat-val">{nextRace.time ? nextRace.time.replace(':00Z', '') : 'TBC'}</div>
               </div>
               <div className="race-stat">
