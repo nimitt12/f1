@@ -1,6 +1,5 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
 
 interface AuthUser {
   id: string;
@@ -27,16 +26,27 @@ const LoginModal: React.FC<LoginModalProps> = ({
   if (!isOpen) return null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSuccess = (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: any) => {
     if (credentialResponse.credential) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const decoded: any = jwtDecode(credentialResponse.credential);
-      onLoginSuccess({
-        id: decoded.sub,
-        name: decoded.name,
-        picture: decoded.picture,
-        email: decoded.email
-      });
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken: credentialResponse.credential })
+        });
+        
+        if (!response.ok) throw new Error('Backend authentication failed');
+        
+        const data = await response.json();
+        // Standardize the user object (handle potential full_name from backend)
+        const userData = {
+          ...data.user,
+          name: data.user.name || data.user.full_name || 'User'
+        };
+        onLoginSuccess(userData);
+      } catch (error) {
+        console.error('Backend auth failed:', error);
+      }
     }
   };
 

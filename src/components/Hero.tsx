@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
 
 export interface AuthUser {
   id: string;
@@ -41,16 +40,27 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleLoginSuccess = (credentialResponse: any) => {
+  const handleLoginSuccess = async (credentialResponse: any) => {
     if (credentialResponse.credential) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const decoded: any = jwtDecode(credentialResponse.credential);
-      setUser({
-        id: decoded.sub,
-        name: decoded.name,
-        picture: decoded.picture,
-        email: decoded.email
-      });
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken: credentialResponse.credential })
+        });
+        
+        if (!response.ok) throw new Error('Backend authentication failed');
+        
+        const data = await response.json();
+        // Standardize the user object (handle potential full_name from backend)
+        const userData = {
+          ...data.user,
+          name: data.user.name || data.user.full_name || 'User'
+        };
+        setUser(userData);
+      } catch (error) {
+        console.error('Backend auth failed:', error);
+      }
     }
   };
 
@@ -98,7 +108,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
       <div className="title-wrap">
         <h1 className="hero-title">
           <span className="line1">
-            <span>{user ? `${user.name.split(' ')[0]}'s` : "My"}</span>
+            <span>{user ? `${(user.name || '').split(' ')[0]}'s` : "My"}</span>
           </span>
           <span className="line2">
             <span>PitWall.</span>

@@ -14,7 +14,6 @@ import DriverBattle from './components/DriverBattle';
 import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
-import { supabase } from './supabaseClient';
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -138,20 +137,6 @@ const App: React.FC = () => {
     setShowGlobalLogin(!user);
     if (user && user.id) {
       localStorage.setItem('f1_user', JSON.stringify(user));
-      // Sync with Supabase
-      const syncProfile = async () => {
-        const { error } = await supabase
-          .from('profiles')
-          .upsert({
-            id: user.id,
-            email: user.email,
-            full_name: user.name,
-            avatar_url: user.picture,
-            updated_at: new Date().toISOString()
-          });
-        if (error) console.error('Error syncing profile:', error);
-      };
-      syncProfile();
     } else {
       localStorage.removeItem('f1_user');
     }
