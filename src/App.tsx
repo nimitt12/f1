@@ -103,7 +103,12 @@ const App: React.FC = () => {
         localStorage.removeItem('f1_user');
         return null;
       }
-      return parsed;
+      // Standardize the user object for existing sessions
+      return {
+        ...parsed,
+        name: parsed.name || parsed.full_name || 'User',
+        picture: parsed.picture || parsed.avatar_url || parsed.picture_url || ''
+      };
     } catch (e) {
       console.error("Error parsing user data:", e);
       localStorage.removeItem('f1_user');

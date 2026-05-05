@@ -52,10 +52,11 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
         if (!response.ok) throw new Error('Backend authentication failed');
         
         const data = await response.json();
-        // Standardize the user object (handle potential full_name from backend)
+        // Standardize the user object (handle potential full_name/avatar_url from backend)
         const userData = {
           ...data.user,
-          name: data.user.name || data.user.full_name || 'User'
+          name: data.user.name || data.user.full_name || 'User',
+          picture: data.user.picture || data.user.avatar_url || data.user.picture_url || ''
         };
         setUser(userData);
       } catch (error) {
