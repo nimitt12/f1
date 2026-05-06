@@ -4470,7 +4470,11 @@ body {
   left: 50%;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, var(--racing) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    var(--racing) 0%,
+    transparent 70%
+  );
   opacity: 0;
   filter: blur(60px);
   transform: translateX(-50%);
@@ -4553,20 +4557,40 @@ body {
 }
 
 /* Team Theming for Podium */
-.rd-podium-spot.theme-mclaren { border-bottom: 8px solid #ff8700; }
-.rd-podium-spot.theme-mclaren .rd-spot-glow { background: radial-gradient(circle, #ff8700 0%, transparent 70%); }
+.rd-podium-spot.theme-mclaren {
+  border-bottom: 8px solid #ff8700;
+}
+.rd-podium-spot.theme-mclaren .rd-spot-glow {
+  background: radial-gradient(circle, #ff8700 0%, transparent 70%);
+}
 
-.rd-podium-spot.theme-mercedes { border-bottom: 8px solid #00d2be; }
-.rd-podium-spot.theme-mercedes .rd-spot-glow { background: radial-gradient(circle, #00d2be 0%, transparent 70%); }
+.rd-podium-spot.theme-mercedes {
+  border-bottom: 8px solid #00d2be;
+}
+.rd-podium-spot.theme-mercedes .rd-spot-glow {
+  background: radial-gradient(circle, #00d2be 0%, transparent 70%);
+}
 
-.rd-podium-spot.theme-redbull { border-bottom: 8px solid #0600ef; }
-.rd-podium-spot.theme-redbull .rd-spot-glow { background: radial-gradient(circle, #0600ef 0%, transparent 70%); }
+.rd-podium-spot.theme-redbull {
+  border-bottom: 8px solid #0600ef;
+}
+.rd-podium-spot.theme-redbull .rd-spot-glow {
+  background: radial-gradient(circle, #0600ef 0%, transparent 70%);
+}
 
-.rd-podium-spot.theme-ferrari { border-bottom: 8px solid #dc0000; }
-.rd-podium-spot.theme-ferrari .rd-spot-glow { background: radial-gradient(circle, #dc0000 0%, transparent 70%); }
+.rd-podium-spot.theme-ferrari {
+  border-bottom: 8px solid #dc0000;
+}
+.rd-podium-spot.theme-ferrari .rd-spot-glow {
+  background: radial-gradient(circle, #dc0000 0%, transparent 70%);
+}
 
-.rd-podium-spot.theme-astonmartin { border-bottom: 8px solid #006f62; }
-.rd-podium-spot.theme-astonmartin .rd-spot-glow { background: radial-gradient(circle, #006f62 0%, transparent 70%); }
+.rd-podium-spot.theme-astonmartin {
+  border-bottom: 8px solid #006f62;
+}
+.rd-podium-spot.theme-astonmartin .rd-spot-glow {
+  background: radial-gradient(circle, #006f62 0%, transparent 70%);
+}
 
 /* Dense Results List */
 .rd-results-list {
@@ -4607,8 +4631,8 @@ body {
 }
 
 .rd-row-name {
-  font-family: "Inter", sans-serif;
-  font-size: 16px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
   font-weight: 800;
   color: var(--carbon);
 }
@@ -4616,6 +4640,7 @@ body {
 .rd-row-team {
   font-family: "JetBrains Mono", monospace;
   font-size: 10px;
+  padding-left: 6px;
   font-weight: 700;
   color: var(--ink-3);
   text-transform: uppercase;
