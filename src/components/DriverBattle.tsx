@@ -147,7 +147,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
             team: d.constructor_name.toUpperCase(),
             pts: parseInt(d.points),
             wins: parseInt(d.wins),
-            podiums: parseInt(d.wins) + 1,
+            podiums: parseInt(d.wins), // Temporarily using wins as podiums until API provides it
             color: TEAM_COLORS[teamId] || '#ffffff',
             image: DRIVER_IMAGES[d.code] || null // No fallback to other drivers
           };
@@ -162,7 +162,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
             team: d.constructor_name.toUpperCase(),
             pts: parseInt(d.points),
             wins: parseInt(d.wins),
-            podiums: parseInt(d.wins) + 1,
+            podiums: parseInt(d.wins),
             color: TEAM_COLORS[NAME_TO_SLUG[d.constructor_name]] || '#ffffff',
             image: DRIVER_IMAGES[d.code] || null
           })));
