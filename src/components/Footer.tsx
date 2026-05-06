@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
         <div className="footer-main">
           <div className="f-col about">
             <div className="f-logo">
-              PIT<span>WALL</span>
+              MY <span>PITWALL</span>
             </div>
             <p className="f-desc">
               The ultimate high-performance telemetry dashboard for Formula 1 enthusiasts. 
@@ -55,10 +55,10 @@ const Footer: React.FC = () => {
             <span className="f-dot"></span>Lights out and away we go<span className="f-dot"></span>
           </div>
           <div className="f-copyright">
-            © 2026 THE PIT WALL <em>•</em> OPTIMIZED FOR PERFORMANCE
+            © 2026 MY PITWALL <em>•</em> OPTIMIZED FOR PERFORMANCE
           </div>
           <div className="f-brand">
-            The <em>Pit Wall</em>
+            My <em>PitWall</em>
           </div>
         </div>
       </footer>

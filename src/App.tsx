@@ -14,6 +14,8 @@ import DriverBattle from './components/DriverBattle';
 import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
+import RaceDetails from './components/RaceDetails';
+import type { Race } from './components/Calendar';
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -115,7 +117,8 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details'>('dashboard');
+  const [selectedRace, setSelectedRace] = useState<Race | null>(null);
   const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
   const [showBoot, setShowBoot] = useState(true);
 
@@ -183,8 +186,16 @@ const App: React.FC = () => {
             setUser={setUser} 
             onOpenSettings={() => setView('account')} 
           />
-          <NextRace />
-          <Calendar />
+          <NextRace onRaceSelect={(race) => {
+            setSelectedRace(race);
+            setView('race_details');
+            window.scrollTo(0, 0);
+          }} />
+          <Calendar onRaceSelect={(race) => {
+            setSelectedRace(race);
+            setView('race_details');
+            window.scrollTo(0, 0);
+          }} />
           <DriverBattle user={user} setUser={setUser} />
 
           <section className="main-section">
@@ -201,10 +212,15 @@ const App: React.FC = () => {
           <StatsRibbon />
           <Footer />
         </>
-      ) : (
+      ) : view === 'account' ? (
         <AccountPage 
           user={user} 
           onClose={() => setView('dashboard')} 
+        />
+      ) : (
+        <RaceDetails 
+          race={selectedRace} 
+          onBack={() => setView('dashboard')} 
         />
       )}
     </>

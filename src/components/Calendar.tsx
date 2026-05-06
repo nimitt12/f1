@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 // Define types for Ergast Race data
-interface Race {
+export interface Race {
   season: string;
   round: string;
   raceName: string;
@@ -13,9 +13,17 @@ interface Race {
     };
   };
   date: string;
-  FirstPractice?: {
-    date: string;
-  };
+  time?: string;
+  FirstPractice?: { date: string; time?: string };
+  SecondPractice?: { date: string; time?: string };
+  ThirdPractice?: { date: string; time?: string };
+  Qualifying?: { date: string; time?: string };
+  Sprint?: { date: string; time?: string };
+  SprintQualifying?: { date: string; time?: string };
+}
+
+interface CalendarProps {
+  onRaceSelect?: (race: Race) => void;
 }
 
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -94,7 +102,7 @@ const Flag: React.FC<{ code: string | undefined }> = ({ code }) => {
   );
 };
 
-const Calendar: React.FC = () => {
+const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
   const stripRef = useRef<HTMLDivElement>(null);
   const [races, setRaces] = useState<Race[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,6 +221,17 @@ const Calendar: React.FC = () => {
                   <div className="cal-country">{`${race.Circuit.Location.locality}, ${race.Circuit.Location.country}`}</div>
                   <div className="cal-flag-name">{race.Circuit.circuitName}</div>
                   <div className="cal-date">{formatDateRange(race.date, race.FirstPractice?.date)}</div>
+                  {onRaceSelect && (
+                    <button 
+                      className="cal-details-btn" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRaceSelect(race);
+                      }}
+                    >
+                      View Details
+                    </button>
+                  )}
                 </div>
               );
             });
