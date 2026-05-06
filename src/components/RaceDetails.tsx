@@ -83,19 +83,6 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
 
   return (
     <div className="race-details-page">
-      {/* Premium Background Elements */}
-      <div className="rd-bg-elements">
-        <div className="rd-orb rd-orb-1"></div>
-        <div className="rd-orb rd-orb-2"></div>
-        <div className="rd-orb rd-orb-3"></div>
-        <div className="rd-mesh"></div>
-        <div className="rd-speed-lines">
-          <div className="rd-line"></div>
-          <div className="rd-line"></div>
-          <div className="rd-line"></div>
-        </div>
-      </div>
-
       <nav className="rd-top-nav">
         <button className="rd-back-btn" onClick={onBack}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -135,6 +122,13 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
               </div>
             )}
           </div>
+        </div>
+        
+        {/* Restored Hero Background Stripes */}
+        <div className="rd-hero-bg">
+          <div className="rd-bg-stripe"></div>
+          <div className="rd-bg-stripe"></div>
+          <div className="rd-bg-stripe"></div>
         </div>
       </div>
 
