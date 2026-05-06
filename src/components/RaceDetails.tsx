@@ -237,9 +237,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
                       <div key={r.id} className={`rd-grid-slot pos-${r.position}`}>
                         <div className="rd-slot-card">
                           <div className="rd-slot-marker">
-                            <span className="rd-marker-bracket">[</span>
                             <span className="rd-marker-num">{r.position}</span>
-                            <span className="rd-marker-bracket">]</span>
                           </div>
                           <div className="rd-slot-info">
                             <span className="rd-slot-name">{r.given_name} <strong>{r.family_name}</strong></span>

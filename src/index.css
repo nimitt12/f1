@@ -4646,7 +4646,7 @@ body {
 .rd-track-surface {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
     linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px);
   background-size: 60px 60px;
@@ -4672,7 +4672,7 @@ body {
 
 /* Staggered Grid Logic - Tighter */
 .rd-grid-slot:nth-child(even) {
-  margin-top: 30px; 
+  margin-top: 30px;
 }
 
 .rd-slot-marker {
@@ -4682,7 +4682,7 @@ body {
   font-family: "Orbitron", sans-serif;
   color: var(--racing);
   font-weight: 900;
-  font-size: 14px;
+  font-size: 24px;
   min-width: 45px;
 }
 
