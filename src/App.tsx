@@ -117,10 +117,25 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account' | 'race_details'>('dashboard');
-  const [selectedRace, setSelectedRace] = useState<Race | null>(null);
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details'>(() => {
+    return (localStorage.getItem('f1_view') as any) || 'dashboard';
+  });
+  const [selectedRace, setSelectedRace] = useState<Race | null>(() => {
+    const saved = localStorage.getItem('f1_selected_race');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
   const [showBoot, setShowBoot] = useState(true);
+
+  // Persist view and selected race
+  useEffect(() => {
+    localStorage.setItem('f1_view', view);
+    if (selectedRace) {
+      localStorage.setItem('f1_selected_race', JSON.stringify(selectedRace));
+    } else {
+      localStorage.removeItem('f1_selected_race');
+    }
+  }, [view, selectedRace]);
 
   // Performant scroll tracking for parallax background
   useEffect(() => {
@@ -220,7 +235,10 @@ const App: React.FC = () => {
       ) : (
         <RaceDetails 
           race={selectedRace} 
-          onBack={() => setView('dashboard')} 
+          onBack={() => {
+            setView('dashboard');
+            setSelectedRace(null);
+          }} 
         />
       )}
     </>

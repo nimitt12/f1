@@ -4786,3 +4786,324 @@ body {
 .nr-view-results-btn:hover svg {
   transform: translateX(5px);
 }
+
+/* Tab Styles for Race Details */
+.rd-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 16px;
+}
+
+.rd-tab {
+  background: transparent;
+  border: none;
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.rd-tab:hover {
+  color: var(--racing);
+  background: rgba(var(--racing-rgb), 0.05);
+}
+
+.rd-tab.active {
+  color: #fff;
+  background: var(--racing);
+  box-shadow: 0 4px 12px rgba(var(--racing-rgb), 0.3);
+}
+
+/* Qualifying Results Premium Screen Styles */
+.qualifying-results-screen {
+  padding: 20px 0;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.qr-header {
+  margin-bottom: 40px;
+}
+
+.qr-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--carbon);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.qr-title em {
+  font-style: italic;
+  color: var(--racing);
+}
+
+.qr-subtitle {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+
+.qr-header-line {
+  height: 2px;
+  background: linear-gradient(to right, var(--racing), transparent);
+  margin-top: 16px;
+  width: 100px;
+}
+
+.qr-top-hero {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 60px;
+  align-items: flex-end;
+}
+
+.qr-hero-card {
+  position: relative;
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 24px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.qr-hero-card:hover {
+  transform: translateY(-8px);
+}
+
+.qr-hero-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--racing);
+}
+
+.qr-hero-card.pos-1 { height: 220px; z-index: 2; border: 2px solid var(--racing); }
+.qr-hero-card.pos-2 { height: 190px; }
+.qr-hero-card.pos-3 { height: 170px; }
+
+.qr-hero-card.theme-mercedes::before { background: var(--mercedes); }
+.qr-hero-card.theme-ferrari::before { background: var(--ferrari); }
+.qr-hero-card.theme-redbullracing::before { background: var(--redbull); }
+.qr-hero-card.theme-mclaren::before { background: var(--mclaren); }
+.qr-hero-card.theme-astonmartin::before { background: var(--aston); }
+
+.qr-pos-badge {
+  font-family: "Orbitron", sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.05);
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.qr-driver-info {
+  margin-top: 20px;
+}
+
+.qr-driver-name {
+  display: block;
+  font-family: "Orbitron", sans-serif;
+  font-size: 18px;
+  color: var(--carbon);
+}
+
+.qr-driver-name strong {
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.qr-team-name {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  margin-top: 4px;
+  display: block;
+}
+
+.qr-best-time {
+  margin-top: 24px;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.qr-time-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--ink-3);
+}
+
+.qr-time-val {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--carbon);
+}
+
+.qr-table-container {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.qr-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.qr-table th {
+  text-align: left;
+  padding: 20px 24px;
+  background: rgba(0, 0, 0, 0.02);
+  font-family: "Orbitron", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-2);
+  letter-spacing: 0.1em;
+}
+
+.qr-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  transition: background 0.2s ease;
+}
+
+.qr-row:hover {
+  background: rgba(var(--racing-rgb), 0.03);
+}
+
+.qr-td-pos { padding: 20px 24px; width: 60px; }
+.qr-pos-num {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--carbon);
+  color: #fff;
+  border-radius: 6px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.qr-td-driver { padding: 20px 24px; }
+.qr-driver-cell { display: flex; align-items: center; gap: 12px; }
+.qr-driver-code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--racing);
+  padding: 2px 6px;
+  background: rgba(var(--racing-rgb), 0.1);
+  border-radius: 4px;
+}
+
+.qr-driver-fullname {
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--carbon);
+}
+
+.qr-td-team {
+  padding: 20px 24px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+
+.qr-td-time {
+  padding: 20px 24px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  color: var(--carbon);
+}
+
+.qr-td-time.knocked-out {
+  color: var(--ink-3);
+  opacity: 0.5;
+}
+
+.qr-loading {
+  padding: 100px 0;
+  text-align: center;
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
+  color: var(--ink-3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: pulse 2s infinite;
+}
+
+.qr-error {
+  padding: 40px;
+  text-align: center;
+  color: var(--ferrari);
+  font-family: "JetBrains Mono", monospace;
+  background: rgba(220, 0, 0, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(220, 0, 0, 0.2);
+  margin: 20px 0;
+}
+
+.qr-no-data {
+  padding: 60px;
+  text-align: center;
+  color: var(--ink-2);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 16px;
+  font-style: italic;
+}
+
+.rd-session-card.clickable {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rd-session-card.clickable:not(.main-event):hover {
+  background: #fff;
+}
+
+.rd-session-card.clickable:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.rd-view-details-hint {
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--racing);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.rd-session-card.clickable:hover .rd-view-details-hint {
+  transform: translateX(5px);
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Race } from './Calendar';
+import QualifyingResults from './QualifyingResults';
 
 interface RaceDetailsProps {
   race: Race | null;
@@ -13,6 +14,9 @@ interface RaceResult {
   given_name: string;
   family_name: string;
   team_name: string;
+  code?: string;
+  time?: string;
+  status?: string;
 }
 
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -37,6 +41,7 @@ const formatDateTime = (dateStr?: string, timeStr?: string) => {
 const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
   const [results, setResults] = useState<RaceResult[] | null>(null);
   const [loadingResults, setLoadingResults] = useState(false);
+  const [activeTab, setActiveTab] = useState<'race' | 'qualifying'>('race');
 
   useEffect(() => {
     if (!race) return;
@@ -71,15 +76,30 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
   const countryName = race.Circuit.Location.country.trim();
   const countryCode = COUNTRY_FLAGS[countryName];
   
-  const sessions = [
-    { name: 'Practice 1', data: race.FirstPractice },
-    { name: 'Practice 2', data: race.SecondPractice },
-    { name: 'Practice 3', data: race.ThirdPractice },
-    { name: 'Sprint Qualifying', data: race.SprintQualifying },
-    { name: 'Sprint', data: race.Sprint },
-    { name: 'Qualifying', data: race.Qualifying },
-    { name: 'Race', data: { date: race.date, time: race.time }, isMain: true },
-  ].filter(s => s.data);
+  interface SessionInfo {
+    name: string;
+    data?: { date: string; time?: string };
+    tab: 'race' | 'qualifying' | null;
+    isMain?: boolean;
+  }
+
+  const sessions: SessionInfo[] = ([
+    { name: 'Practice 1', data: race.FirstPractice, tab: null },
+    { name: 'Practice 2', data: race.SecondPractice, tab: null },
+    { name: 'Practice 3', data: race.ThirdPractice, tab: null },
+    { name: 'Sprint Qualifying', data: race.SprintQualifying, tab: null },
+    { name: 'Sprint', data: race.Sprint, tab: 'race' },
+    { name: 'Qualifying', data: race.Qualifying, tab: 'qualifying' },
+    { name: 'Race', data: { date: race.date, time: race.time }, isMain: true, tab: 'race' },
+  ] as SessionInfo[]).filter(s => !!s.data);
+
+  const scrollToResults = (tab?: 'race' | 'qualifying') => {
+    if (tab) setActiveTab(tab);
+    const element = document.querySelector('.rd-results-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <div className="race-details-page">
@@ -154,8 +174,15 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
               Icon = <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>;
             }
 
+            const isPast = new Date() > new Date(`${session.data?.date}T${session.data?.time || '00:00:00Z'}`);
+            const canViewDetails = !!(isPast && session.tab);
+
             return (
-              <div key={i} className={`rd-session-card ${session.isMain ? 'main-event' : ''}`}>
+              <div 
+                key={i} 
+                className={`rd-session-card ${session.isMain ? 'main-event' : ''} ${canViewDetails ? 'clickable' : ''}`}
+                onClick={() => canViewDetails && session.tab && scrollToResults(session.tab)}
+              >
                 <div className="rd-card-accent"></div>
                 <div className="rd-card-header">
                   <div className="rd-session-icon">{Icon}</div>
@@ -168,6 +195,12 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
                     <span className="rd-time-zone">Local</span>
                   </div>
                   <div className="rd-date-row">{date}</div>
+                  {canViewDetails && (
+                    <div className="rd-view-details-hint">
+                      View Details 
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -176,77 +209,110 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
 
         {(loadingResults || (results && results.length > 0)) && (
           <div className="rd-results-section">
-            <div className="rd-section-header">
-              <h2 className="rd-section-title">Race <em>Results</em></h2>
-              <div className="rd-section-line"></div>
+            <div className="rd-tabs">
+              <button 
+                className={`rd-tab ${activeTab === 'race' ? 'active' : ''}`}
+                onClick={() => setActiveTab('race')}
+              >
+                Race Results
+              </button>
+              <button 
+                className={`rd-tab ${activeTab === 'qualifying' ? 'active' : ''}`}
+                onClick={() => setActiveTab('qualifying')}
+              >
+                Qualifying Results
+              </button>
             </div>
-            
-            {loadingResults ? (
-              <div className="rd-loading">Loading official results...</div>
-            ) : results && results.length > 0 ? (
-              <div className="rd-results-container">
-                <div className="rd-podium">
-                  {results[1] && (
-                    <div className={`rd-podium-spot rd-p2 theme-${results[1].team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                      <div className="rd-spot-glow"></div>
-                      <span className="rd-podium-pos">P2</span>
-                      <div className="rd-podium-info">
-                        <span className="rd-podium-name">{results[1].given_name} <strong>{results[1].family_name}</strong></span>
-                        <span className="rd-podium-team">{results[1].team_name}</span>
-                      </div>
-                      <div className="rd-podium-pts">+{results[1].points} <span>PTS</span></div>
-                    </div>
-                  )}
-                  {results[0] && (
-                    <div className={`rd-podium-spot rd-p1 theme-${results[0].team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                      <div className="rd-spot-glow"></div>
-                      <div className="rd-winner-crown">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-                      </div>
-                      <span className="rd-podium-pos">P1</span>
-                      <div className="rd-podium-info">
-                        <span className="rd-podium-name">{results[0].given_name} <strong>{results[0].family_name}</strong></span>
-                        <span className="rd-podium-team">{results[0].team_name}</span>
-                      </div>
-                      <div className="rd-podium-pts">+{results[0].points} <span>PTS</span></div>
-                    </div>
-                  )}
-                  {results[2] && (
-                    <div className={`rd-podium-spot rd-p3 theme-${results[2].team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                      <div className="rd-spot-glow"></div>
-                      <span className="rd-podium-pos">P3</span>
-                      <div className="rd-podium-info">
-                        <span className="rd-podium-name">{results[2].given_name} <strong>{results[2].family_name}</strong></span>
-                        <span className="rd-podium-team">{results[2].team_name}</span>
-                      </div>
-                      <div className="rd-podium-pts">+{results[2].points} <span>PTS</span></div>
-                    </div>
-                  )}
-                </div>
 
-                <div className="rd-grid-container">
-                  <div className="rd-track-surface"></div>
-                  <div className="rd-grid-slots">
-                    {results.slice(3).map((r) => (
-                      <div key={r.id} className={`rd-grid-slot pos-${r.position}`}>
-                        <div className="rd-slot-card">
-                          <div className="rd-slot-marker">
-                            <span className="rd-marker-num">{r.position}</span>
-                          </div>
-                          <div className="rd-slot-info">
-                            <span className="rd-slot-name">{r.given_name} <strong>{r.family_name}</strong></span>
-                            <span className="rd-slot-team">{r.team_name}</span>
-                          </div>
-                          <div className="rd-slot-pts">
-                            {Number(r.points) > 0 ? `+${r.points}` : ''}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            {activeTab === 'race' ? (
+              <>
+                <div className="rd-section-header">
+                  <h2 className="rd-section-title">Official <em>Classification</em></h2>
+                  <div className="rd-section-line"></div>
                 </div>
-              </div>
-            ) : null}
+                
+                {loadingResults ? (
+                  <div className="rd-loading">Loading official results...</div>
+                ) : results && results.length > 0 ? (
+                  <div className="rd-results-container">
+                    <div className="rd-podium">
+                      {results[1] && (
+                        <div className={`rd-podium-spot rd-p2 theme-${results[1].team_name.toLowerCase().replace(/\s+/g, '')}`}>
+                          <div className="rd-spot-glow"></div>
+                          <span className="rd-podium-pos">P2</span>
+                          <div className="rd-podium-info">
+                            <span className="rd-podium-name">{results[1].given_name} <strong>{results[1].family_name}</strong></span>
+                            <span className="rd-podium-team">{results[1].team_name}</span>
+                          </div>
+                          <div className="rd-podium-pts">+{results[1].points} <span>PTS</span></div>
+                        </div>
+                      )}
+                      {results[0] && (
+                        <div className={`rd-podium-spot rd-p1 theme-${results[0].team_name.toLowerCase().replace(/\s+/g, '')}`}>
+                          <div className="rd-spot-glow"></div>
+                          <div className="rd-winner-crown">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                          </div>
+                          <span className="rd-podium-pos">P1</span>
+                          <div className="rd-podium-info">
+                            <span className="rd-podium-name">{results[0].given_name} <strong>{results[0].family_name}</strong></span>
+                            <span className="rd-podium-team">{results[0].team_name}</span>
+                          </div>
+                          <div className="rd-podium-pts">+{results[0].points} <span>PTS</span></div>
+                        </div>
+                      )}
+                      {results[2] && (
+                        <div className={`rd-podium-spot rd-p3 theme-${results[2].team_name.toLowerCase().replace(/\s+/g, '')}`}>
+                          <div className="rd-spot-glow"></div>
+                          <span className="rd-podium-pos">P3</span>
+                          <div className="rd-podium-info">
+                            <span className="rd-podium-name">{results[2].given_name} <strong>{results[2].family_name}</strong></span>
+                            <span className="rd-podium-team">{results[2].team_name}</span>
+                          </div>
+                          <div className="rd-podium-pts">+{results[2].points} <span>PTS</span></div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="qr-table-container" style={{ marginTop: '40px' }}>
+                      <table className="qr-table">
+                        <thead>
+                          <tr>
+                            <th className="qr-col-pos">POS</th>
+                            <th className="qr-col-driver">DRIVER</th>
+                            <th className="qr-col-team">TEAM</th>
+                            <th className="qr-col-time">TIME/STATUS</th>
+                            <th className="qr-col-pts">PTS</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {results.slice(3).map((r) => (
+                            <tr key={r.id} className={`qr-row theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
+                              <td className="qr-td-pos">
+                                <span className="qr-pos-num">{r.position}</span>
+                              </td>
+                              <td className="qr-td-driver">
+                                <div className="qr-driver-cell">
+                                  <span className="qr-driver-code">{r.code}</span>
+                                  <span className="qr-driver-fullname">{r.given_name} {r.family_name}</span>
+                                </div>
+                              </td>
+                              <td className="qr-td-team">{r.team_name}</td>
+                              <td className="qr-td-time">{r.time || r.status}</td>
+                              <td className="qr-td-pts" style={{ fontWeight: 800, color: 'var(--racing)', textAlign: 'right', paddingRight: '24px' }}>
+                                {Number(r.points) > 0 ? `+${r.points}` : '0'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <QualifyingResults season={race.season} round={race.round} />
+            )}
           </div>
         )}
       </div>
