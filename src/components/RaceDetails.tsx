@@ -414,7 +414,7 @@ const RaceLaptimeScatter: React.FC<{ results: RaceResult[] }> = ({ results }) =>
             return (
               <g key={driver.id}>
                 {laps.map((lap) => {
-                  const time = getSimulatedLapTime(baseTime, lap, driver.code);
+                  const time = getSimulatedLapTime(baseTime, lap, driver.code || driver.id);
                   const x = ((lap - 1) / 49) * 900 + 60;
                   const y = ((time - 1.25) / 0.06) * 280 + 35;
                   
@@ -580,7 +580,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                 const isDashed = rIndex % 2 !== 0;
                 
                 // Deterministic simulation based on driver code to satisfy purity requirements
-                const seed = r.code.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                const seed = (r.code || r.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                 const getStableOffset = (step: number, range: number) => {
                   return ((seed * step) % range) - (range / 2);
                 };
