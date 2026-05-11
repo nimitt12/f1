@@ -5418,6 +5418,55 @@ body {
   margin-top: 32px;
 }
 
+/* Scatterplot Styles */
+.ra-scatterplot-container {
+  width: 100%;
+  height: 350px;
+  position: relative;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 16px;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
+}
+
+.ra-scatter-dot {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.ra-scatter-dot:hover {
+  r: 6;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.ra-scatter-line {
+  fill: none;
+  stroke-width: 1.5;
+  opacity: 0.3;
+  stroke-dasharray: 4;
+}
+
+.ra-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--racing);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: #fff;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.ra-tooltip-val {
+  color: var(--racing);
+  font-weight: 800;
+}
+
 @media (max-width: 1024px) {
   .ra-full-width-chart {
     grid-column: span 1;
