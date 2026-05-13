@@ -719,27 +719,78 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           </div>
         </div>
 
-        <div className="ra-chart-box ra-full-width-chart">
-          <h3 className="ra-chart-title">Strategic Stint Pattern</h3>
-          <div className="ra-bar-list" style={{ gap: '12px' }}>
-            {results.slice(0, 15).map((r, i) => (
-              <div key={r.id} className="ra-bar-item">
-                <div className="ra-bar-info" style={{ fontSize: '9px', marginBottom: '4px' }}>
-                  <span>{r.family_name}</span>
-                  <span style={{ opacity: 0.6 }}>STINT_01 // STINT_02</span>
-                </div>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  <div className="ra-bar-wrap" style={{ flex: i % 2 === 0 ? 0.6 : 0.4, height: '14px' }}>
-                    <div className="ra-bar-fill" style={{ width: '100%', background: i % 3 === 0 ? '#ffea00' : '#f44336', opacity: 0.8 }}></div>
-                  </div>
-                  <div className="ra-bar-wrap" style={{ flex: i % 2 === 0 ? 0.4 : 0.6, height: '14px' }}>
-                    <div className="ra-bar-fill" style={{ width: '100%', background: `var(--${getTeamKey(r.team_name)}, var(--racing))` }}></div>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+          <h3 className="ra-chart-title" style={{ marginBottom: '20px' }}>Grid vs Finish (Positions Gained/Lost)</h3>
+          
+          {/* Axis Header */}
+          <div style={{ display: 'flex', padding: '0 12px 10px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}>
+            <div style={{ flex: '0 0 80px' }}>DRIVER</div>
+            <div style={{ flex: 1, textAlign: 'center', position: 'relative' }}>
+               <span style={{ position: 'absolute', left: '0' }}>LOST</span>
+               <span>GRID POSITION</span>
+               <span style={{ position: 'absolute', right: '0' }}>GAINED</span>
+            </div>
+            <div style={{ flex: '0 0 50px', textAlign: 'right' }}>DELTA</div>
           </div>
-          <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '10px', right: '10px', left: 'auto' }}>STRATEGY_ANALYSIS_MOCK // SESSION_2026</div>
+
+          <div className="ra-delta-list" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {results.map((r, i) => {
+              const startPos = Number(r.grid) || 20; 
+              const finishPos = Number(r.position);
+              const delta = startPos - finishPos;
+              const isPositive = delta > 0;
+              const isNegative = delta < 0;
+              const teamColor = `var(--${getTeamKey(r.team_name)}, var(--racing))`;
+              const driverCode = r.code || r.family_name.substring(0,3).toUpperCase();
+
+              return (
+                <div key={r.id} style={{ display: 'flex', alignItems: 'center', background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent', padding: '8px 12px', borderRadius: '6px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.background = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent'}>
+                  
+                  {/* Left: Driver Info */}
+                  <div style={{ flex: '0 0 80px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ color: teamColor, width: '24px', fontWeight: '800', fontFamily: 'JetBrains Mono', fontSize: '13px' }}>P{finishPos}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '1px', color: 'rgba(255,255,255,0.9)' }}>{driverCode}</span>
+                  </div>
+                  
+                  {/* Middle: Premium Zero-Centered Bar */}
+                  <div style={{ flex: 1, position: 'relative', height: '24px', display: 'flex', alignItems: 'center', margin: '0 20px' }}>
+                    {/* Center Axis Grid Line */}
+                    <div style={{ position: 'absolute', left: '50%', top: '-8px', bottom: '-8px', width: '1px', background: 'rgba(255,255,255,0.15)', zIndex: 0 }}></div>
+                    
+                    {/* Positive Bar (Gained) */}
+                    {isPositive && (
+                      <div style={{ position: 'absolute', left: '50%', height: '6px', width: `${(delta / 20) * 50}%`, background: 'linear-gradient(90deg, rgba(34,197,94,0.3) 0%, #22c55e 100%)', borderRadius: '0 3px 3px 0', boxShadow: '0 0 12px rgba(34,197,94,0.4)', zIndex: 1 }}></div>
+                    )}
+                    
+                    {/* Negative Bar (Lost) */}
+                    {isNegative && (
+                      <div style={{ position: 'absolute', right: '50%', height: '6px', width: `${(Math.abs(delta) / 20) * 50}%`, background: 'linear-gradient(270deg, rgba(239,68,68,0.3) 0%, #ef4444 100%)', borderRadius: '3px 0 0 3px', boxShadow: '0 0 12px rgba(239,68,68,0.4)', zIndex: 1 }}></div>
+                    )}
+                  </div>
+                  
+                  {/* Right: Glassmorphic Delta Badge */}
+                  <div style={{ flex: '0 0 50px', textAlign: 'right' }}>
+                    <span style={{ 
+                        display: 'inline-block',
+                        padding: '4px 8px', 
+                        borderRadius: '4px',
+                        background: isPositive ? 'rgba(34,197,94,0.1)' : isNegative ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)',
+                        color: isPositive ? '#4ade80' : isNegative ? '#f87171' : 'rgba(255,255,255,0.4)',
+                        fontWeight: 800,
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: '12px',
+                        border: `1px solid ${isPositive ? 'rgba(34,197,94,0.2)' : isNegative ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.05)'}`,
+                        minWidth: '36px',
+                        textAlign: 'center'
+                    }}>
+                        {isPositive ? `+${delta}` : isNegative ? delta : '='}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '15px', right: '20px', left: 'auto' }}>POSITION_DELTA // ACTUAL_TELEMETRY</div>
         </div>
       </div>
     </div>
