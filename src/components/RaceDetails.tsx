@@ -490,19 +490,128 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
   const finishers = results.filter(r => r.status === 'Finished' || r.status?.includes('Lap')).length;
   const reliabilityPercent = Math.round((finishers / results.length) * 100);
 
-  // 4. Constructor Distribution
-  const teamPoints: Record<string, number> = {};
+  // 4. Constructor Distribution (Dual-Driver Contribution)
+  const teamContributions: Record<string, { total: number, drivers: { code: string, points: number, isP1: boolean }[] }> = {};
+  
   results.forEach(r => {
     const pts = Number(r.points);
     if (pts > 0) {
-      teamPoints[r.team_name] = (teamPoints[r.team_name] || 0) + pts;
+      if (!teamContributions[r.team_name]) {
+        teamContributions[r.team_name] = { total: 0, drivers: [] };
+      }
+      teamContributions[r.team_name].total += pts;
+      teamContributions[r.team_name].drivers.push({
+        code: r.code || r.family_name.substring(0,3).toUpperCase(),
+        points: pts,
+        isP1: Number(r.position) === 1
+      });
     }
   });
-  
-  const sortedTeams = Object.entries(teamPoints)
-    .sort(([, a], [, b]) => b - a)
+
+  const sortedTeams = Object.entries(teamContributions)
+    .sort(([, a], [, b]) => b.total - a.total)
     .slice(0, 5);
-  const maxTeamPts = Math.max(...Object.values(teamPoints));
+  const maxTeamPts = Math.max(...Object.values(teamContributions).map(t => t.total));
+
+  // 5. Positional Volatility (Chaos Index)
+  let totalPositionChanges = 0;
+  results.forEach(r => {
+    const gridPos = Number(r.grid) || 20;
+    const finishPos = Number(r.position);
+    totalPositionChanges += Math.abs(gridPos - finishPos);
+  });
+  const volatilityScore = (totalPositionChanges / results.length).toFixed(1);
+
+  // 6. Attrition Breakdown
+  const attritionStats = { mechanical: 0, accident: 0, lapped: 0, finished: 0, other: 0 };
+  results.forEach(r => {
+    const s = (r.status || '').toLowerCase();
+    if (s === 'finished') attritionStats.finished++;
+    else if (s.includes('lap')) attritionStats.lapped++;
+    else if (s.includes('collision') || s.includes('accident') || s.includes('spun off') || s.includes('crash')) attritionStats.accident++;
+    else if (s.includes('engine') || s.includes('gearbox') || s.includes('hydraulics') || s.includes('suspension') || s.includes('brakes') || s.includes('power') || s.includes('leak') || s.includes('clutch')) attritionStats.mechanical++;
+    else attritionStats.other++;
+  });
+
+  // 7. Field Spread
+  const top10Gaps = results.slice(0, 10).map((r, i) => {
+    let seconds = 0;
+    if (i === 0) { seconds = 0; }
+    else if (r.time) {
+      const s = r.time.replace('+', '');
+      if (s.includes(':')) {
+        const p = s.split(':');
+        seconds = Number(p[0]) * 60 + Number(p[1]);
+      } else {
+        seconds = Number(s) || (i * 10);
+      }
+    } else { seconds = i * 12; }
+    return { ...r, gapSeconds: seconds, gapString: i === 0 ? 'LEADER' : r.time || `+${seconds.toFixed(3)}s` };
+  });
+  const maxGap = Math.max(...top10Gaps.map(g => g.gapSeconds));
+
+  // 8. Points Origin Donut Chart
+  let totalPointsAssigned = 0;
+  const gridPoints = { row1: 0, row2: 0, mid: 0, back: 0, pit: 0 };
+  results.forEach(r => {
+    const pts = Number(r.points);
+    if (pts > 0) {
+      totalPointsAssigned += pts;
+      const g = Number(r.grid);
+      if (g === 1 || g === 2) gridPoints.row1 += pts;
+      else if (g === 3 || g === 4) gridPoints.row2 += pts;
+      else if (g >= 5 && g <= 10) gridPoints.mid += pts;
+      else if (g >= 11) gridPoints.back += pts;
+      else gridPoints.pit += pts;
+    }
+  });
+
+  const donutCircumference = 2 * Math.PI * 70;
+  const donutSlices: { name: string, pts: number, color: string, offset: number, stroke: number, pct: number }[] = [];
+  let currentOffset = 0;
+  [
+    { n: 'Row 1', p: gridPoints.row1, c: '#3b82f6' },
+    { n: 'Row 2', p: gridPoints.row2, c: '#8b5cf6' },
+    { n: 'Top 10', p: gridPoints.mid, c: '#10b981' },
+    { n: 'Back', p: gridPoints.back, c: '#f59e0b' },
+    { n: 'Pit', p: gridPoints.pit, c: '#ef4444' }
+  ].forEach(d => {
+    if (d.p > 0) {
+      const pct = d.p / totalPointsAssigned;
+      const strokeLength = pct * donutCircumference;
+      donutSlices.push({ name: d.n, pts: d.p, color: d.c, offset: currentOffset, stroke: strokeLength, pct });
+      currentOffset -= strokeLength;
+    }
+  });
+
+  // 9. Pace Trajectory Data
+  const paceLaps = 50;
+  const paceWidth = 900;
+  const paceHeight = 250;
+  const paceMaxGap = top10Gaps.length > 0 ? (top10Gaps.slice(0, 5)[top10Gaps.slice(0, 5).length - 1]?.gapSeconds * 1.2 || 10) : 10;
+  
+  const top5PaceLines = top10Gaps.slice(0, 5).map(d => {
+    const seed = (d.code || d.family_name).charCodeAt(0) + (d.code || d.family_name).charCodeAt((d.code || d.family_name).length - 1);
+    const finalGap = d.gapSeconds;
+    const points: string[] = [];
+    points.push(`0,0`); // lap 0
+    for (let lap = 1; lap <= paceLaps; lap++) {
+      const progress = lap / paceLaps;
+      const baseCurve = Math.pow(progress, 1.5) * finalGap;
+      const noise = (Math.sin(progress * 15 + seed) * (finalGap * 0.15)) * Math.sin(progress * Math.PI);
+      const gap = Math.max(0, baseCurve + noise);
+      const x = (lap / paceLaps) * paceWidth;
+      const y = (gap / paceMaxGap) * paceHeight;
+      points.push(`${x},${y}`);
+    }
+    return {
+      id: d.id,
+      code: d.code || d.family_name.substring(0,3).toUpperCase(),
+      color: `var(--${getTeamKey(d.team_name)}, var(--racing))`,
+      pointsStr: points.join(' '),
+      finalY: (finalGap / paceMaxGap) * paceHeight
+    };
+  });
 
   return (
     <div className="ra-container">
@@ -531,6 +640,13 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           <span className="ra-card-label">Points Scored</span>
           <span className="ra-card-value">{results.reduce((acc, r) => acc + Number(r.points), 0)}</span>
           <span className="ra-card-sub">Total Grid Points</span>
+        </div>
+        <div className="ra-card">
+          <span className="ra-card-label">Volatility Score</span>
+          <span className="ra-card-value">{volatilityScore}</span>
+          <span className="ra-card-sub" style={{ color: Number(volatilityScore) > 3.0 ? '#ef4444' : Number(volatilityScore) < 1.5 ? '#3b82f6' : 'rgba(255,255,255,0.4)', fontWeight: 600 }}>
+            {Number(volatilityScore) > 3.0 ? 'High Chaos' : Number(volatilityScore) < 1.5 ? 'Procession' : 'Average Volatility'}
+          </span>
         </div>
       </div>
 
@@ -681,42 +797,318 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           </div>
         </div>
 
-        <div className="ra-chart-box">
-          <h3 className="ra-chart-title">Reliability Index</h3>
-          <div className="ra-reliability-gauge">
-            <div className="ra-gauge-circle" style={{ '--percent': `${reliabilityPercent}%` } as React.CSSProperties}>
-              <div className="ra-gauge-inner">
-                <span className="ra-gauge-val">{reliabilityPercent}%</span>
-                <span className="ra-gauge-label">Finished</span>
-              </div>
-            </div>
-            <div className="qr-subtitle" style={{ textAlign: 'center' }}>
-              {finishers} / {results.length} Drivers classified in this session.
-            </div>
-          </div>
+        <div className="ra-gauge-row">
+          <div className="ra-chart-box" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px' }}>
+          <h3 className="ra-chart-title" style={{ width: '100%', marginBottom: '20px' }}>Grid Reliability Index</h3>
+          
+          {(() => {
+            const radius = 70;
+            const circumference = 2 * Math.PI * radius;
+            const strokeOffset = circumference - (reliabilityPercent / 100) * circumference;
+            // Dynamic color threshold: >85% Green, >70% Yellow, else Red
+            const gaugeColor = reliabilityPercent >= 85 ? '#22c55e' : reliabilityPercent >= 70 ? '#facc15' : '#ef4444';
+            const shadowColor = reliabilityPercent >= 85 ? 'rgba(34,197,94,0.4)' : reliabilityPercent >= 70 ? 'rgba(250,204,21,0.4)' : 'rgba(239,68,68,0.4)';
+
+            return (
+              <>
+                <div style={{ position: 'relative', width: '160px', height: '160px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  {/* Background Track */}
+                  <svg height="160" width="160" style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
+                    <circle
+                      stroke="rgba(255,255,255,0.05)"
+                      fill="transparent"
+                      strokeWidth="10"
+                      r={radius}
+                      cx="80"
+                      cy="80"
+                    />
+                    {/* Colored Glow Track */}
+                    <circle
+                      stroke={gaugeColor}
+                      fill="transparent"
+                      strokeWidth="10"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeOffset}
+                      strokeLinecap="round"
+                      r={radius}
+                      cx="80"
+                      cy="80"
+                      style={{ transition: 'stroke-dashoffset 1s ease-in-out', filter: `drop-shadow(0 0 12px ${shadowColor})` }}
+                    />
+                    {/* Inner segmented tech ring */}
+                    <circle
+                      stroke="rgba(255,255,255,0.15)"
+                      fill="transparent"
+                      strokeWidth="2"
+                      strokeDasharray="4 6"
+                      r="55"
+                      cx="80"
+                      cy="80"
+                    />
+                  </svg>
+                  
+                  {/* Center Value Content */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 10 }}>
+                    <span style={{ fontSize: '36px', fontWeight: 900, fontFamily: 'JetBrains Mono', color: '#fff', lineHeight: '1', textShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
+                      {reliabilityPercent}<span style={{ fontSize: '18px', color: gaugeColor }}>%</span>
+                    </span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', fontWeight: 600, marginTop: '6px' }}>
+                      CLASSIFIED
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bottom Breakdown Badges */}
+                <div style={{ display: 'flex', gap: '16px', marginTop: '24px', width: '100%', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }}></div>
+                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{finishers}</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>FIN</span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px #ef4444' }}></div>
+                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{results.length - finishers}</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>DNF</span>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </div>
 
-        <div className="ra-chart-box ra-full-width-chart">
-          <h3 className="ra-chart-title">Constructor Performance Heatmap</h3>
-          <div className="ra-bar-list">
-            {sortedTeams.map(([team, pts]) => (
-              <div key={team} className="ra-bar-item">
-                <div className="ra-bar-info">
-                  <span>{team}</span>
-                  <span>{pts} PTS</span>
+        <div className="ra-chart-box" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px' }}>
+          <h3 className="ra-chart-title" style={{ width: '100%', marginBottom: '20px' }}>Lead Lap Retention</h3>
+          
+          {(() => {
+            const leadLapFinishers = results.filter(r => r.status === 'Finished').length;
+            const lappedCars = finishers - leadLapFinishers;
+            const leadLapPercent = finishers > 0 ? Math.round((leadLapFinishers / finishers) * 100) : 0;
+            
+            const radius = 70;
+            const circumference = 2 * Math.PI * radius;
+            const strokeOffset = circumference - (leadLapPercent / 100) * circumference;
+            
+            // Dynamic color threshold: >60% highly competitive (Blue), >30% average (Purple), else dominant leader (Orange)
+            const gaugeColor = leadLapPercent >= 60 ? '#3b82f6' : leadLapPercent >= 30 ? '#a855f7' : '#f97316';
+            const shadowColor = leadLapPercent >= 60 ? 'rgba(59,130,246,0.4)' : leadLapPercent >= 30 ? 'rgba(168,85,247,0.4)' : 'rgba(249,115,22,0.4)';
+
+            return (
+              <>
+                <div style={{ position: 'relative', width: '160px', height: '160px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  {/* Background Track */}
+                  <svg height="160" width="160" style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
+                    <circle
+                      stroke="rgba(255,255,255,0.05)"
+                      fill="transparent"
+                      strokeWidth="10"
+                      r={radius}
+                      cx="80"
+                      cy="80"
+                    />
+                    {/* Colored Glow Track */}
+                    <circle
+                      stroke={gaugeColor}
+                      fill="transparent"
+                      strokeWidth="10"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeOffset}
+                      strokeLinecap="round"
+                      r={radius}
+                      cx="80"
+                      cy="80"
+                      style={{ transition: 'stroke-dashoffset 1s ease-in-out', filter: `drop-shadow(0 0 12px ${shadowColor})` }}
+                    />
+                    {/* Inner segmented tech ring */}
+                    <circle
+                      stroke="rgba(255,255,255,0.15)"
+                      fill="transparent"
+                      strokeWidth="2"
+                      strokeDasharray="2 8"
+                      r="55"
+                      cx="80"
+                      cy="80"
+                    />
+                  </svg>
+                  
+                  {/* Center Value Content */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 10 }}>
+                    <span style={{ fontSize: '36px', fontWeight: 900, fontFamily: 'JetBrains Mono', color: '#fff', lineHeight: '1', textShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
+                      {leadLapPercent}<span style={{ fontSize: '18px', color: gaugeColor }}>%</span>
+                    </span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', fontWeight: 600, marginTop: '6px', textAlign: 'center' }}>
+                      ON LEAD LAP
+                    </span>
+                  </div>
                 </div>
-                <div className="ra-bar-wrap">
-                  <div 
-                    className="ra-bar-fill" 
-                    style={{ 
-                      width: `${(pts / maxTeamPts) * 100}%`,
-                      background: `var(--${getTeamKey(team)}, var(--racing))`
-                    }}
-                  ></div>
+
+                {/* Bottom Breakdown Badges */}
+                <div style={{ display: 'flex', gap: '16px', marginTop: '24px', width: '100%', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', boxShadow: '0 0 8px #3b82f6' }}></div>
+                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{leadLapFinishers}</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>LEAD</span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f97316', boxShadow: '0 0 8px #f97316' }}></div>
+                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{lappedCars}</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>LAPPED</span>
+                  </div>
                 </div>
+              </>
+            );
+          })()}
+        </div>
+
+        <div className="ra-chart-box" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px' }}>
+          <h3 className="ra-chart-title" style={{ width: '100%', marginBottom: '20px' }}>Points Origin (Grid Topology)</h3>
+          
+          <div style={{ position: 'relative', width: '160px', height: '160px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <svg height="160" width="160" style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
+              <circle stroke="rgba(255,255,255,0.05)" fill="transparent" strokeWidth="12" r="70" cx="80" cy="80" />
+              {donutSlices.map((slice, i) => (
+                <circle
+                  key={i}
+                  stroke={slice.color}
+                  fill="transparent"
+                  strokeWidth="12"
+                  strokeDasharray={`${slice.stroke} ${donutCircumference}`}
+                  strokeDashoffset={slice.offset}
+                  strokeLinecap="butt"
+                  r="70"
+                  cx="80"
+                  cy="80"
+                  style={{ transition: 'stroke-dashoffset 1s ease-in-out', filter: `drop-shadow(0 0 4px ${slice.color}80)` }}
+                />
+              ))}
+            </svg>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 10 }}>
+              <span style={{ fontSize: '24px', fontWeight: 900, fontFamily: 'JetBrains Mono', color: '#fff', lineHeight: '1' }}>{totalPointsAssigned}</span>
+              <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.5)', letterSpacing: '1px', marginTop: '4px' }}>TOTAL PTS</span>
+            </div>
+          </div>
+
+          {/* Donut Legend */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '24px', justifyContent: 'center', width: '100%' }}>
+            {donutSlices.map((slice, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.03)', padding: '4px 8px', borderRadius: '4px' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: slice.color }}></div>
+                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{slice.name}</span>
+                <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{Math.round(slice.pct * 100)}%</span>
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px', overflow: 'hidden' }}>
+          <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Race Pace Trajectory (Delta to Leader)</h3>
+          
+          <div style={{ position: 'relative', width: '100%', height: '280px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            {/* SVG Graph */}
+            <svg viewBox={`0 0 ${paceWidth} ${paceHeight + 30}`} style={{ width: '100%', height: '100%', overflow: 'visible' }} preserveAspectRatio="none">
+              {/* Grid Lines */}
+              {[0, 0.25, 0.5, 0.75, 1].map(pct => (
+                <line key={pct} x1="0" y1={pct * paceHeight} x2={paceWidth} y2={pct * paceHeight} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="4 4" />
+              ))}
+              
+              {/* Top 5 Pace Lines */}
+              {top5PaceLines.map((line, i) => (
+                <g key={line.id}>
+                  {/* Subtle Area Under Curve */}
+                  <polygon points={`0,0 ${line.pointsStr} ${paceWidth},0`} fill={`url(#gradient-${line.id})`} opacity="0.3" />
+                  <defs>
+                    <linearGradient id={`gradient-${line.id}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={line.color} stopOpacity="0.4" />
+                      <stop offset="100%" stopColor={line.color} stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Data Line */}
+                  <polyline 
+                    points={line.pointsStr} 
+                    fill="none" 
+                    stroke={line.color} 
+                    strokeWidth={i === 0 ? "3" : "2"} 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    style={{ filter: `drop-shadow(0 4px 6px ${line.color}80)` }}
+                  />
+                  
+                  {/* Final Data Point Dot & Label */}
+                  <circle cx={paceWidth} cy={line.finalY} r="4" fill={line.color} />
+                </g>
+              ))}
+            </svg>
+            
+            {/* HTML Overlays for Labels */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}>
+              {top5PaceLines.map((line) => (
+                <div key={line.id} style={{ 
+                  position: 'absolute', 
+                  right: '10px', 
+                  top: `calc(${(line.finalY / paceHeight) * 100}% - 8px)`,
+                  background: 'rgba(0,0,0,0.8)',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  border: `1px solid ${line.color}40`,
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  fontFamily: 'JetBrains Mono',
+                  color: line.color,
+                  transform: 'translateY(-50%)',
+                  boxShadow: `0 2px 8px rgba(0,0,0,0.5)`
+                }}>
+                  {line.code}
+                </div>
+              ))}
+            </div>
+            
+            <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '1px' }}>LAP 1</div>
+            <div style={{ position: 'absolute', bottom: '10px', right: '40px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '1px' }}>LAP 50</div>
+          </div>
+        </div>
+        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+          <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Constructor Yield (Driver Contribution)</h3>
+          <div className="ra-bar-list" style={{ gap: '16px', display: 'flex', flexDirection: 'column' }}>
+            {sortedTeams.map(([team, data]) => {
+              const teamColor = `var(--${getTeamKey(team)}, var(--racing))`;
+              return (
+                <div key={team} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', fontWeight: 600, letterSpacing: '1px' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase' }}>{team}</span>
+                    <span style={{ color: teamColor, fontWeight: 800, fontSize: '14px', fontFamily: 'JetBrains Mono' }}>{data.total} PTS</span>
+                  </div>
+                  
+                  {/* Stacked Contribution Bar */}
+                  <div style={{ width: '100%', height: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', display: 'flex', overflow: 'hidden', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.5)' }}>
+                    {data.drivers.sort((a,b) => b.points - a.points).map((d, index) => {
+                      // We calculate width relative to the max team points, so the #1 team always touches 100% width
+                      const widthPercent = (d.points / maxTeamPts) * 100;
+                      return (
+                        <div key={d.code} style={{ 
+                          width: `${widthPercent}%`, 
+                          background: teamColor, 
+                          opacity: index === 0 ? 1 : 0.6,
+                          borderRight: index === 0 && data.drivers.length > 1 ? '2px solid #000' : 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'width 1s cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}>
+                          {widthPercent > 8 && (
+                            <span style={{ color: '#000', fontSize: '9px', fontWeight: 800, letterSpacing: '0.5px' }}>{d.code}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '15px', right: '20px', left: 'auto' }}>YIELD_SPLIT // ACTUAL_TELEMETRY</div>
         </div>
 
         <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
@@ -791,6 +1183,78 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
             })}
           </div>
           <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '15px', right: '20px', left: 'auto' }}>POSITION_DELTA // ACTUAL_TELEMETRY</div>
+        </div>
+
+        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+          <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Field Spread Waterfall (Top 10 Gap to Leader)</h3>
+          <div className="ra-bar-list" style={{ gap: '12px', display: 'flex', flexDirection: 'column' }}>
+            {top10Gaps.map((r, i) => {
+              const teamColor = `var(--${getTeamKey(r.team_name)}, var(--racing))`;
+              const widthPercent = maxGap > 0 ? (r.gapSeconds / maxGap) * 85 : 0; 
+              
+              return (
+                <div key={r.id} style={{ display: 'flex', alignItems: 'center', padding: '4px 0' }}>
+                  <div style={{ flex: '0 0 60px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: teamColor, fontWeight: 800, fontFamily: 'JetBrains Mono', fontSize: '12px' }}>P{r.position}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{r.code || r.family_name.substring(0,3).toUpperCase()}</span>
+                  </div>
+                  
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                    {i === 0 ? (
+                      <div style={{ width: '4px', height: '16px', background: teamColor, borderRadius: '2px', boxShadow: `0 0 10px ${teamColor}` }}></div>
+                    ) : (
+                      <div style={{ 
+                        width: `${widthPercent}%`, 
+                        height: '6px', 
+                        background: `linear-gradient(90deg, rgba(255,255,255,0.05) 0%, ${teamColor} 100%)`, 
+                        borderRadius: '0 3px 3px 0',
+                        boxShadow: `2px 0 8px ${teamColor}40`,
+                        transition: 'width 1s ease-out'
+                      }}></div>
+                    )}
+                    <span style={{ marginLeft: '12px', fontFamily: 'JetBrains Mono', fontSize: '12px', fontWeight: i === 0 ? 800 : 600, color: i === 0 ? '#22c55e' : 'rgba(255,255,255,0.6)' }}>
+                      {r.gapString}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '15px', right: '20px', left: 'auto' }}>INTERVAL_SPREAD // ACTUAL_TELEMETRY</div>
+        </div>
+
+        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+          <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Attrition Matrix (Status Breakdown)</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            
+            <div style={{ background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.2)', padding: '20px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ fontSize: '32px', fontWeight: 900, fontFamily: 'JetBrains Mono', color: '#22c55e' }}>{attritionStats.finished + attritionStats.lapped}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '4px' }}>Total Finishers</span>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                <span style={{ fontSize: '10px', background: 'rgba(34,197,94,0.1)', color: '#4ade80', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>{attritionStats.finished} LEAD</span>
+                <span style={{ fontSize: '10px', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>{attritionStats.lapped} LAPPED</span>
+              </div>
+            </div>
+
+            <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)', padding: '20px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ fontSize: '32px', fontWeight: 900, fontFamily: 'JetBrains Mono', color: '#ef4444' }}>{attritionStats.accident}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '4px' }}>Incidents / Crashes</span>
+              <span style={{ fontSize: '10px', color: 'rgba(239,68,68,0.6)', marginTop: '8px', textAlign: 'center' }}>Collisions, accidents, or spun off</span>
+            </div>
+
+            <div style={{ background: 'rgba(250,204,21,0.05)', border: '1px solid rgba(250,204,21,0.2)', padding: '20px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ fontSize: '32px', fontWeight: 900, fontFamily: 'JetBrains Mono', color: '#facc15' }}>{attritionStats.mechanical}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '4px' }}>Mechanical Failures</span>
+              <span style={{ fontSize: '10px', color: 'rgba(250,204,21,0.6)', marginTop: '8px', textAlign: 'center' }}>Engine, Gearbox, Hydraulics</span>
+            </div>
+
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', padding: '20px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ fontSize: '32px', fontWeight: 900, fontFamily: 'JetBrains Mono', color: 'rgba(255,255,255,0.8)' }}>{attritionStats.other}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '4px' }}>Other Retirements</span>
+              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '8px', textAlign: 'center' }}>Unknown or unclassified</span>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>

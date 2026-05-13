@@ -5472,3 +5472,24 @@ body {
     grid-column: span 1;
   }
 }
+
+.ra-gauge-row {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 32px;
+}
+
+@media (max-width: 1200px) {
+  .ra-gauge-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .ra-gauge-row {
+    grid-template-columns: 1fr;
+    grid-column: span 1;
+  }
+}
