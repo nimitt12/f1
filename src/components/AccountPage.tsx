@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
 interface AccountSettingsProps {
   onClose: () => void;
@@ -44,15 +45,17 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
   useEffect(() => {
     const fetchPrefs = async () => {
       if (!user) return;
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('fav_constructor, fav_drivers')
-        .eq('id', user.id)
-        .single();
-      
-      if (data && !error) {
-        setFavConstructor(data.fav_constructor || '');
-        setFavDrivers(data.fav_drivers || []);
+      try {
+        const response = await fetch(`${BACKEND_URL}/profile/${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data) {
+            setFavConstructor(data.fav_constructor || '');
+            setFavDrivers(data.fav_drivers || []);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching preferences from backend:', err);
       }
     };
     fetchPrefs();
@@ -71,21 +74,28 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
     if (!user) return;
     setIsSaving(true);
     
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        fav_constructor: favConstructor,
-        fav_drivers: favDrivers,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', user.id);
+    try {
+      const response = await fetch(`${BACKEND_URL}/profile/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fav_constructor: favConstructor,
+          fav_drivers: favDrivers,
+        }),
+      });
 
-    if (error) {
-      console.error('Error saving preferences:', error);
-      alert('Failed to save preferences. Please try again.');
-    } else {
+      if (!response.ok) {
+        throw new Error('Server responded with an error status');
+      }
+      
       setIsSaving(false);
       onClose();
+    } catch (error) {
+      console.error('Error saving preferences to backend:', error);
+      alert('Failed to save preferences. Please try again.');
+      setIsSaving(false);
     }
   };
 

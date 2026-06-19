@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
 import LoginModal from './LoginModal';
 import antonelliImg from '../assets/ant.png';
 import russellImg from '../assets/rus.png';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
 interface ApiDriverRanking {
   id: string;
@@ -103,20 +104,25 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
     const fetchBattleData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('https://pitwall-backend-dq9r.onrender.com/drivers/get-all-drivers-season-rankings');
+        const response = await fetch(`${BACKEND_URL}/drivers/get-all-drivers-season-rankings`);
         const allStandings: ApiDriverRanking[] = await response.json();
         
         let targetDrivers: ApiDriverRanking[] = [];
 
         if (viewMode === 'favorites' && user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('fav_drivers')
-            .eq('id', user.id)
-            .single();
+          let favDrivers: string[] = [];
+          try {
+            const profileRes = await fetch(`${BACKEND_URL}/profile/${user.id}`);
+            if (profileRes.ok) {
+              const profileData = await profileRes.json();
+              favDrivers = profileData?.fav_drivers || [];
+            }
+          } catch (profileErr) {
+            console.error('Failed to fetch user preferences from backend', profileErr);
+          }
 
-          if (profile?.fav_drivers && profile.fav_drivers.length > 0) {
-            const favCodes = profile.fav_drivers.map((id: string) => FAVORITE_MAP[id] || id.toUpperCase());
+          if (favDrivers && favDrivers.length > 0) {
+            const favCodes = favDrivers.map((id: string) => FAVORITE_MAP[id] || id.toUpperCase());
             
             // Filter and sort by user's preference order
             targetDrivers = favCodes.map((code: string) => 
