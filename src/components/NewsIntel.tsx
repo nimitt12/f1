@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import Loader from './Loader';
 
 interface NewsItem {
   id: string;
@@ -175,9 +176,7 @@ const NewsIntel: React.FC = () => {
         </div>
         <div className="podium-list">
           {podiumLoading ? (
-            <div style={{ padding: '20px', textAlign: 'center', opacity: 0.5, fontSize: '12px' }}>
-              Updating Podium...
-            </div>
+            <Loader label="Updating podium" size={28} variant="inline" className="news-podium-loader" />
           ) : podiumResults.map((result) => (
             <div key={result.position} className={`pod-row p${result.position}`}>
               <div className="pod-badge">P{result.position}</div>
@@ -193,9 +192,7 @@ const NewsIntel: React.FC = () => {
 
       <div className="news-block">
         {loading && (
-          <div className="news-loading" style={{ padding: '40px', textAlign: 'center', opacity: 0.6 }}>
-            Streaming Paddock Intel...
-          </div>
+          <Loader label="Streaming paddock intel" size={36} />
         )}
 
         {!loading && news.map((item, index) => (

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import LoginModal from './LoginModal';
+import Loader from './Loader';
 import antonelliImg from '../assets/ant.png';
 import russellImg from '../assets/rus.png';
 
@@ -191,7 +192,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
            <h2 className="battle-title">Driver's <em>Clash</em></h2>
         </div>
         <div className="battle-container" style={{ opacity: 0.5, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="loading-clash">Synchronizing Data...</div>
+          <Loader label="Synchronizing data" />
         </div>
       </section>
     );

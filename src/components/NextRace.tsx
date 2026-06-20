@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from './Loader';
 
 const Flag: React.FC<{ code: string }> = ({ code }) => {
   if (!code || code.length !== 2 || code === '🏁') return <span style={{ fontSize: '24px' }}>🏁</span>;
@@ -326,10 +327,8 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
                   </div>
                 </>
               ) : (
-                <div className="winner-card p1-featured" style={{ opacity: 0.5 }}>
-                  <div className="winner-info">
-                    <div className="winner-name">Loading Results...</div>
-                  </div>
+                <div className="winner-card p1-featured">
+                  <Loader label="Loading results" size={32} />
                 </div>
               )}
             </div>

@@ -7,6 +7,7 @@ export interface AuthUser {
   name: string;
   picture: string;
   email: string;
+  is_admin?: boolean;
 }
 
 interface HeroProps {
@@ -35,6 +36,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
   const handleLogout = (e: React.MouseEvent) => {
     e.stopPropagation();
     googleLogout();
+    localStorage.removeItem('f1_token');
     setUser(null);
     setIsMenuOpen(false);
   };
@@ -52,6 +54,8 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
         if (!response.ok) throw new Error('Backend authentication failed');
         
         const data = await response.json();
+        // Persist the JWT so the admin portal can authorize against the backend
+        if (data.token) localStorage.setItem('f1_token', data.token);
         // Standardize the user object (handle potential full_name/avatar_url from backend)
         const userData = {
           ...data.user,
@@ -142,6 +146,12 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
             <div className="menu-user-section">
               {user ? (
                 <>
+                  {user.is_admin && (
+                    <a className="menu-action-btn admin" href="/admin-portal">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                      Admin Portal
+                    </a>
+                  )}
                   <button className="menu-action-btn" onClick={() => { onOpenSettings(); setIsMenuOpen(false); }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                     My Account

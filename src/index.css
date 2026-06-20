@@ -3682,6 +3682,115 @@ body {
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* --- UNIVERSAL LOADER --- */
+.pw-loader {
+  --pw-accent: var(--team-color, var(--racing));
+  --pw-loader-size: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pw-loader.block {
+  width: 100%;
+  padding: 80px 24px;
+}
+
+.pw-loader.inline {
+  flex-direction: row;
+  gap: 12px;
+  padding: 0;
+}
+
+.pw-loader-ring {
+  position: relative;
+  width: var(--pw-loader-size);
+  height: var(--pw-loader-size);
+  border-radius: 50%;
+  /* faint full-circle track behind the spinning trail */
+  background: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 3px),
+    rgba(255, 255, 255, 0.08) calc(100% - 3px)
+  );
+}
+
+.pw-loader-trail {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  /* comet trail: fades from transparent up to the accent color */
+  background: conic-gradient(from 90deg, transparent 6%, var(--pw-accent));
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 3px),
+    #000 calc(100% - 3px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 3px),
+    #000 calc(100% - 3px)
+  );
+  animation: pwLoaderSpin 0.85s linear infinite;
+}
+
+/* glowing head of the comet */
+.pw-loader-trail::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--pw-accent);
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px 1px var(--pw-accent);
+}
+
+@keyframes pwLoaderSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pw-loader-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  animation: pwLoaderPulse 1.6s ease-in-out infinite;
+}
+
+.pw-loader.inline .pw-loader-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+@keyframes pwLoaderPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pw-loader-trail {
+    animation-duration: 1.8s;
+  }
+  .pw-loader-label {
+    animation: none;
+    opacity: 0.75;
+  }
+}
+
 /* --- SKELETON LOADER SYSTEM --- */
 .skeleton-box {
   background-color: rgba(255, 255, 255, 0.05);
@@ -3969,6 +4078,22 @@ body {
   background: rgba(225, 6, 0, 0.1);
   border-color: rgba(225, 6, 0, 0.3);
   color: var(--racing-hot);
+}
+
+/* Anchor used as an action button (admin portal link) */
+a.menu-action-btn {
+  text-decoration: none;
+}
+
+.menu-action-btn.admin {
+  background: color-mix(in srgb, var(--racing) 12%, transparent);
+  border-color: color-mix(in srgb, var(--racing) 35%, transparent);
+  color: var(--racing-hot);
+}
+
+.menu-action-btn.admin:hover {
+  background: color-mix(in srgb, var(--racing) 20%, transparent);
+  border-color: color-mix(in srgb, var(--racing) 55%, transparent);
 }
 
 .ts-icon {

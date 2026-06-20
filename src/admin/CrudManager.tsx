@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { authFetch } from './adminAuth';
+import Loader from '../components/Loader';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
@@ -68,12 +70,27 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
   const [seasons, setSeasons] = useState<string[]>([]);
   const [rounds, setRounds] = useState<string[]>([]);
 
-  // Editing modal state. `null` = closed; row object = edit; {} = create.
-  const [editing, setEditing] = useState<Row | null>(null);
-  const [isNew, setIsNew] = useState(false);
-  const [form, setForm] = useState<Record<string, string>>({});
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  // Spreadsheet UX state
+  const [fullscreen, setFullscreen] = useState(false);
+  const [editCell, setEditCell] = useState<{ rowId: string; col: string } | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const [savingKey, setSavingKey] = useState<string | null>(null); // `${rowId}::${col}`
+  const [newRow, setNewRow] = useState<Record<string, string>>({});
+  const [creating, setCreating] = useState(false);
+
+  // When true, the next input blur is a programmatic move (Enter/Tab/Esc) and
+  // should NOT trigger a save — we've already handled it.
+  const skipBlurRef = useRef(false);
+  const newRowFirstInput = useRef<HTMLInputElement | null>(null);
+
+  // Table for which we've already applied the "default to latest season/round"
+  // behaviour. Reset on every fresh table open so re-entering re-defaults, but
+  // left alone afterwards so the user can switch to "All" without it snapping back.
+  const autoFilterTableRef = useRef<string | null>(null);
+
+  // Highest value in a list of numeric-ish strings (latest season / round)
+  const latestOf = (list: string[]) =>
+    list.slice().sort((a, b) => Number(b) - Number(a))[0];
 
   const log = useCallback((msg: string) => onLog?.(msg), [onLog]);
 
@@ -86,7 +103,7 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/admin/tables`);
+        const res = await authFetch(`${BACKEND_URL}/admin/tables`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: TableMeta[] = await res.json();
         setTables(data);
@@ -118,7 +135,7 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
       if (term.trim()) params.set('search', term.trim());
       if (season) params.set('season', season);
       if (round) params.set('round', round);
-      const res = await fetch(`${BACKEND_URL}/admin/${table}?${params.toString()}`);
+      const res = await authFetch(`${BACKEND_URL}/admin/${table}?${params.toString()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRows(Array.isArray(data.data) ? data.data : []);
@@ -157,9 +174,15 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
     }
     (async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/admin/${activeTable}/distinct/season`);
+        const res = await authFetch(`${BACKEND_URL}/admin/${activeTable}/distinct/season`);
         const data = await res.json();
-        setSeasons(Array.isArray(data) ? data.map(String) : []);
+        const list = Array.isArray(data) ? data.map(String) : [];
+        setSeasons(list);
+        // On a fresh open of this table, default to the latest season. The round
+        // default is applied once rounds load for it (see rounds effect below).
+        if (autoFilterTableRef.current !== activeTable && list.length) {
+          setFilterSeason(latestOf(list));
+        }
       } catch {
         setSeasons([]);
       }
@@ -175,20 +198,41 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
     (async () => {
       try {
         const qs = filterSeason ? `?season=${encodeURIComponent(filterSeason)}` : '';
-        const res = await fetch(`${BACKEND_URL}/admin/${activeTable}/distinct/round${qs}`);
+        const res = await authFetch(`${BACKEND_URL}/admin/${activeTable}/distinct/round${qs}`);
         const data = await res.json();
-        setRounds(Array.isArray(data) ? data.map(String) : []);
+        const list = Array.isArray(data) ? data.map(String) : [];
+        setRounds(list);
+        // Finish the fresh-open default: once the (auto-selected latest) season's
+        // rounds are in, default to the latest round and mark this table done so
+        // later season/round changes are left to the user.
+        if (autoFilterTableRef.current !== activeTable && filterSeason) {
+          if (list.length) setFilterRound(latestOf(list));
+          autoFilterTableRef.current = activeTable;
+        }
       } catch {
         setRounds([]);
       }
     })();
   }, [activeTable, filterSeason, supportsFilters]);
 
+  // Esc exits fullscreen (unless a cell is being edited)
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !editCell) setFullscreen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [fullscreen, editCell]);
+
   const selectTable = (name: string) => {
     setSearch('');
     setDebouncedSearch('');
     setFilterSeason('');
     setFilterRound('');
+    autoFilterTableRef.current = null; // re-apply latest-season/round default on open
+    setEditCell(null);
+    setNewRow({});
     setActiveTable(name);
   };
 
@@ -196,80 +240,146 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  // Columns shown in the form (everything except server-managed/auto ones)
-  const formColumns = useMemo(
-    () => (meta ? meta.columns.filter((c) => !c.auto) : []),
-    [meta]
-  );
+  const columns = meta?.columns ?? [];
+  const pk = meta?.pk ?? 'id';
+  // Columns the user can edit inline on an existing row (PK is immutable, auto cols are server-managed)
+  const editableCols = useMemo(() => columns.filter((c) => !c.auto && !c.isPk), [columns]);
+  // Columns shown in the "new record" row (PK included — blank means auto-generate)
+  const newRowCols = useMemo(() => columns.filter((c) => !c.auto), [columns]);
 
-  const openCreate = () => {
+  // ---- Inline cell editing -------------------------------------------------
+
+  const openCell = (rowId: string, col: string, value: string) => {
+    setEditCell({ rowId, col });
+    setEditValue(value);
+  };
+
+  const commitCell = async (rowId: string, col: string, rawValue: string) => {
     if (!meta) return;
-    const blank: Record<string, string> = {};
-    formColumns.forEach((c) => (blank[c.name] = ''));
-    setForm(blank);
-    setEditing({});
-    setIsNew(true);
-    setFormError(null);
+    const row = rows.find((r) => String(r[meta.pk]) === rowId);
+    if (!row) return;
+    const colMeta = columns.find((c) => c.name === col);
+    if (rawValue === toInputString(row[col])) return; // unchanged -> no request
+
+    const payloadVal = rawValue === '' && !colMeta?.required ? null : rawValue;
+    const key = `${rowId}::${col}`;
+    setSavingKey(key);
+    try {
+      const res = await authFetch(`${BACKEND_URL}/admin/${meta.name}/${encodeURIComponent(rowId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [col]: payloadVal }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      // Merge the server's row back so derived columns (updated_at) refresh too
+      setRows((rs) => rs.map((r) => (String(r[meta.pk]) === rowId ? { ...r, ...data } : r)));
+      log(`Updated ${meta.name} (${rowId}) · ${col}`);
+    } catch (e) {
+      setError(`Update failed: ${errMsg(e)}`);
+      reload(); // re-sync from server on failure
+    } finally {
+      setSavingKey(null);
+    }
   };
 
-  const openEdit = (row: Row) => {
+  const moveTo = (rowIdx: number, colIdx: number) => {
+    const targetRow = rows[rowIdx];
+    const targetCol = editableCols[colIdx];
+    if (!targetRow || !targetCol) {
+      setEditCell(null);
+      return;
+    }
+    openCell(String(targetRow[pk]), targetCol.name, toInputString(targetRow[targetCol.name]));
+  };
+
+  const onCellKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, rowId: string, col: string) => {
+    const rowIdx = rows.findIndex((r) => String(r[pk]) === rowId);
+    const colIdx = editableCols.findIndex((c) => c.name === col);
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      skipBlurRef.current = true;
+      commitCell(rowId, col, editValue);
+      moveTo(rowIdx + 1, colIdx); // down
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      skipBlurRef.current = true;
+      commitCell(rowId, col, editValue);
+      if (e.shiftKey) {
+        if (colIdx > 0) moveTo(rowIdx, colIdx - 1);
+        else moveTo(rowIdx - 1, editableCols.length - 1);
+      } else {
+        if (colIdx < editableCols.length - 1) moveTo(rowIdx, colIdx + 1);
+        else moveTo(rowIdx + 1, 0);
+      }
+    } else if (e.key === 'Escape') {
+      e.stopPropagation();
+      skipBlurRef.current = true;
+      setEditCell(null);
+    }
+  };
+
+  const onCellBlur = (rowId: string, col: string) => {
+    if (skipBlurRef.current) {
+      skipBlurRef.current = false;
+      return;
+    }
+    commitCell(rowId, col, editValue);
+    setEditCell(null);
+  };
+
+  // ---- New record row ------------------------------------------------------
+
+  const createRecord = async () => {
     if (!meta) return;
-    const filled: Record<string, string> = {};
-    formColumns.forEach((c) => (filled[c.name] = toInputString(row[c.name])));
-    setForm(filled);
-    setEditing(row);
-    setIsNew(false);
-    setFormError(null);
-  };
+    // Nothing typed yet
+    const hasInput = newRowCols.some((c) => (newRow[c.name] ?? '').trim() !== '');
+    if (!hasInput) return;
 
-  const closeModal = () => {
-    setEditing(null);
-    setForm({});
-    setFormError(null);
-  };
-
-  // Build the JSON body from the form, omitting empty optional fields
-  const buildPayload = () => {
     const payload: Record<string, unknown> = {};
-    formColumns.forEach((c) => {
-      const raw = form[c.name];
-      if (raw === undefined) return;
-      // On create, skip empty PK so the server auto-generates it
-      if (isNew && c.isPk && raw.trim() === '') return;
+    newRowCols.forEach((c) => {
+      const raw = (newRow[c.name] ?? '').trim();
+      if (c.isPk && raw === '') return; // auto-generate
       if (raw === '' && !c.required) {
         payload[c.name] = null;
         return;
       }
+      if (raw === '') return;
       payload[c.name] = raw;
     });
-    return payload;
-  };
 
-  const handleSave = async () => {
-    if (!meta) return;
-    setSaving(true);
-    setFormError(null);
-    const payload = buildPayload();
-    const pkValue = editing ? String(editing[meta.pk]) : '';
-    const url = isNew
-      ? `${BACKEND_URL}/admin/${meta.name}`
-      : `${BACKEND_URL}/admin/${meta.name}/${encodeURIComponent(pkValue)}`;
+    setCreating(true);
+    setError(null);
     try {
-      const res = await fetch(url, {
-        method: isNew ? 'POST' : 'PUT',
+      const res = await authFetch(`${BACKEND_URL}/admin/${meta.name}`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-      log(`${isNew ? 'Created' : 'Updated'} ${meta.name} record (${data[meta.pk] ?? pkValue})`);
-      closeModal();
+      log(`Created ${meta.name} record (${data[meta.pk] ?? ''})`);
+      setNewRow({});
       reload();
+      newRowFirstInput.current?.focus();
     } catch (e) {
-      setFormError(errMsg(e));
+      setError(`Create failed: ${errMsg(e)}`);
     } finally {
-      setSaving(false);
+      setCreating(false);
     }
+  };
+
+  const onNewRowKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      createRecord();
+    }
+  };
+
+  const focusNewRow = () => {
+    newRowFirstInput.current?.focus();
+    newRowFirstInput.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   };
 
   const handleDelete = async (row: Row) => {
@@ -277,13 +387,12 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
     const pkValue = String(row[meta.pk]);
     if (!window.confirm(`Delete ${meta.name} record "${pkValue}"? This cannot be undone.`)) return;
     try {
-      const res = await fetch(`${BACKEND_URL}/admin/${meta.name}/${encodeURIComponent(pkValue)}`, {
+      const res = await authFetch(`${BACKEND_URL}/admin/${meta.name}/${encodeURIComponent(pkValue)}`, {
         method: 'DELETE',
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       log(`Deleted ${meta.name} record (${pkValue})`);
-      // If we just deleted the last row on a page beyond the first, step back
       if (rows.length === 1 && page > 1) setPage((p) => p - 1);
       else reload();
     } catch (e) {
@@ -291,10 +400,49 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
     }
   };
 
-  const columns = meta?.columns ?? [];
+  // ---- Render --------------------------------------------------------------
+
+  const renderEditableCell = (row: Row, c: ColumnMeta) => {
+    const rowId = String(row[pk]);
+    const isEditing = editCell?.rowId === rowId && editCell?.col === c.name;
+    const isSaving = savingKey === `${rowId}::${c.name}`;
+    const numeric = c.type === 'integer';
+    const cls = numeric ? 'crud-grid-cell right-cell font-mono' : 'crud-grid-cell';
+
+    if (isEditing) {
+      return (
+        <td key={c.name} className={`${cls} editing`}>
+          <input
+            autoFocus
+            className="crud-cell-input"
+            type={numeric ? 'number' : 'text'}
+            value={editValue}
+            placeholder={c.type === 'text[]' ? 'comma-separated' : ''}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={(e) => onCellKeyDown(e, rowId, c.name)}
+            onBlur={() => onCellBlur(rowId, c.name)}
+          />
+        </td>
+      );
+    }
+
+    return (
+      <td
+        key={c.name}
+        className={`${cls} editable ${isSaving ? 'saving' : ''}`}
+        onClick={() => openCell(rowId, c.name, toInputString(row[c.name]))}
+        title="Click to edit"
+      >
+        <span className="crud-cell-value">{displayValue(row[c.name])}</span>
+      </td>
+    );
+  };
+
+  const panelClass =
+    'admin-panel db-table-panel crud-panel' + (fullscreen ? ' crud-fullscreen' : '');
 
   return (
-    <section className="admin-panel db-table-panel crud-panel">
+    <section className={panelClass}>
       {/* Table selector */}
       <div className="crud-table-tabs">
         {tables.map((t) => (
@@ -348,7 +496,10 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
           <button className="admin-text-btn" onClick={reload}>
             {loading ? 'Refreshing...' : 'Refresh'}
           </button>
-          <button className="admin-primary-btn" onClick={openCreate} disabled={!meta}>
+          <button className="admin-text-btn" onClick={() => setFullscreen((f) => !f)}>
+            {fullscreen ? '✕ Exit' : '⤢ Fullscreen'}
+          </button>
+          <button className="admin-primary-btn" onClick={focusNewRow} disabled={!meta}>
             + New Record
           </button>
         </div>
@@ -357,10 +508,10 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
       {error && <div className="crud-error-banner">{error}</div>}
 
       {loading ? (
-        <div className="loading-container">Loading {activeTable} records...</div>
+        <Loader label={`Loading ${activeTable} records`} accent="#e0c47d" />
       ) : (
-        <div className="table-wrapper">
-          <table className="admin-table crud-table">
+        <div className="table-wrapper crud-grid-wrapper">
+          <table className="admin-table crud-table crud-grid">
             <thead>
               <tr>
                 {columns.map((c) => (
@@ -373,30 +524,76 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
               </tr>
             </thead>
             <tbody>
-              {rows.length > 0 ? (
-                rows.map((row) => (
-                  <tr key={String(row[meta!.pk])}>
-                    {columns.map((c) => (
-                      <td key={c.name} className={c.type === 'integer' ? 'right-cell font-mono' : ''}>
-                        <span className="crud-cell-value" title={displayValue(row[c.name])}>
-                          {displayValue(row[c.name])}
-                        </span>
+              {rows.map((row) => (
+                <tr key={String(row[pk])}>
+                  {columns.map((c) =>
+                    c.auto || c.isPk ? (
+                      <td
+                        key={c.name}
+                        className={`crud-grid-cell readonly ${c.type === 'integer' ? 'right-cell font-mono' : ''}`}
+                        title={c.isPk ? 'Primary key (read-only)' : 'Auto-managed (read-only)'}
+                      >
+                        <span className="crud-cell-value">{displayValue(row[c.name])}</span>
                       </td>
-                    ))}
-                    <td className="crud-actions-col">
-                      <div className="crud-row-actions">
-                        <button className="crud-icon-btn edit" onClick={() => openEdit(row)}>Edit</button>
-                        <button className="crud-icon-btn delete" onClick={() => handleDelete(row)}>Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
+                    ) : (
+                      renderEditableCell(row, c)
+                    )
+                  )}
+                  <td className="crud-actions-col">
+                    <div className="crud-row-actions">
+                      <button className="crud-icon-btn delete" onClick={() => handleDelete(row)}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {rows.length === 0 && (
                 <tr>
                   <td colSpan={columns.length + 1} className="empty-table-cell">
                     {debouncedSearch || filterSeason || filterRound
                       ? 'No records match the current filters.'
-                      : 'No records in this table yet.'}
+                      : 'No records yet — add one in the row below.'}
+                  </td>
+                </tr>
+              )}
+
+              {/* Spreadsheet-style "new record" row */}
+              {meta && (
+                <tr className="crud-new-row">
+                  {columns.map((c) => {
+                    if (c.auto) {
+                      return (
+                        <td key={c.name} className="crud-grid-cell readonly">
+                          <span className="crud-new-auto">auto</span>
+                        </td>
+                      );
+                    }
+                    const isFirst = c.name === newRowCols[0]?.name;
+                    return (
+                      <td key={c.name} className={`crud-grid-cell ${c.type === 'integer' ? 'right-cell' : ''}`}>
+                        <input
+                          ref={isFirst ? newRowFirstInput : undefined}
+                          className="crud-cell-input new"
+                          type={c.type === 'integer' ? 'number' : 'text'}
+                          value={newRow[c.name] ?? ''}
+                          placeholder={
+                            c.isPk ? 'auto' : c.required ? `${labelize(c.name)} *` : labelize(c.name)
+                          }
+                          onChange={(e) => setNewRow((r) => ({ ...r, [c.name]: e.target.value }))}
+                          onKeyDown={onNewRowKeyDown}
+                        />
+                      </td>
+                    );
+                  })}
+                  <td className="crud-actions-col">
+                    <button
+                      className="crud-icon-btn add"
+                      onClick={createRecord}
+                      disabled={creating}
+                      title="Add record (or press Enter)"
+                    >
+                      {creating ? '…' : '+ Add'}
+                    </button>
                   </td>
                 </tr>
               )}
@@ -428,56 +625,6 @@ const CrudManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) => 
           >
             Next →
           </button>
-        </div>
-      )}
-
-      {/* Create / Edit modal */}
-      {editing && meta && (
-        <div className="crud-modal-overlay" onClick={closeModal}>
-          <div className="crud-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="crud-modal-head">
-              <h3>{isNew ? 'New' : 'Edit'} {labelize(meta.name)} record</h3>
-              <button className="crud-modal-close" onClick={closeModal}>×</button>
-            </div>
-
-            <div className="crud-modal-body">
-              {formColumns.map((c) => {
-                const pkLocked = c.isPk && !isNew;
-                return (
-                  <label key={c.name} className="crud-field">
-                    <span className="crud-field-label">
-                      {labelize(c.name)}
-                      {c.required && <em className="crud-req">*</em>}
-                      <span className="crud-field-type">{c.type}{c.isPk ? ' · pk' : ''}</span>
-                    </span>
-                    <input
-                      className="crud-field-input"
-                      type={c.type === 'integer' ? 'number' : 'text'}
-                      value={form[c.name] ?? ''}
-                      disabled={pkLocked}
-                      placeholder={
-                        c.isPk && isNew
-                          ? 'leave blank to auto-generate'
-                          : c.type === 'text[]'
-                          ? 'comma-separated values'
-                          : ''
-                      }
-                      onChange={(e) => setForm((f) => ({ ...f, [c.name]: e.target.value }))}
-                    />
-                  </label>
-                );
-              })}
-            </div>
-
-            {formError && <div className="crud-error-banner crud-modal-error">{formError}</div>}
-
-            <div className="crud-modal-foot">
-              <button className="admin-text-btn" onClick={closeModal} disabled={saving}>Cancel</button>
-              <button className="admin-primary-btn" onClick={handleSave} disabled={saving}>
-                {saving ? 'Saving...' : isNew ? 'Create Record' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </section>

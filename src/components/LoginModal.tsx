@@ -38,6 +38,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
         if (!response.ok) throw new Error('Backend authentication failed');
         
         const data = await response.json();
+        // Persist the JWT so the admin portal can authorize against the backend
+        if (data.token) localStorage.setItem('f1_token', data.token);
         // Standardize the user object (handle potential full_name/avatar_url from backend)
         const userData = {
           ...data.user,

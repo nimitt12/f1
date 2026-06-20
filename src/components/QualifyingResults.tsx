@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from './Loader';
 
 interface QualifyingResult {
   position: string;
@@ -46,7 +47,7 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round }) 
   }, [season, round]);
 
   if (loading) {
-    return <div className="qr-loading">Analyzing qualifying telemetry...</div>;
+    return <Loader label="Analyzing qualifying telemetry" />;
   }
 
   if (error) {

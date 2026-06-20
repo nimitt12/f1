@@ -15,7 +15,7 @@ import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
 import RaceDetails from './components/RaceDetails';
-import AdminPortal from './admin/AdminPortal';
+import AdminGate from './admin/AdminGate';
 import type { Race } from './components/Calendar';
 
 const themes = [
@@ -169,7 +169,7 @@ const App: React.FC = () => {
 
   if (isAdminPortal) {
     return (
-      <AdminPortal />
+      <AdminGate />
     );
   }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Race } from './Calendar';
 import QualifyingResults from './QualifyingResults';
+import Loader from './Loader';
 
 interface RaceDetailsProps {
   race: Race | null;
@@ -239,7 +240,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
                 </div>
                 
                 {loadingResults ? (
-                  <div className="rd-loading">Loading official results...</div>
+                  <Loader label="Loading official results" />
                 ) : results && results.length > 0 ? (
                   <div className="rd-results-container">
                     <div className="rd-podium">

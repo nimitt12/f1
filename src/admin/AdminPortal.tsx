@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './admin.css';
 import CrudManager from './CrudManager';
+import Loader from '../components/Loader';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
@@ -618,7 +619,7 @@ const AdminPortal: React.FC = () => {
             </div>
 
             {loadingDrivers ? (
-              <div className="loading-container">Syncing local repository drivers list...</div>
+              <Loader label="Syncing local repository drivers list" accent="#e0c47d" />
             ) : (
               <div className="table-wrapper">
                 <table className="admin-table">
@@ -694,7 +695,7 @@ const AdminPortal: React.FC = () => {
             </div>
 
             {loadingConstructors ? (
-              <div className="loading-container">Querying constructors from database...</div>
+              <Loader label="Querying constructors from database" accent="#e0c47d" />
             ) : (
               <div className="table-wrapper">
                 <table className="admin-table">
