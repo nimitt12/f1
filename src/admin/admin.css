@@ -1073,3 +1073,323 @@
     width: 170px;
   }
 }
+
+/* ===================================================================
+   DATABASE CRUD MANAGER
+   =================================================================== */
+.crud-panel {
+  position: relative;
+}
+
+/* Table selector pills */
+.crud-table-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.crud-table-tab {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--admin-font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.crud-table-tab:hover {
+  color: #fff;
+  border-color: var(--admin-accent);
+}
+
+.crud-table-tab.active {
+  background: var(--admin-accent);
+  border-color: var(--admin-accent-hot);
+  color: #090909;
+  font-weight: 700;
+}
+
+.crud-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crud-row-count {
+  font-size: 11px;
+  font-family: var(--admin-mono);
+  color: var(--admin-muted);
+  white-space: nowrap;
+}
+
+/* Season / round filter dropdowns */
+.crud-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.crud-filter-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #15151a;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='%23b99a56' d='M2 4l4 4 4-4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e6e6e6;
+  font-family: var(--admin-mono);
+  font-size: 12px;
+  padding: 7px 28px 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+}
+
+.crud-filter-select:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.crud-filter-select:focus {
+  border-color: var(--admin-accent);
+}
+
+/* Dropdown option list (where the browser honors it) */
+.crud-filter-select option {
+  background-color: #15151a;
+  color: #e6e6e6;
+}
+
+/* Pagination controls */
+.crud-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 14px;
+  padding: 6px 0;
+}
+
+.crud-page-info {
+  font-size: 12px;
+  font-family: var(--admin-mono);
+  color: var(--admin-text);
+  white-space: nowrap;
+}
+
+.crud-page-range {
+  color: var(--admin-muted);
+}
+
+/* Inline error banner */
+.crud-error-banner {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(232, 0, 45, 0.4);
+  background: rgba(232, 0, 45, 0.1);
+  color: #ff8a9a;
+  font-size: 12px;
+  font-family: var(--admin-mono);
+}
+
+/* PK badge in headers */
+.crud-pk-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent-hot);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+}
+
+/* Truncate long cell values */
+.crud-cell-value {
+  display: inline-block;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Row actions */
+.crud-actions-col {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.crud-row-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.crud-icon-btn {
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--admin-font);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.crud-icon-btn.edit:hover {
+  border-color: var(--admin-accent);
+  color: var(--admin-accent-hot);
+}
+
+.crud-icon-btn.delete:hover {
+  border-color: rgba(232, 0, 45, 0.6);
+  color: #ff6275;
+  background: rgba(232, 0, 45, 0.08);
+}
+
+/* ---- Modal ---- */
+.crud-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(4, 4, 4, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.crud-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(16, 15, 13, 0.98);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.crud-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.crud-modal-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-family: var(--admin-display);
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.crud-modal-close {
+  background: none;
+  border: none;
+  color: var(--admin-muted);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.16s ease;
+}
+
+.crud-modal-close:hover {
+  color: #fff;
+}
+
+.crud-modal-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.crud-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crud-field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.crud-req {
+  color: #ff6275;
+  font-style: normal;
+}
+
+.crud-field-type {
+  margin-left: auto;
+  font-size: 9px;
+  font-family: var(--admin-mono);
+  color: var(--admin-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.crud-field-input {
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  padding: 0 14px;
+  font-family: var(--admin-font);
+  font-size: 13px;
+  transition: border-color 0.18s ease;
+}
+
+.crud-field-input:focus {
+  border-color: var(--admin-accent);
+  outline: none;
+}
+
+.crud-field-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.crud-modal-error {
+  margin: 0 22px;
+}
+
+.crud-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 640px) {
+  .crud-controls-right {
+    flex-wrap: wrap;
+  }
+  .crud-cell-value {
+    max-width: 140px;
+  }
+}

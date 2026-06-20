@@ -2,10 +2,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import './admin.css';
+import CrudManager from './CrudManager';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
-const navItems = ['Overview', 'Race Ops', 'Drivers DB', 'Constructors DB', 'Systems'];
+const navItems = ['Overview', 'Race Ops', 'Drivers DB', 'Constructors DB', 'Database', 'Systems'];
 
 interface ApiDriverRanking {
   id: string;
@@ -738,8 +739,13 @@ const AdminPortal: React.FC = () => {
           </section>
         )}
 
-        {/* TAB 4: SYSTEMS & DIAGNOSTICS */}
+        {/* TAB 4: DATABASE CRUD */}
         {activeTab === 4 && (
+          <CrudManager onLog={addLog} />
+        )}
+
+        {/* TAB 5: SYSTEMS & DIAGNOSTICS */}
+        {activeTab === 5 && (
           <section className="admin-diagnostics-systems">
             <div className="admin-grid">
               <article className="admin-panel diagnostics-control-panel">
