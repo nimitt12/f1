@@ -37,6 +37,35 @@
   --alphatauri: #2b4562;
   --cadillac: #939393;
   --rule-light: #d4cec4;
+
+  /* --- Premium foundation tokens --- */
+  /* Refined ink hierarchy (--ink-1 was referenced site-wide but never defined,
+     causing muted text to fall back to solid black and flatten the hierarchy) */
+  --ink-1: #544d40;
+  --ink-muted: #8a8172;
+
+  /* Layered elevation — soft, warm-tinted shadows read more premium than flat black */
+  --elev-1: 0 1px 2px rgba(28, 22, 12, 0.04), 0 2px 6px rgba(28, 22, 12, 0.05);
+  --elev-2: 0 2px 6px rgba(28, 22, 12, 0.05), 0 10px 24px rgba(28, 22, 12, 0.08);
+  --elev-3: 0 8px 18px rgba(28, 22, 12, 0.08), 0 24px 56px rgba(28, 22, 12, 0.12);
+  --elev-dark: 0 10px 30px rgba(0, 0, 0, 0.28), 0 30px 70px rgba(0, 0, 0, 0.22);
+
+  /* Corner system — restrained, consistent radii */
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+
+  /* Motion — a single refined easing curve for premium, settled transitions */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Type system — tokenized so the display face can change in one place. */
+  --font-display: "Orbitron", sans-serif;
+  --font-display-cond: "Orbitron", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-alt: "Syne", sans-serif;
 }
 
 body {
@@ -134,7 +163,7 @@ body.theme-cadillac {
 
 .dropdown-item {
   padding: 8px 16px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-style: normal;
   font-weight: 500;
@@ -358,7 +387,7 @@ html {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-weight: 400;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -413,7 +442,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 0 26px;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -740,7 +769,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 18px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.24em;
@@ -793,7 +822,7 @@ body {
 }
 
 .greeting-main {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-style: italic;
   font-size: 15px;
   color: var(--ink);
@@ -807,7 +836,7 @@ body {
 }
 
 .dateline {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -821,7 +850,7 @@ body {
 }
 
 .hero-title {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.03em;
@@ -870,7 +899,7 @@ body {
 }
 
 .hero-sub {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -990,7 +1019,7 @@ body {
 }
 
 .race-round {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -1007,7 +1036,7 @@ body {
 }
 
 .race-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(44px, 6vw, 60px);
   font-weight: 700;
   line-height: 0.92;
@@ -1017,7 +1046,7 @@ body {
 }
 
 .race-name-previous {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(44px, 6vw, 40px);
   font-weight: 700;
   line-height: 0.92;
@@ -1055,7 +1084,7 @@ body {
 }
 
 .winner-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.2em;
@@ -1089,7 +1118,7 @@ body {
   right: 20px;
   background: var(--gold);
   color: #000;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   font-weight: 800;
   width: 40px;
@@ -1103,7 +1132,7 @@ body {
 }
 
 .winner-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 24px;
   font-weight: 700;
   color: #fff;
@@ -1111,7 +1140,7 @@ body {
 }
 
 .winner-team {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
@@ -1133,7 +1162,7 @@ body {
 }
 
 .ws-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
@@ -1141,7 +1170,7 @@ body {
 }
 
 .ws-val {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 600;
   color: var(--gold);
@@ -1167,7 +1196,7 @@ body {
   color: #000;
   padding: 2px 8px;
   border-radius: 4px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
 }
@@ -1197,7 +1226,7 @@ body {
 }
 
 .pm-pos {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
   color: var(--ink-3);
@@ -1216,14 +1245,14 @@ body {
 }
 
 .pm-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 600;
   color: #fff;
 }
 
 .pm-team {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
@@ -1232,14 +1261,14 @@ body {
 
 .pm-time {
   grid-column: 2;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 11px;
   color: var(--ink-3);
   margin-top: 4px;
 }
 
 .race-circuit {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   color: rgba(255, 255, 255, 0.68);
   margin-bottom: 6px;
@@ -1265,7 +1294,7 @@ body {
 }
 
 .race-stat-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1274,7 +1303,7 @@ body {
 }
 
 .race-stat-val {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 500;
   color: #fff;
@@ -1288,7 +1317,7 @@ body {
 }
 
 .countdown-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
@@ -1322,7 +1351,7 @@ body {
 }
 
 .cd-num {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(36px, 4.2vw, 48px);
   font-weight: 700;
   color: #fff;
@@ -1345,7 +1374,7 @@ body {
 }
 
 .cd-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -1368,7 +1397,7 @@ body {
 }
 
 .cal-title {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 500;
   letter-spacing: -0.015em;
@@ -1382,7 +1411,7 @@ body {
 }
 
 .cal-meta {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1518,7 +1547,7 @@ body {
 }
 
 .cal-rnum {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.14em;
   color: var(--ink-3);
@@ -1553,7 +1582,7 @@ body {
 }
 
 .cal-country {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--ink-2);
   letter-spacing: 0.14em;
@@ -1563,7 +1592,7 @@ body {
 }
 
 .cal-flag-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 500;
   color: var(--ink);
@@ -1573,7 +1602,7 @@ body {
 }
 
 .cal-date {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--ink-2);
   letter-spacing: 0.04em;
@@ -1582,7 +1611,7 @@ body {
 }
 
 .cal-winner {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--gold);
   margin-top: 6px;
@@ -1689,7 +1718,7 @@ body {
 }
 
 .col-num {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   color: var(--ink-3);
   letter-spacing: 0.18em;
@@ -1698,7 +1727,7 @@ body {
 }
 
 .col-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -1713,7 +1742,7 @@ body {
 }
 
 .col-sub {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1761,7 +1790,7 @@ body {
 }
 
 .driver-pos {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 18px;
   font-weight: 700;
   color: var(--paper);
@@ -1780,7 +1809,7 @@ body {
 }
 
 .driver-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 700;
   color: #fff;
@@ -1792,7 +1821,7 @@ body {
 }
 
 .driver-code {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   color: #fff;
@@ -1807,7 +1836,7 @@ body {
   gap: 10px;
   margin-top: 6px;
   color: rgba(255, 255, 255, 0.4);
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1843,7 +1872,7 @@ body {
 
 .driver-team .gap {
   color: var(--ink-2);
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
 }
@@ -1853,7 +1882,7 @@ body {
 }
 
 .driver-pts {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 700;
   color: #fff;
@@ -1865,7 +1894,7 @@ body {
 }
 
 .driver-pts-sub {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--paper);
   letter-spacing: 0.1em;
@@ -1913,7 +1942,7 @@ body {
 }
 
 .con-pos {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 18px;
   font-weight: 700;
   color: var(--paper);
@@ -1921,7 +1950,7 @@ body {
 }
 
 .con-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 700;
   color: #fff;
@@ -1936,14 +1965,14 @@ body {
   font-size: 12px;
   color: var(--paper);
   margin-top: 4px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   text-transform: uppercase;
 }
 
 .con-pts {
   flex: 1;
   text-align: right;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 700;
   color: #fff;
@@ -1975,7 +2004,7 @@ body {
 }
 
 .podium-head {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 15px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -2043,7 +2072,7 @@ body {
 }
 
 .pod-badge {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 700;
   text-align: center;
@@ -2066,7 +2095,7 @@ body {
 }
 
 .pod-driver-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 500;
   color: #fff; /* Force white for visibility */
@@ -2081,7 +2110,7 @@ body {
 }
 
 .pod-time {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 20px;
   color: rgba(255, 255, 255, 0.8); /* Light gray */
   font-weight: 500;
@@ -2140,7 +2169,7 @@ body {
 }
 
 .news-kicker {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -2159,7 +2188,7 @@ body {
 }
 
 .news-date {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.4);
@@ -2167,7 +2196,7 @@ body {
 }
 
 .news-num {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   color: rgba(255, 255, 255, 0.15);
   font-weight: 800;
@@ -2175,7 +2204,7 @@ body {
 }
 
 .news-headline {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 20px;
   font-weight: 600;
   line-height: 1.35;
@@ -2259,7 +2288,7 @@ body {
 
 .news-modal-title {
   padding: 16px 40px;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 700;
   color: var(--ink);
@@ -2302,7 +2331,7 @@ body {
   color: #fff;
   border: none;
   padding: 16px 32px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -2385,7 +2414,7 @@ body {
 }
 
 .stat-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -2393,7 +2422,7 @@ body {
 }
 
 .stat-big {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(28px, 3vw, 38px);
   font-weight: 700;
   color: #fff;
@@ -2410,7 +2439,7 @@ body {
 }
 
 .stat-sub {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 12px;
   color: rgba(255, 255, 255, 0.58);
   font-weight: 400;
@@ -2436,7 +2465,7 @@ body {
 }
 
 .f-col .f-logo {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -2456,7 +2485,7 @@ body {
 }
 
 .f-h {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -2476,7 +2505,7 @@ body {
 }
 
 .f-col ul li a {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 500;
   color: var(--ink);
@@ -2497,7 +2526,7 @@ body {
 }
 
 .source-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--ink-3);
   text-transform: uppercase;
@@ -2506,7 +2535,7 @@ body {
 }
 
 .source-val {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 600;
   color: var(--ink);
@@ -2528,7 +2557,7 @@ body {
 }
 
 .f-copyright {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   color: var(--ink-3);
   letter-spacing: 0.08em;
@@ -2541,7 +2570,7 @@ body {
 }
 
 .f-note {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   color: var(--ink-3);
   letter-spacing: 0.18em;
@@ -2561,7 +2590,7 @@ body {
 }
 
 .f-brand {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-style: italic;
   color: var(--ink-2);
@@ -2619,7 +2648,7 @@ body {
 }
 
 .ts-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   color: #fff;
@@ -2661,7 +2690,7 @@ body {
 .ts-item {
   padding: 10px 14px;
   border-radius: 8px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: rgba(255, 255, 255, 0.7);
   display: flex;
@@ -2705,7 +2734,7 @@ body {
 }
 
 .sp-percent {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 50px;
   font-weight: 400;
   line-height: 1;
@@ -2723,7 +2752,7 @@ body {
 }
 
 .sp-count {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 30px;
   color: #fff;
   font-weight: 300;
@@ -2735,7 +2764,7 @@ body {
 }
 
 .sp-label {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   color: #fff;
   font-weight: 400;
@@ -2786,7 +2815,7 @@ body {
 }
 
 .battle-eyebrow {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.3em;
@@ -2797,7 +2826,7 @@ body {
 }
 
 .battle-title {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 48px;
   font-weight: 800;
   color: var(--ink);
@@ -2832,7 +2861,7 @@ body {
   color: rgba(0, 0, 0, 0.4);
   padding: 10px 20px;
   border-radius: 10px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -2854,7 +2883,7 @@ body {
 }
 
 .loading-clash {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.3em;
   color: var(--racing);
@@ -2950,7 +2979,7 @@ body {
 }
 
 .modal-eyebrow {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.3em;
   color: var(--racing);
@@ -2960,7 +2989,7 @@ body {
 }
 
 .modal-title {
-  font-family: "Syne", sans-serif;
+  font-family: var(--font-alt);
   font-size: 32px;
   font-weight: 800;
   color: #fff;
@@ -2974,7 +3003,7 @@ body {
 }
 
 .modal-text {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.6);
@@ -3021,7 +3050,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Syne", sans-serif;
+  font-family: var(--font-alt);
   font-size: 64px;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.1);
@@ -3058,7 +3087,7 @@ body {
 .battle-bg-name {
   position: absolute;
   top: 20px;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 200px;
   font-weight: 900;
   opacity: 25%;
@@ -3105,7 +3134,7 @@ body {
 }
 
 .battle-pos {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 110px;
   font-weight: 800;
   color: var(--team-color);
@@ -3115,7 +3144,7 @@ body {
 }
 
 .battle-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 700;
   color: #fff;
@@ -3125,7 +3154,7 @@ body {
 }
 
 .battle-team {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   color: var(--ink-1);
@@ -3153,7 +3182,7 @@ body {
   height: 50px;
   background: var(--racing);
   color: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-weight: 900;
   font-size: 16px;
   border-radius: 50%;
@@ -3190,7 +3219,7 @@ body {
 }
 
 .stat-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 18px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
@@ -3200,7 +3229,7 @@ body {
 }
 
 .stat-val {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 18px;
   font-weight: 700;
   color: #fff;
@@ -3288,7 +3317,7 @@ body {
   color: #fff;
   padding: 10px 20px;
   border-radius: 100px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -3305,7 +3334,7 @@ body {
 }
 
 .nav-brand {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.4em;
   opacity: 0.4;
@@ -3339,7 +3368,7 @@ body {
   right: 0;
   background: var(--racing);
   color: #fff;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 800;
   padding: 4px 10px;
@@ -3347,7 +3376,7 @@ body {
 }
 
 .profile-hero-name {
-  font-family: "Syne", "Inter", sans-serif;
+  font-family: var(--font-alt), var(--font-body);
   font-size: 72px;
   font-weight: 800;
   letter-spacing: -0.04em;
@@ -3361,7 +3390,7 @@ body {
   align-items: center;
   gap: 16px;
   margin-top: 12px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.5);
@@ -3412,7 +3441,7 @@ body {
 }
 
 .section-num {
-  font-family: "Syne", sans-serif;
+  font-family: var(--font-alt);
   font-size: 32px;
   font-weight: 800;
   color: var(--racing);
@@ -3421,7 +3450,7 @@ body {
 }
 
 .section-title {
-  font-family: "Syne", sans-serif;
+  font-family: var(--font-alt);
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 8px;
@@ -3429,7 +3458,7 @@ body {
 }
 
 .section-desc {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   color: rgba(255, 255, 255, 0.4);
   max-width: 500px;
@@ -3481,14 +3510,14 @@ body {
 }
 
 .team-short {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .team-full {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 11px;
   opacity: 0.4;
   text-transform: uppercase;
@@ -3500,7 +3529,7 @@ body {
   position: absolute;
   top: 12px;
   right: 12px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 800;
   color: var(--team-color);
@@ -3540,14 +3569,14 @@ body {
 }
 
 .driver-select-code {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   opacity: 0.5;
   margin-bottom: 4px;
 }
 
 .driver-select-name {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
 }
@@ -3578,7 +3607,7 @@ body {
 }
 
 .summary-title {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.3em;
   font-weight: 800;
@@ -3591,7 +3620,7 @@ body {
 }
 
 .summary-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   opacity: 0.4;
   margin-bottom: 6px;
@@ -3599,7 +3628,7 @@ body {
 }
 
 .summary-value {
-  font-family: "Syne", sans-serif;
+  font-family: var(--font-alt);
   font-size: 20px;
   font-weight: 800;
   text-transform: uppercase;
@@ -3612,7 +3641,7 @@ body {
   border: none;
   padding: 24px;
   border-radius: 16px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -3639,7 +3668,7 @@ body {
 }
 
 .info-title {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 800;
   margin-bottom: 12px;
@@ -3647,7 +3676,7 @@ body {
 }
 
 .info-text {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.4);
@@ -3721,7 +3750,7 @@ body {
 }
 
 .boot-title {
-  font-family: "Syne", sans-serif;
+  font-family: var(--font-alt);
   font-size: 64px;
   color: #fff;
   margin-bottom: 40px;
@@ -3771,7 +3800,7 @@ body {
 }
 
 .boot-status {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.3em;
   color: rgba(255, 255, 255, 0.4);
@@ -3868,7 +3897,7 @@ body {
   cursor: pointer;
   line-height: 1;
   transition: all 0.3s ease;
-  font-family: "Syne", sans-serif;
+  font-family: var(--font-alt);
   font-weight: 300;
 }
 
@@ -3885,7 +3914,7 @@ body {
 }
 
 .menu-nav-links a {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 700;
   color: #fff;
@@ -3921,7 +3950,7 @@ body {
   padding: 16px 20px;
   border-radius: 12px;
   color: #fff;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -3954,7 +3983,7 @@ body {
   border: 1px solid rgba(10, 10, 10, 0.2);
   padding: 6px 16px;
   border-radius: 4px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -4029,7 +4058,7 @@ body {
   color: var(--carbon);
   padding: 10px 24px;
   border-radius: 40px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -4074,7 +4103,7 @@ body {
 }
 
 .rd-hero-tag {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.4em;
@@ -4086,7 +4115,7 @@ body {
 }
 
 .rd-hero-title {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(3rem, 6vw, 6.5rem);
   font-weight: 900;
   font-style: italic;
@@ -4114,7 +4143,7 @@ body {
 }
 
 .rd-meta-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 800;
   color: var(--ink-3);
@@ -4123,7 +4152,7 @@ body {
 }
 
 .rd-meta-value {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 20px;
   font-weight: 700;
   color: var(--carbon);
@@ -4211,7 +4240,7 @@ body {
 }
 
 .rd-section-title {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 800;
   font-style: italic;
@@ -4311,7 +4340,7 @@ body {
 }
 
 .rd-session-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 800;
   font-style: italic;
@@ -4332,7 +4361,7 @@ body {
 }
 
 .rd-time-val {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 20px;
   font-weight: 800;
   color: var(--carbon);
@@ -4340,7 +4369,7 @@ body {
 }
 
 .rd-time-zone {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   color: var(--ink-3);
@@ -4349,7 +4378,7 @@ body {
 }
 
 .rd-date-row {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
   color: var(--ink-3);
@@ -4389,7 +4418,7 @@ body {
   color: var(--racing-hot-ticker);
   padding: 6px 16px;
   border-radius: 30px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 800;
   display: flex;
@@ -4498,7 +4527,7 @@ body {
 }
 
 .rd-podium-pos {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 120px;
   font-weight: 950;
   font-style: italic;
@@ -4520,7 +4549,7 @@ body {
 }
 
 .rd-podium-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 20px;
   font-weight: 400;
   color: var(--carbon);
@@ -4534,7 +4563,7 @@ body {
 }
 
 .rd-podium-team {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 800;
   color: var(--ink-3);
@@ -4544,7 +4573,7 @@ body {
 }
 
 .rd-podium-pts {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 42px;
   font-weight: 900;
   color: var(--carbon);
@@ -4621,7 +4650,7 @@ body {
 }
 
 .rd-row-pos {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 20px;
   font-weight: 900;
   color: var(--racing);
@@ -4682,7 +4711,7 @@ body {
   display: flex;
   align-items: center;
   gap: 2px;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   color: var(--racing);
   font-weight: 900;
   font-size: 24px;
@@ -4727,7 +4756,7 @@ body {
 }
 
 .rd-slot-name {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 13px;
   color: var(--carbon);
 }
@@ -4738,7 +4767,7 @@ body {
 }
 
 .rd-slot-team {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   color: var(--ink-3);
   text-transform: uppercase;
@@ -4746,7 +4775,7 @@ body {
 }
 
 .rd-slot-pts {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 900;
   color: var(--racing);
@@ -4764,7 +4793,7 @@ body {
   color: var(--racing);
   padding: 12px 24px;
   border-radius: 12px;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -4802,7 +4831,7 @@ body {
 .rd-tab {
   background: transparent;
   border: none;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
   color: var(--ink-2);
@@ -4836,7 +4865,7 @@ body {
 }
 
 .qr-title {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 900;
   color: var(--carbon);
@@ -4850,7 +4879,7 @@ body {
 }
 
 .qr-subtitle {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   color: var(--ink-3);
   margin-top: 4px;
@@ -4906,7 +4935,7 @@ body {
 .qr-hero-card.theme-astonmartin::before { background: var(--aston); }
 
 .qr-pos-badge {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 48px;
   font-weight: 900;
   color: rgba(0, 0, 0, 0.05);
@@ -4921,7 +4950,7 @@ body {
 
 .qr-driver-name {
   display: block;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
   color: var(--carbon);
 }
@@ -4932,7 +4961,7 @@ body {
 }
 
 .qr-team-name {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   color: var(--ink-3);
   text-transform: uppercase;
@@ -4957,7 +4986,7 @@ body {
 }
 
 .qr-time-val {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   font-weight: 700;
   color: var(--carbon);
@@ -4979,7 +5008,7 @@ body {
   text-align: left;
   padding: 20px 24px;
   background: rgba(0, 0, 0, 0.02);
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 800;
   color: var(--ink-2);
@@ -5005,7 +5034,7 @@ body {
   background: var(--carbon);
   color: #fff;
   border-radius: 6px;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 800;
 }
@@ -5013,7 +5042,7 @@ body {
 .qr-td-driver { padding: 20px 24px; }
 .qr-driver-cell { display: flex; align-items: center; gap: 12px; }
 .qr-driver-code {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 800;
   color: var(--racing);
@@ -5023,7 +5052,7 @@ body {
 }
 
 .qr-driver-fullname {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
   color: var(--carbon);
@@ -5031,7 +5060,7 @@ body {
 
 .qr-td-team {
   padding: 20px 24px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--ink-3);
   text-transform: uppercase;
@@ -5039,7 +5068,7 @@ body {
 
 .qr-td-time {
   padding: 20px 24px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   color: var(--carbon);
 }
@@ -5052,7 +5081,7 @@ body {
 .qr-loading {
   padding: 100px 0;
   text-align: center;
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   color: var(--ink-3);
   letter-spacing: 0.2em;
@@ -5064,7 +5093,7 @@ body {
   padding: 40px;
   text-align: center;
   color: var(--ferrari);
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   background: rgba(220, 0, 0, 0.05);
   border-radius: 12px;
   border: 1px solid rgba(220, 0, 0, 0.2);
@@ -5150,7 +5179,7 @@ body {
 }
 
 .ra-card-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 800;
   color: var(--ink-3);
@@ -5159,7 +5188,7 @@ body {
 }
 
 .ra-card-value {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 900;
   color: #fff;
@@ -5167,7 +5196,7 @@ body {
 }
 
 .ra-card-sub {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 11px;
   color: var(--ink-2);
   font-weight: 600;
@@ -5188,7 +5217,7 @@ body {
 }
 
 .ra-chart-title {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 800;
   color: #fff;
@@ -5222,7 +5251,7 @@ body {
 .ra-bar-info {
   display: flex;
   justify-content: space-between;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   color: var(--ink-2);
@@ -5281,7 +5310,7 @@ body {
 }
 
 .ra-gauge-val {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 900;
   color: #fff;
@@ -5289,7 +5318,7 @@ body {
 }
 
 .ra-gauge-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 800;
   color: var(--ink-3);
@@ -5329,7 +5358,7 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 10px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-weight: 700;
   color: var(--ink-3);
   text-transform: uppercase;
@@ -5395,7 +5424,7 @@ body {
 
 .ra-axis-label {
   font-size: 11px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   fill: var(--ink-2);
   font-weight: 800;
   text-transform: uppercase;
@@ -5405,7 +5434,7 @@ body {
   position: absolute;
   top: 10px;
   left: 10px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 8px;
   color: var(--racing);
   opacity: 0.4;
@@ -5454,7 +5483,7 @@ body {
   border: 1px solid var(--racing);
   padding: 8px 12px;
   border-radius: 6px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   color: #fff;
   pointer-events: none;
@@ -5492,4 +5521,219 @@ body {
     grid-template-columns: 1fr;
     grid-column: span 1;
   }
+}
+
+/* ============================================================
+   PREMIUM REFINEMENT LAYER
+   Site-wide polish: typographic rendering, elevation, focus
+   states, scrollbar, selection, and Hero refinements. Loaded
+   last so it cleanly refines the base without rewriting it.
+   ============================================================ */
+
+/* --- Typographic rendering --- */
+body {
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+/* Data/number type reads cleaner with tabular, lining figures */
+.tick,
+.dateline,
+.hero-sub,
+[class*="-points"],
+[class*="-position"],
+[class*="countdown"],
+[class*="timer"],
+.brand-eyebrow {
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* --- Refined text selection --- */
+::selection {
+  background: var(--racing);
+  color: #fff;
+}
+
+/* --- Premium scrollbar --- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-muted) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--ink-muted) 55%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--racing);
+  background-clip: content-box;
+}
+
+/* --- Accessible, on-brand focus ring --- */
+:focus-visible {
+  outline: 2px solid var(--racing);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+/* Don't double-ring native controls that manage their own focus visuals */
+.theme-switcher:focus-visible,
+.live-badge:focus-visible {
+  outline-offset: 3px;
+}
+
+/* --- Hero refinements --- */
+/* Badge: a hair of radius + layered shadow + tighter optical kerning */
+.live-badge {
+  border-radius: var(--r-xs);
+  box-shadow: var(--elev-1);
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+/* Avatar: premium double-ring and soft lift */
+.user-avatar {
+  object-fit: cover;
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 3px var(--racing),
+    var(--elev-1);
+  border: none;
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+}
+.greeting-box:hover .user-avatar {
+  transform: scale(1.05);
+}
+
+/* Greeting hierarchy: lighten the dateline so the name leads */
+.greeting-main {
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+.greeting-text .dateline {
+  color: var(--ink-muted);
+  margin-top: 1px;
+}
+
+/* Title underline: gradient gives the accent rule depth instead of a flat bar */
+.title-underline {
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--racing) 0%,
+    var(--racing-hot) 60%,
+    transparent 100%
+  );
+  border-radius: 999px;
+}
+
+/* Hero surface: a touch more lift so it reads as an elevated panel */
+.hero {
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+
+/* --- Interactive lift for card-like surfaces --- */
+.race-block,
+.menu-action-btn {
+  transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
+}
+
+/* --- NextRace / countdown refinements --- */
+/* The race panel reads as a true elevated card with a refined edge */
+.race-block {
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  box-shadow: var(--elev-dark);
+}
+.race-block.upcoming {
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+/* Round badge: pill with refined accent fill instead of a hard red box */
+.race-round {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--racing) 16%, transparent);
+  border-color: color-mix(in srgb, var(--racing) 55%, transparent);
+}
+
+/* Countdown cells: dimensional, glassy tiles with a top accent + soft depth */
+.cd-cell {
+  border-radius: var(--r-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 60%),
+    var(--carbon-3);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s var(--ease-out), border-color 0.4s var(--ease-out);
+}
+.cd-cell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14%;
+  right: 14%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--racing), transparent);
+  opacity: 0.7;
+}
+.cd-cell:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--racing) 45%, transparent);
+}
+.cd-num {
+  /* subtle accent glow gives the digits presence without changing color */
+  text-shadow: 0 0 24px color-mix(in srgb, var(--racing) 30%, transparent);
+}
+
+/* --- Standings panels --- */
+/* Refined elevation + a subtle top sheen and theme-accent hairline,
+   so the black columns read as crafted panels rather than flat slabs */
+.col {
+  border-radius: 20px;
+  box-shadow: var(--elev-3), 0 40px 90px rgba(0, 0, 0, 0.38);
+  border-color: rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+.col::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--racing), var(--racing-hot), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* --- Stats ribbon --- */
+.stats-grid {
+  border-radius: var(--r-lg);
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--elev-2);
+  overflow: hidden;
+}
+.stat::after {
+  height: 2px;
+  background: linear-gradient(90deg, var(--racing), var(--racing-hot));
+}
+
+/* --- News intel --- */
+.news-item {
+  transition: transform 0.4s var(--ease-out), background 0.3s var(--ease);
+}
+.news-item:hover {
+  transform: translateX(3px);
 }

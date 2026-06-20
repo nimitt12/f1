@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pitwall-v1';
+const CACHE_NAME = 'pitwall-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

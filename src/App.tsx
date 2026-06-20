@@ -15,6 +15,7 @@ import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
 import RaceDetails from './components/RaceDetails';
+import AdminPortal from './admin/AdminPortal';
 import type { Race } from './components/Calendar';
 
 const themes = [
@@ -95,6 +96,7 @@ const ThemeSwitcher: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  const isAdminPortal = window.location.pathname === '/admin-portal';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     const savedUser = localStorage.getItem('f1_user');
     if (!savedUser) return null;
@@ -165,6 +167,12 @@ const App: React.FC = () => {
     }
   }, [user]);
 
+  if (isAdminPortal) {
+    return (
+      <AdminPortal />
+    );
+  }
+
   return (
     <>
       {showBoot && <BootLoader onComplete={() => setShowBoot(false)} />}
@@ -192,55 +200,57 @@ const App: React.FC = () => {
         </div>
       </div>
       
-      {view === 'dashboard' ? (
-        <>
-          <ThemeSwitcher />
-          <Ticker />
-          <Hero 
+      <div className="public-site-shell">
+        {view === 'dashboard' ? (
+          <>
+            <ThemeSwitcher />
+            <Ticker />
+            <Hero 
+              user={user} 
+              setUser={setUser} 
+              onOpenSettings={() => setView('account')} 
+            />
+            <NextRace onRaceSelect={(race) => {
+              setSelectedRace(race);
+              setView('race_details');
+              window.scrollTo(0, 0);
+            }} />
+            <Calendar onRaceSelect={(race) => {
+              setSelectedRace(race);
+              setView('race_details');
+              window.scrollTo(0, 0);
+            }} />
+            <DriverBattle user={user} setUser={setUser} />
+
+            <section className="main-section">
+              <div className="main-grid">
+                <DriversStandings />
+                <ConstructorsStandings />
+              </div>
+            </section>
+
+            <section id="paddock" className="intel-section">
+              <NewsIntel />
+            </section>
+
+            <StatsRibbon />
+            <Footer />
+          </>
+        ) : view === 'account' ? (
+          <AccountPage 
             user={user} 
-            setUser={setUser} 
-            onOpenSettings={() => setView('account')} 
+            onClose={() => setView('dashboard')} 
           />
-          <NextRace onRaceSelect={(race) => {
-            setSelectedRace(race);
-            setView('race_details');
-            window.scrollTo(0, 0);
-          }} />
-          <Calendar onRaceSelect={(race) => {
-            setSelectedRace(race);
-            setView('race_details');
-            window.scrollTo(0, 0);
-          }} />
-          <DriverBattle user={user} setUser={setUser} />
-
-          <section className="main-section">
-            <div className="main-grid">
-              <DriversStandings />
-              <ConstructorsStandings />
-            </div>
-          </section>
-
-          <section id="paddock" className="intel-section">
-            <NewsIntel />
-          </section>
-
-          <StatsRibbon />
-          <Footer />
-        </>
-      ) : view === 'account' ? (
-        <AccountPage 
-          user={user} 
-          onClose={() => setView('dashboard')} 
-        />
-      ) : (
-        <RaceDetails 
-          race={selectedRace} 
-          onBack={() => {
-            setView('dashboard');
-            setSelectedRace(null);
-          }} 
-        />
-      )}
+        ) : (
+          <RaceDetails 
+            race={selectedRace} 
+            onBack={() => {
+              setView('dashboard');
+              setSelectedRace(null);
+            }} 
+          />
+        )}
+      </div>
     </>
   );
 };
