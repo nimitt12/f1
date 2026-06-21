@@ -107,6 +107,17 @@ const Flag: React.FC<{ nationality: string }> = ({ nationality }) => {
   );
 };
 
+// Relative time formatter for "last synced" labels
+const timeAgo = (iso: string | null) => {
+  if (!iso) return 'Never synced';
+  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+};
+
 const AdminPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [apiHealth, setApiHealth] = useState<'Checking...' | 'HEALTHY' | 'OFFLINE'>('Checking...');
@@ -159,16 +170,7 @@ const AdminPortal: React.FC = () => {
     setConsoleLogs(prev => [...prev, `[${timestamp}] ${msg}`]);
   };
 
-  // Relative time formatter for "last synced" labels
-  const timeAgo = (iso: string | null) => {
-    if (!iso) return 'Never synced';
-    const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.floor(hrs / 24)}d ago`;
-  };
+
 
   // Run health check and latency
   const checkHealth = async () => {
@@ -182,7 +184,7 @@ const AdminPortal: React.FC = () => {
       } else {
         setApiHealth('OFFLINE');
       }
-    } catch (e) {
+    } catch {
       setApiHealth('OFFLINE');
       setLatency(Math.round(performance.now() - start));
     }
@@ -194,7 +196,7 @@ const AdminPortal: React.FC = () => {
       } else {
         setDbStatus('ERROR');
       }
-    } catch (e) {
+    } catch {
       setDbStatus('ERROR');
     }
   };
@@ -210,7 +212,7 @@ const AdminPortal: React.FC = () => {
       } else {
         addLog('Error: Failed to fetch driver database standings.');
       }
-    } catch (e) {
+    } catch {
       addLog('Error: Network failure loading driver database.');
     } finally {
       setLoadingDrivers(false);
@@ -228,7 +230,7 @@ const AdminPortal: React.FC = () => {
       } else {
         addLog('Error: Failed to fetch constructor standings.');
       }
-    } catch (e) {
+    } catch {
       addLog('Error: Network failure loading constructors standings.');
     } finally {
       setLoadingConstructors(false);
@@ -255,8 +257,8 @@ const AdminPortal: React.FC = () => {
       } else {
         addLog(`FAILED: Sync ${type.toUpperCase()} returned error: ${data.error || 'Unknown response error'}`);
       }
-    } catch (e: any) {
-      addLog(`FAILED: Sync request encountered connection error: ${e.message}`);
+    } catch (e: unknown) {
+      addLog(`FAILED: Sync request encountered connection error: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setIsSyncing(prev => ({ ...prev, [type]: false }));
     }
@@ -323,8 +325,8 @@ const AdminPortal: React.FC = () => {
       }
 
       logLine('SYSTEM DIAGNOSTICS: Completed. All routes operational.');
-    } catch (e: any) {
-      logLine(`CRITICAL ERROR DURING TESTING: ${e.message}`);
+    } catch (e: unknown) {
+      logLine(`CRITICAL ERROR DURING TESTING: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setRunningDiagnostics(false);
     }
@@ -426,31 +428,41 @@ const AdminPortal: React.FC = () => {
         {/* TAB 0: OVERVIEW */}
         {activeTab === 0 && (
           <>
-            <section className="admin-hero-panel">
-              <div className="admin-hero-copy">
+            <section className="admin-dashboard-hero">
+              <div className="admin-hero-overview">
                 <p className="admin-kicker">Command Center</p>
-                <h2>Telemetry, standings syncing, and global F1 paddock database administration.</h2>
+                <h2>System Overview</h2>
                 <div className="admin-hero-meta">
                   <span>Season: 2026</span>
-                  <span>Database: pgSQL Live</span>
-                  <span>Credentials: Super Admin</span>
+                  <span>pgSQL Live</span>
+                  <span>Super Admin</span>
                 </div>
               </div>
-              <div className="admin-hero-stats">
-                <div className="hero-stat">
-                  <span className="hero-stat-label">API Latency</span>
-                  <strong>{latency ?? '--'}<em>ms</em></strong>
-                </div>
-                <div className="hero-stat">
-                  <span className="hero-stat-label">Database</span>
-                  <strong className={dbStatus === 'CONNECTED' ? 'ok' : 'bad'}>
-                    {dbStatus === 'CONNECTED' ? 'Live' : 'Down'}
-                  </strong>
-                </div>
-                <div className="hero-stat">
-                  <span className="hero-stat-label">Records</span>
-                  <strong>{drivers.length + constructors.length}</strong>
-                </div>
+              
+              <div className="hero-stat-card">
+                 <div className="stat-icon">⚡</div>
+                 <div className="stat-content">
+                    <span className="hero-stat-label">API Latency</span>
+                    <strong>{latency ?? '--'}<em>ms</em></strong>
+                 </div>
+              </div>
+              
+              <div className="hero-stat-card">
+                 <div className="stat-icon">🗄️</div>
+                 <div className="stat-content">
+                    <span className="hero-stat-label">Database</span>
+                    <strong className={dbStatus === 'CONNECTED' ? 'ok' : 'bad'}>
+                      {dbStatus === 'CONNECTED' ? 'Live' : 'Down'}
+                    </strong>
+                 </div>
+              </div>
+              
+              <div className="hero-stat-card">
+                 <div className="stat-icon">📊</div>
+                 <div className="stat-content">
+                    <span className="hero-stat-label">Records</span>
+                    <strong>{drivers.length + constructors.length}</strong>
+                 </div>
               </div>
             </section>
 
