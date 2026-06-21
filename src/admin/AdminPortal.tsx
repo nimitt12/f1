@@ -398,10 +398,15 @@ const AdminPortal: React.FC = () => {
                 setSearchQuery(''); // Reset search query on tab change
               }}
             >
-              <span>{String(index + 1).padStart(2, '0')}</span>
               {item}
             </button>
           ))}
+          
+          <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.1)', margin: '12px 0' }} />
+          
+          <a href="/" className="admin-nav-item" style={{ textDecoration: 'none' }}>
+            Back to Main Site
+          </a>
         </nav>
 
         <div className="admin-sidebar-footer">
