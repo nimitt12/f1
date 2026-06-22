@@ -7206,6 +7206,43 @@ body {
   }
 }
 
+/* ============================================================
+   Scroll parallax + reveal (Parallax.tsx).
+   Outer .prlx carries the continuous drift; inner .prlx-inner
+   carries the one-shot entrance reveal so the two transforms
+   never fight each other.
+   ============================================================ */
+.prlx {
+  transform: translate3d(0, var(--py, 0px), 0);
+  will-change: transform;
+}
+
+.prlx-inner {
+  opacity: 0;
+  transform: translate3d(0, 52px, 0) scale(0.985);
+  transition:
+    opacity 0.9s var(--ease-out),
+    transform 1.05s var(--ease-out);
+  transition-delay: var(--prlx-delay, 0ms);
+}
+
+.prlx.prlx-in .prlx-inner {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prlx {
+    transform: none;
+    will-change: auto;
+  }
+  .prlx-inner {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* --- Done cards: gently de-emphasized --- */
 .cal-round.done {
   opacity: 0.92;

@@ -5,6 +5,7 @@ import Ticker from './components/Ticker';
 import Hero from './components/Hero';
 import RaceLive from './components/RaceLive';
 import NextRace from './components/NextRace';
+import Parallax from './components/Parallax';
 import { useLiveRace } from './hooks/useLiveRace';
 import Calendar from './components/Calendar';
 import DriversStandings from './components/DriversStandings';
@@ -241,42 +242,54 @@ const App: React.FC = () => {
               onOpenSettings={() => setView('account')}
             />
             {/* On race day, the live takeover replaces the next/previous race header. */}
-            {liveRace ? (
-              <RaceLive
-                race={liveRace}
-                races={races}
-                onRaceSelect={(race) => {
+            <Parallax speed={0.05}>
+              {liveRace ? (
+                <RaceLive
+                  race={liveRace}
+                  races={races}
+                  onRaceSelect={(race) => {
+                    setSelectedRace(race);
+                    setView('race_details');
+                    window.scrollTo(0, 0);
+                  }}
+                />
+              ) : (
+                <NextRace onRaceSelect={(race) => {
                   setSelectedRace(race);
                   setView('race_details');
                   window.scrollTo(0, 0);
-                }}
-              />
-            ) : (
-              <NextRace onRaceSelect={(race) => {
+                }} />
+              )}
+            </Parallax>
+            <Parallax speed={0.035} delay={60}>
+              <Calendar onRaceSelect={(race) => {
                 setSelectedRace(race);
                 setView('race_details');
                 window.scrollTo(0, 0);
               }} />
-            )}
-            <Calendar onRaceSelect={(race) => {
-              setSelectedRace(race);
-              setView('race_details');
-              window.scrollTo(0, 0);
-            }} />
-            <DriverBattle user={user} setUser={setUser} />
+            </Parallax>
+            <Parallax speed={0.05}>
+              <DriverBattle user={user} setUser={setUser} />
+            </Parallax>
 
-            <section className="main-section">
-              <div className="main-grid">
-                <DriversStandings />
-                <ConstructorsStandings />
-              </div>
-            </section>
+            <Parallax speed={0.03} delay={80}>
+              <section className="main-section">
+                <div className="main-grid">
+                  <DriversStandings />
+                  <ConstructorsStandings />
+                </div>
+              </section>
+            </Parallax>
 
-            <section id="paddock" className="intel-section">
-              <NewsIntel />
-            </section>
+            <Parallax speed={0.045}>
+              <section id="paddock" className="intel-section">
+                <NewsIntel />
+              </section>
+            </Parallax>
 
-            <StatsRibbon />
+            <Parallax speed={0.04}>
+              <StatsRibbon />
+            </Parallax>
             <Footer />
           </>
         ) : view === 'account' ? (
