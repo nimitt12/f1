@@ -16,7 +16,7 @@ import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
 import RaceDetails from './components/RaceDetails';
 import AdminGate from './admin/AdminGate';
-import type { Race } from './components/Calendar';
+import type { Race } from './data/races';
 
 const themes = [
   { id: 'default', label: 'Default' },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Race } from './Calendar';
+import type { Race } from '../data/races';
 import QualifyingResults from './QualifyingResults';
 import Loader from './Loader';
 
