@@ -7009,3 +7009,217 @@ body {
     animation: none;
   }
 }
+
+/* ============================================================
+   Season Calendar — premium pass.
+   Editorial round-number watermark per card, a refined frame,
+   a carbon "next" card with an accent rail, glassy nav buttons,
+   and a glowing progress bar.
+   ============================================================ */
+
+/* --- Header --- */
+.cal-title {
+  font-size: 30px;
+}
+
+.cal-title em {
+  background: linear-gradient(118deg, var(--racing), var(--racing-hot));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* --- Nav buttons: crafted carbon tiles --- */
+.cal-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 16px;
+  background: linear-gradient(135deg, var(--carbon-2), var(--carbon));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--elev-1), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.cal-nav-btn:hover {
+  background: linear-gradient(135deg, var(--racing), var(--racing-deep));
+  border-color: var(--racing);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--racing) 32%, transparent);
+}
+
+/* --- Frame: softer, rounded, elevated --- */
+.cal-strip-wrap {
+  border: 1px solid rgba(10, 10, 10, 0.12);
+  border-radius: var(--r-lg);
+  background: rgba(232, 225, 210, 0.5);
+  box-shadow: var(--elev-2);
+}
+
+/* --- Progress bar --- */
+.cal-progress-track {
+  background: rgba(10, 10, 10, 0.06);
+}
+
+.cal-progress-fill {
+  background: linear-gradient(90deg, var(--racing), var(--racing-hot));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--racing) 55%, transparent);
+}
+
+/* --- Cards --- */
+.cal-round {
+  overflow: hidden;
+  border-right: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  transition: background 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+/* keep real content above the watermark */
+.cal-round > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Editorial round-number watermark */
+.cal-round::after {
+  content: attr(data-round);
+  position: absolute;
+  right: -8px;
+  bottom: -22px;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 104px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+  opacity: 0.045;
+  pointer-events: none;
+}
+
+/* Hover: top accent line instead of a lift (avoids clipping inside the
+   horizontally-scrolling, overflow-hidden strip). */
+.cal-round:hover {
+  background: var(--paper-3);
+  box-shadow: inset 0 3px 0 var(--racing);
+}
+
+/* --- "Next" card: premium carbon with sheen, corner glow, pulsing rail --- */
+.cal-round.next {
+  background:
+    linear-gradient(115deg, transparent 44%, rgba(255, 255, 255, 0.07) 50%, transparent 56%),
+    radial-gradient(80% 60% at 100% 0%, color-mix(in srgb, var(--racing) 20%, transparent), transparent 62%),
+    radial-gradient(130% 150% at 0% 0%, rgba(255, 255, 255, 0.06), transparent 45%),
+    linear-gradient(140deg, rgba(22, 22, 25, 0.98), rgba(8, 8, 10, 0.99));
+  background-size: 220% 100%, auto, auto, auto;
+  background-position: 150% 0, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat;
+  animation: calSheen 6.5s ease-in-out infinite;
+}
+
+.cal-round.next::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  z-index: 1;
+  background: linear-gradient(180deg, var(--racing), var(--racing-hot));
+  box-shadow: 0 0 16px var(--racing);
+  animation: calRailPulse 2.4s ease-in-out infinite;
+}
+
+.cal-round.next::after {
+  color: #fff;
+  opacity: 0.07;
+}
+
+.cal-round.next .cal-flag-emoji {
+  width: max-content;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+
+.cal-round.next .cal-flag-name {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.45);
+}
+
+.cal-round.next:hover {
+  box-shadow: inset 0 3px 0 var(--racing-hot);
+  filter: brightness(1.07);
+}
+
+/* Filled accent CTA on the highlighted round */
+.cal-round.next .cal-details-btn {
+  background: linear-gradient(135deg, var(--racing), var(--racing-deep));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--racing) 35%, transparent);
+}
+
+.cal-round.next .cal-details-btn:hover {
+  background: #fff;
+  color: var(--carbon);
+  border-color: #fff;
+}
+
+/* "Up Next" pill in the round header */
+.cal-rnum-id {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cal-next-pill {
+  margin-left: 9px;
+  padding: 2px 9px 3px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--racing), var(--racing-deep));
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--racing) 55%, transparent);
+}
+
+@keyframes calSheen {
+  0%, 62% {
+    background-position: 150% 0, 0 0, 0 0, 0 0;
+  }
+  100% {
+    background-position: -70% 0, 0 0, 0 0, 0 0;
+  }
+}
+
+@keyframes calRailPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px var(--racing);
+  }
+  50% {
+    box-shadow: 0 0 22px var(--racing), 0 0 5px var(--racing-hot);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-round.next,
+  .cal-round.next::before {
+    animation: none;
+  }
+}
+
+/* --- Done cards: gently de-emphasized --- */
+.cal-round.done {
+  opacity: 0.92;
+}
+
+/* --- Details button: pill --- */
+.cal-details-btn {
+  border-radius: 999px;
+  padding: 7px 18px;
+  transition: transform 0.3s var(--ease), background 0.3s var(--ease),
+    color 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.cal-details-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--racing) 30%, transparent);
+}

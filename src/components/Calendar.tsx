@@ -143,9 +143,13 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
               const countryEmoji = <Flag code={countryCode} />;
 
               return (
-                <div key={race.round} className={`cal-round ${isDone && !isNext ? 'done' : ''} ${isNext ? 'next' : ''}`}>
+                <div key={race.round} data-round={displayRound} className={`cal-round ${isDone && !isNext ? 'done' : ''} ${isNext ? 'next' : ''}`}>
                   <div className="cal-rnum">
-                    {isNext ? `R#${displayRound} · NEXT` : `R#${displayRound}`}<span className="cal-status-dot"></span>
+                    <span className="cal-rnum-id">
+                      R#{displayRound}
+                      {isNext && <span className="cal-next-pill">Up Next</span>}
+                    </span>
+                    <span className="cal-status-dot"></span>
                   </div>
                   <div className="cal-flag-emoji">{countryEmoji}</div>
                   <div className="cal-country">{`${race.Circuit.Location.locality}, ${race.Circuit.Location.country}`}</div>
