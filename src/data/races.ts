@@ -89,12 +89,7 @@ export const RACES: Race[] = [
   {"season":"2026","round":"22","url":"https://en.wikipedia.org/wiki/2026_Abu_Dhabi_Grand_Prix","raceName":"Abu Dhabi Grand Prix","Circuit":{"circuitId":"yas_marina","url":"https://en.wikipedia.org/wiki/Yas_Marina_Circuit","circuitName":"Yas Marina Circuit","Location":{"lat":"24.4672","long":"54.6031","locality":"Abu Dhabi","country":"UAE"}},"date":"2026-12-06","time":"13:00:00Z","FirstPractice":{"date":"2026-12-04","time":"09:30:00Z"},"SecondPractice":{"date":"2026-12-04","time":"13:00:00Z"},"ThirdPractice":{"date":"2026-12-05","time":"10:30:00Z"},"Qualifying":{"date":"2026-12-05","time":"14:00:00Z"}}
 ];
 
-/**
- * Fetch the live race calendar from the backend, sorted by round. Falls back to
- * the bundled {@link RACES} snapshot if the request fails or returns nothing, so
- * callers can rely on always getting a non-empty list.
- */
-export const fetchRaces = async (): Promise<Race[]> => {
+const loadRaces = async (): Promise<Race[]> => {
   try {
     const res = await fetch(`${BACKEND_URL}/races`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -107,4 +102,20 @@ export const fetchRaces = async (): Promise<Race[]> => {
     console.error('Failed to fetch races, using bundled calendar', e);
     return RACES;
   }
+};
+
+// Several components (NextRace, Calendar, Ticker, the race-day hook) each request
+// the calendar on first paint. Share a single in-flight request between them so
+// the (cold-starting) backend isn't hit four times in parallel on load.
+let racesPromise: Promise<Race[]> | null = null;
+
+/**
+ * Fetch the live race calendar from the backend, sorted by round. Falls back to
+ * the bundled {@link RACES} snapshot if the request fails or returns nothing, so
+ * callers can rely on always getting a non-empty list. The result is memoized
+ * for the session so concurrent callers share one network request.
+ */
+export const fetchRaces = (): Promise<Race[]> => {
+  if (!racesPromise) racesPromise = loadRaces();
+  return racesPromise;
 };

@@ -986,6 +986,564 @@ body {
   animation: blink 1.6s ease infinite;
 }
 
+/* ============================================================
+   RACE LIVE — premium "race day" banner inside the hero.
+   Only renders when a calendar race falls on today's date.
+   ============================================================ */
+.rl-section {
+  margin: 8px auto 0;
+  max-width: 1440px;
+  padding: 0 36px;
+  animation: fadeUpSlow 0.7s ease both 0.55s;
+}
+
+.rl-banner {
+  position: relative;
+  padding: 30px 34px;
+  border-radius: 18px;
+  overflow: hidden;
+  color: #f4f1ea;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.06), transparent 45%),
+    linear-gradient(135deg, rgba(16, 16, 18, 0.96), rgba(8, 8, 9, 0.97));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 24px 60px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(0, 0, 0, 0.3);
+  animation: rlReveal 0.7s var(--ease-out) both;
+}
+
+/* Animated accent rail down the left edge — the "live" signature */
+.rl-banner::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--racing), var(--racing-hot));
+  box-shadow: 0 0 18px var(--racing);
+  animation: rlRail 2.4s ease-in-out infinite;
+}
+
+/* Carbon weave texture, matching the dark race blocks */
+.rl-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.018) 0 2px,
+    transparent 2px 16px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Slow diagonal light sweep across the whole banner */
+.rl-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.07) 48%,
+    transparent 62%
+  );
+  transform: translateX(-100%);
+  animation: rlSheen 6.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.rl-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 34px;
+  align-items: center;
+}
+
+.rl-left {
+  min-width: 0;
+}
+
+/* --- Status line --- */
+.rl-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.rl-pulse {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--racing-hot);
+  box-shadow: 0 0 0 0 var(--racing-hot);
+  animation: rlPulse 1.5s ease-out infinite;
+}
+
+.rl-status-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.rl-status-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--racing-hot-ticker);
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* --- Headline --- */
+.rl-headline {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.rl-flag {
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.rl-flag-fallback {
+  font-size: 32px;
+}
+
+.rl-race-name {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: #fff;
+}
+
+.rl-race-name span {
+  display: block;
+  font-size: 0.42em;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--racing-hot-ticker);
+  margin-top: 8px;
+}
+
+.rl-circuit {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.05em;
+  color: rgba(244, 241, 234, 0.62);
+  margin-bottom: 22px;
+}
+
+.rl-circuit strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.rl-dot {
+  margin: 0 8px;
+  color: var(--racing-hot);
+}
+
+/* --- Stat chips --- */
+.rl-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.rl-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  min-width: 96px;
+}
+
+.rl-stat-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.45);
+}
+
+.rl-stat-val {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rl-stat-val em {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(244, 241, 234, 0.5);
+  margin-left: 4px;
+}
+
+/* --- CTA --- */
+.rl-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, var(--racing), var(--racing-deep));
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.rl-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.rl-cta svg {
+  transition: transform 0.25s var(--ease);
+}
+
+.rl-cta:hover svg {
+  transform: translateX(4px);
+}
+
+/* --- Right side: live timer --- */
+.rl-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 28px;
+  border-radius: 14px;
+  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 300px;
+}
+
+.rl-timer-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.55);
+}
+
+.rl-timer {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.rl-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 64px;
+}
+
+.rl-cell-num {
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.12);
+}
+
+.rl-timer-live .rl-cell-num,
+.rl-timer-live .rl-colon {
+  color: var(--racing-hot);
+  text-shadow: 0 0 26px var(--racing);
+}
+
+.rl-cell-unit {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.45);
+}
+
+.rl-colon {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: rgba(255, 255, 255, 0.35);
+  animation: rlBlink 1.5s steps(1) infinite;
+}
+
+/* --- F1 start-lights gantry --- */
+.rl-lights {
+  display: flex;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rl-light {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #2a0c0c;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Pre-race: lights armed, glowing red in an F1 illumination sweep */
+.rl-lights-pre .rl-light {
+  background: radial-gradient(circle at 50% 35%, #ff5a4d, #c4140a 70%);
+  box-shadow: 0 0 12px rgba(220, 0, 0, 0.7), inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+  animation: rlLightSweep 2.4s ease-in-out infinite;
+}
+
+/* Race underway: lights out — go */
+.rl-lights-underway .rl-light {
+  background: radial-gradient(circle at 50% 35%, #6dffa8, #14a85a 75%);
+  box-shadow: 0 0 14px rgba(40, 220, 120, 0.65), inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+}
+
+.rl-lights-finished .rl-light:nth-child(odd) {
+  background: #f4f1ea;
+}
+.rl-lights-finished .rl-light:nth-child(even) {
+  background: #1a1a1a;
+}
+
+.rl-lights-caption {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--racing-hot-ticker);
+}
+
+/* --- Weekend session timeline --- */
+.rl-sessions {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.rl-session {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.rl-session-done {
+  opacity: 0.5;
+}
+
+.rl-session-next {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rl-session.rl-session-live {
+  border-color: var(--racing);
+  background: rgba(168, 85, 247, 0.1);
+  box-shadow: 0 0 0 1px var(--racing), 0 0 24px rgba(168, 85, 247, 0.25);
+}
+
+.rl-session.rl-session-race {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.rl-session.rl-session-race.rl-session-next,
+.rl-session.rl-session-race.rl-session-live {
+  border-color: var(--racing-hot);
+}
+
+.rl-session-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rl-session-name {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.rl-session-time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(244, 241, 234, 0.5);
+}
+
+.rl-badge-live,
+.rl-badge-next,
+.rl-badge-check {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.rl-badge-live {
+  color: #fff;
+  background: var(--racing);
+  animation: rlBlink 1.4s steps(1) infinite;
+}
+
+.rl-badge-next {
+  color: var(--racing-hot-ticker);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.rl-badge-check {
+  color: #6dffa8;
+  background: transparent;
+  padding: 0;
+}
+
+@keyframes rlLightSweep {
+  0%, 100% {
+    filter: brightness(0.65);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes rlReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes rlRail {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes rlSheen {
+  0%, 70% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes rlPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(168, 85, 247, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+  }
+}
+
+@keyframes rlBlink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 760px) {
+  .rl-banner {
+    padding: 24px 22px;
+  }
+  .rl-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .rl-right {
+    min-width: 0;
+    width: 100%;
+  }
+  .rl-cell {
+    min-width: 0;
+    flex: 1;
+  }
+  .rl-cell-num {
+    font-size: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rl-banner::before,
+  .rl-sheen,
+  .rl-pulse,
+  .rl-colon,
+  .rl-light,
+  .rl-badge-live {
+    animation: none;
+  }
+}
+
 .race-hero {
   margin: 0 auto;
   max-width: 1440px;
@@ -5955,4 +6513,362 @@ body {
 }
 .news-item:hover {
   transform: translateX(3px);
+}
+
+/* ============================================================
+   NextRace — premium pass.
+   Brings the upcoming / season-progress / previous race stack
+   in line with the polished RaceLive banner: richer carbon
+   gradients, a glowing accent rail, a softened checker motif,
+   premium progress ticks, and refined stat + countdown tiles.
+   ============================================================ */
+
+/* --- Card surfaces: layered carbon instead of a flat slab --- */
+.race-block.upcoming {
+  background:
+    radial-gradient(130% 150% at 0% 0%, rgba(255, 255, 255, 0.055), transparent 42%),
+    linear-gradient(135deg, rgba(21, 21, 24, 0.92) 0%, rgba(9, 9, 11, 0.95) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: var(--elev-dark);
+}
+
+/* Glowing team-accent rail down the left edge — the signature the old
+   thick red top-border used to carry, but softer and more crafted. */
+.race-block.upcoming::after {
+  content: "";
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: auto;
+  width: 4px;
+  height: auto;
+  background: linear-gradient(180deg, var(--racing), var(--racing-hot));
+  box-shadow: 0 0 22px var(--racing);
+  background-color: transparent;
+  background-size: auto;
+  background-position: 0 0;
+  opacity: 1;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+/* Faded checker motif, top-right — kept as an F1 nod but dialled right back
+   so it reads as texture rather than a hard transparency-grid block. */
+.race-block.upcoming .race-grid::before {
+  content: "";
+  position: absolute;
+  top: -28px;
+  right: -16px;
+  width: 220px;
+  height: 64px;
+  background:
+    linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%),
+    linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
+  background-size: 13px 13px;
+  background-position: 0 0, 6.5px 6.5px;
+  opacity: 0.05;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at 100% 0%, #000, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle at 100% 0%, #000, transparent 72%);
+}
+
+/* --- Stat row: crafted glass chips with a leading accent tick --- */
+.race-block .race-stats {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.race-block .race-stat {
+  position: relative;
+  gap: 6px;
+  padding: 12px 18px 12px 20px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color 0.35s var(--ease), background 0.35s var(--ease);
+}
+
+.race-block .race-stat::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--racing);
+  opacity: 0.65;
+}
+
+.race-block .race-stat:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: color-mix(in srgb, var(--racing) 38%, transparent);
+}
+
+.race-block .race-stat-label {
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  margin-bottom: 0;
+  color: rgba(244, 241, 234, 0.45);
+}
+
+.race-block .race-stat-val {
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+/* --- Countdown: tighter premium tiles, glowing colon-free read --- */
+.countdown-label {
+  letter-spacing: 0.28em;
+}
+
+.cd-cell {
+  padding: 22px 10px 16px;
+}
+
+.cd-cell::before {
+  height: 2px;
+  filter: drop-shadow(0 0 6px var(--racing));
+}
+
+.cd-label {
+  font-size: 9px;
+  color: rgba(244, 241, 234, 0.5);
+}
+
+/* --- Season progress: cohesive carbon card + premium pill ticks --- */
+.sp-card {
+  background:
+    radial-gradient(140% 200% at 100% 0%, rgba(255, 255, 255, 0.045), transparent 52%),
+    linear-gradient(135deg, #101012 0%, #050506 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sp-percent {
+  background: linear-gradient(180deg, var(--racing-hot), var(--racing));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--racing) 35%, transparent));
+}
+
+.sp-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.sp-bar {
+  height: 34px;
+  gap: 6px;
+}
+
+.sp-tick {
+  height: 100%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.sp-tick.active {
+  background: linear-gradient(180deg, var(--racing-hot), var(--racing));
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--racing) 70%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* The single tick at the "completed/next" boundary gets a brighter cap so the
+   progress edge reads clearly. */
+.sp-tick.active:last-of-type {
+  background: linear-gradient(180deg, #fff, var(--racing-hot));
+}
+
+/* --- Previous race card: warmer carbon, gold winner accents kept --- */
+.race-block.previous {
+  background:
+    radial-gradient(130% 160% at 0% 100%, rgba(255, 255, 255, 0.035), transparent 46%),
+    linear-gradient(135deg, rgba(20, 20, 22, 0.95) 0%, rgba(12, 12, 13, 0.97) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .race-block.upcoming::after {
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .race-block .race-stats {
+    gap: 8px;
+  }
+  .race-block .race-stat {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+
+/* ============================================================
+   Completed-race podium showcase — premium "champion" pass.
+   Gold-graded winner card with a contained shine sweep, a
+   richer medallion, silver/bronze medal accents on P2/P3, and
+   the iconic F1 purple for the fastest lap.
+   ============================================================ */
+
+/* --- P1 winner: champion gold card --- */
+.winner-card.p1-featured {
+  position: relative;
+  padding: 24px 26px;
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(130% 170% at 0% 0%, rgba(212, 160, 23, 0.18), transparent 55%),
+    linear-gradient(135deg, rgba(46, 34, 10, 0.55) 0%, rgba(18, 15, 9, 0.72) 100%);
+  border: 1px solid rgba(212, 160, 23, 0.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 224, 150, 0.2),
+    0 18px 44px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(212, 160, 23, 0.08);
+}
+
+/* Slow gold light sweep, clipped to the rounded card via background-clip
+   (no overflow:hidden, so the medallion can still overhang the corner). */
+.winner-card.p1-featured::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 222, 140, 0.13) 50%, transparent 58%);
+  background-size: 250% 100%;
+  background-position: 150% 0;
+  animation: goldSweep 7.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.winner-card.p1-featured > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* "Winner" eyebrow above the name */
+.winner-card.p1-featured .winner-info::before {
+  content: "🏆 Race Winner";
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-ticker);
+  margin-bottom: 10px;
+}
+
+.winner-card.p1-featured .winner-name {
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+.winner-card.p1-featured .ws-val {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--gold-ticker);
+}
+
+/* --- Champion medallion --- */
+.winner-badge {
+  width: 46px;
+  height: 46px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #2a1c02;
+  background: radial-gradient(circle at 36% 30%, #ffeaa8 0%, var(--gold) 52%, #9c7410 100%);
+  border: 2px solid rgba(255, 240, 205, 0.55);
+  box-shadow:
+    0 6px 18px rgba(212, 160, 23, 0.5),
+    0 0 0 5px rgba(212, 160, 23, 0.12);
+}
+
+.ws-pts {
+  background: linear-gradient(135deg, #ffd86b, var(--gold));
+  color: #2a1c02;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(212, 160, 23, 0.35);
+}
+
+/* --- P2 / P3 medal cards --- */
+.podium-mini-card {
+  position: relative;
+  overflow: hidden;
+  padding-left: 18px;
+  background: rgba(255, 255, 255, 0.025);
+  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.podium-mini-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+}
+
+.podium-mini-card.p2::before {
+  background: linear-gradient(180deg, #f1f1f6, #9a9aa4);
+  box-shadow: 0 0 12px rgba(200, 200, 210, 0.4);
+}
+
+.podium-mini-card.p3::before {
+  background: linear-gradient(180deg, #e6ad7a, #a76a36);
+  box-shadow: 0 0 12px rgba(205, 127, 50, 0.4);
+}
+
+.podium-mini-card.p2:hover {
+  border-color: rgba(220, 220, 228, 0.32);
+}
+.podium-mini-card.p3:hover {
+  border-color: rgba(205, 127, 50, 0.34);
+}
+
+.pm-time {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  color: rgba(244, 241, 234, 0.55);
+}
+
+/* --- Fastest lap: iconic F1 purple, regardless of active team theme --- */
+.race-block.previous .race-stat::before {
+  background: #b388ff;
+  opacity: 0.9;
+  box-shadow: 0 0 10px rgba(140, 80, 255, 0.7);
+}
+
+.race-block.previous .race-stat {
+  background: rgba(140, 80, 255, 0.08);
+  border-color: rgba(140, 80, 255, 0.22);
+}
+
+.race-block.previous .race-stat .race-stat-label {
+  color: #c9b3ff;
+}
+
+.race-block.previous .race-stat .race-stat-val {
+  color: #fff;
+}
+
+@keyframes goldSweep {
+  0%, 58% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winner-card.p1-featured::after {
+    animation: none;
+  }
 }

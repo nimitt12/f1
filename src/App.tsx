@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Ticker from './components/Ticker';
 import Hero from './components/Hero';
+import RaceLive from './components/RaceLive';
 import NextRace from './components/NextRace';
+import { useLiveRace } from './hooks/useLiveRace';
 import Calendar from './components/Calendar';
 import DriversStandings from './components/DriversStandings';
 import ConstructorsStandings from './components/ConstructorsStandings';
@@ -129,6 +131,10 @@ const App: React.FC = () => {
   const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
   const [showBoot, setShowBoot] = useState(true);
 
+  // When a calendar race falls on today's date we switch the dashboard into a
+  // focused "race day" takeover (just the live section) instead of the full grid.
+  const { races, liveRace } = useLiveRace();
+
   // Persist view and selected race
   useEffect(() => {
     localStorage.setItem('f1_view', view);
@@ -229,16 +235,29 @@ const App: React.FC = () => {
           <>
             <ThemeSwitcher />
             <Ticker />
-            <Hero 
-              user={user} 
-              setUser={setUser} 
-              onOpenSettings={() => setView('account')} 
+            <Hero
+              user={user}
+              setUser={setUser}
+              onOpenSettings={() => setView('account')}
             />
-            <NextRace onRaceSelect={(race) => {
-              setSelectedRace(race);
-              setView('race_details');
-              window.scrollTo(0, 0);
-            }} />
+            {/* On race day, the live takeover replaces the next/previous race header. */}
+            {liveRace ? (
+              <RaceLive
+                race={liveRace}
+                races={races}
+                onRaceSelect={(race) => {
+                  setSelectedRace(race);
+                  setView('race_details');
+                  window.scrollTo(0, 0);
+                }}
+              />
+            ) : (
+              <NextRace onRaceSelect={(race) => {
+                setSelectedRace(race);
+                setView('race_details');
+                window.scrollTo(0, 0);
+              }} />
+            )}
             <Calendar onRaceSelect={(race) => {
               setSelectedRace(race);
               setView('race_details');
