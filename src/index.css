@@ -6872,3 +6872,140 @@ body {
     animation: none;
   }
 }
+
+/* ============================================================
+   Hero top — premium pass.
+   Frosted greeting capsule with a live status dot + glowing
+   avatar ring, refined gradient badges, a glassy menu button,
+   a tonal-gradient title, and an animated underline w/ glint.
+   ============================================================ */
+
+/* --- Eyebrow badges (LIVE EDITION / SEASON 2026) --- */
+.live-badge {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 11px;
+  background: linear-gradient(135deg, var(--racing) 0%, var(--racing-deep) 130%);
+  box-shadow:
+    0 6px 16px color-mix(in srgb, var(--racing) 32%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.checker-flag {
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Greeting capsule (logged in) --- */
+.greeting-box {
+  position: relative;
+  gap: 14px;
+  padding: 6px 8px 6px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: var(--elev-1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+.greeting-main {
+  font-weight: 600;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.7),
+    0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Pulsing "live/online" dot on the avatar corner */
+.greeting-box::after {
+  content: "";
+  position: absolute;
+  right: 9px;
+  bottom: 6px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #2fd27a;
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 0 rgba(47, 210, 122, 0.6);
+  animation: rlPulse 1.8s ease-out infinite;
+}
+
+/* --- Glassy menu button (backing only — inner bars untouched so the
+       open/close "X" animation geometry stays exactly as tuned) --- */
+.hamburger-btn::before {
+  content: "";
+  position: absolute;
+  inset: -11px -10px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--elev-1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  z-index: -1;
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.hamburger-btn:hover::before {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: color-mix(in srgb, var(--racing) 35%, rgba(255, 255, 255, 0.5));
+}
+
+/* --- Title: tonal gradient + soft glow on the wordmark --- */
+.hero-title .line2 span {
+  background: linear-gradient(118deg, var(--racing) 18%, var(--racing-hot) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 6px 18px color-mix(in srgb, var(--racing) 22%, transparent));
+}
+
+/* --- Underline: gradient rail with a traveling glint --- */
+.title-underline {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--racing), var(--racing-hot) 45%, transparent);
+  box-shadow: 0 3px 14px color-mix(in srgb, var(--racing) 38%, transparent);
+}
+
+.title-wrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 72px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+  animation: railGlint 5s var(--ease-out) infinite 1.2s;
+  pointer-events: none;
+}
+
+@keyframes railGlint {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(calc(60vw - 72px));
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .greeting-box::after,
+  .title-wrap::after {
+    animation: none;
+  }
+}
