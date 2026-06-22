@@ -532,7 +532,9 @@ body {
   border-radius: 50%;
   filter: blur(130px);
   opacity: 0.55; /* More intense */
-  transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+    translate 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); /* fluid mouse drift */
   mix-blend-mode: soft-light; /* More vibrant branding on light bg */
 }
 
@@ -543,7 +545,10 @@ body {
   height: 75vw;
   background: radial-gradient(circle, var(--racing) 0%, transparent 70%);
   animation: float1 25s ease-in-out infinite alternate;
-  translate: 0 calc(var(--scroll-y, 0px) * -0.15); /* Parallax layer 1 */
+  /* Scroll + mouse parallax (near layer) */
+  translate:
+    calc(var(--mx, 0) * -34px)
+    calc(var(--scroll-y, 0px) * -0.15 + var(--my, 0) * -28px);
 }
 
 .orb-2 {
@@ -553,7 +558,10 @@ body {
   height: 65vw;
   background: radial-gradient(circle, var(--racing-hot) 0%, transparent 70%);
   animation: float2 30s ease-in-out infinite alternate-reverse;
-  translate: 0 calc(var(--scroll-y, 0px) * -0.3); /* Parallax layer 2 */
+  /* Scroll + mouse parallax (opposing drift) */
+  translate:
+    calc(var(--mx, 0) * 46px)
+    calc(var(--scroll-y, 0px) * -0.3 + var(--my, 0) * 38px);
 }
 
 .orb-3 {
@@ -564,7 +572,10 @@ body {
   background: radial-gradient(circle, var(--racing-deep) 0%, transparent 70%);
   opacity: 0.25;
   animation: float3 22s ease-in-out infinite alternate;
-  translate: 0 calc(var(--scroll-y, 0px) * -0.05); /* Parallax layer 3 */
+  /* Scroll + mouse parallax (deep layer, gentle) */
+  translate:
+    calc(var(--mx, 0) * -20px)
+    calc(var(--scroll-y, 0px) * -0.05 + var(--my, 0) * -16px);
 }
 
 @keyframes float1 {
@@ -609,6 +620,7 @@ body {
   position: absolute;
   pointer-events: none;
   transform-origin: left center;
+  transition: translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); /* fluid mouse drift */
 }
 
 /* Main thick ribbon */
@@ -663,7 +675,9 @@ body {
   );
 
   transform: rotate(-22deg);
-  translate: 0 calc(var(--scroll-y, 0px) * -0.4); /* Intense parallax layer */
+  translate:
+    calc(var(--mx, 0) * 26px)
+    calc(var(--scroll-y, 0px) * -0.4 + var(--my, 0) * 18px); /* Intense parallax layer */
   opacity: 0.95; /* High intensity */
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3)); /* 3D depth */
 }
@@ -723,7 +737,9 @@ body {
   );
 
   transform: rotate(15deg);
-  translate: 0 calc(var(--scroll-y, 0px) * -0.2); /* Medium parallax layer */
+  translate:
+    calc(var(--mx, 0) * -32px)
+    calc(var(--scroll-y, 0px) * -0.2 + var(--my, 0) * -22px); /* Medium parallax layer */
   opacity: 0.85;
   filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
 }
@@ -767,7 +783,9 @@ body {
   );
 
   transform: rotate(-18deg);
-  translate: 0 calc(var(--scroll-y, 0px) * -0.6); /* Deep parallax layer */
+  translate:
+    calc(var(--mx, 0) * 20px)
+    calc(var(--scroll-y, 0px) * -0.6 + var(--my, 0) * 14px); /* Deep parallax layer */
   opacity: 0.7;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
 }
@@ -1390,16 +1408,63 @@ body {
   animation: numCountUp 0.5s ease both 0.75s;
 }
 
-.cd-cell:nth-child(2) .cd-num {
+/* Stagger digits — targets direct children so it works whether or not each
+   cell is wrapped (e.g. by the 3D Tilt scene). */
+.countdown > :nth-child(2) .cd-num {
   animation-delay: 0.82s;
 }
 
-.cd-cell:nth-child(3) .cd-num {
+.countdown > :nth-child(3) .cd-num {
   animation-delay: 0.89s;
 }
 
-.cd-cell:nth-child(4) .cd-num {
+.countdown > :nth-child(4) .cd-num {
   animation-delay: 0.96s;
+}
+
+/* ---- Interactive 3D tilt (Tilt.tsx) ---- */
+.tilt3d-scene {
+  /* keep the parent grid/flex layout intact — the card itself becomes the
+     layout item and carries its own perspective() in its transform */
+  display: contents;
+}
+
+.tilt3d-card {
+  position: relative;
+  transform:
+    perspective(650px)
+    rotateX(var(--tilt-rx, 0deg))
+    rotateY(var(--tilt-ry, 0deg))
+    scale(var(--tilt-s, 1));
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.tilt3d-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(255, 255, 255, 0.32),
+    rgba(255, 255, 255, 0) 55%
+  );
+  opacity: var(--go, 0);
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt3d-card {
+    transform: none;
+    transition: none;
+  }
+  .tilt3d-glare {
+    display: none;
+  }
 }
 
 .cd-label {
@@ -5842,7 +5907,7 @@ body {
   opacity: 0.7;
 }
 .cd-cell:hover {
-  transform: translateY(-2px);
+  /* 3D tilt (Tilt.tsx) now drives the motion; just warm the edge on hover */
   border-color: color-mix(in srgb, var(--racing) 45%, transparent);
 }
 .cd-num {

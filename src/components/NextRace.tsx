@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Loader from './Loader';
+import Tilt from './Tilt';
 
 const Flag: React.FC<{ code: string }> = ({ code }) => {
   if (!code || code.length !== 2 || code === '🏁') return <span style={{ fontSize: '24px' }}>🏁</span>;
@@ -210,22 +211,22 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
           <div className="race-right">
             <div className="countdown-label">Lights Out In</div>
             <div className="countdown">
-              <div className="cd-cell">
+              <Tilt className="cd-cell">
                 <div className="cd-num">{timeLeft.d}</div>
                 <div className="cd-label">Days</div>
-              </div>
-              <div className="cd-cell">
+              </Tilt>
+              <Tilt className="cd-cell">
                 <div className="cd-num">{timeLeft.h}</div>
                 <div className="cd-label">Hours</div>
-              </div>
-              <div className="cd-cell">
+              </Tilt>
+              <Tilt className="cd-cell">
                 <div className="cd-num">{timeLeft.m}</div>
                 <div className="cd-label">Mins</div>
-              </div>
-              <div className="cd-cell">
+              </Tilt>
+              <Tilt className="cd-cell">
                 <div className="cd-num">{timeLeft.s}</div>
                 <div className="cd-label">Secs</div>
-              </div>
+              </Tilt>
             </div>
           </div>
         </div>

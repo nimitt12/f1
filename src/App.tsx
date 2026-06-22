@@ -154,8 +154,32 @@ const App: React.FC = () => {
     
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Set initial position
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Pointer-driven parallax: feeds normalized cursor offset (-0.5..0.5) into CSS
+  // so the background orbs/ribbons drift with the mouse for a sense of depth.
+  useEffect(() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return; // skip on touch
+    let ticking = false;
+    let mx = 0;
+    let my = 0;
+    const handleMove = (e: PointerEvent) => {
+      mx = e.clientX / window.innerWidth - 0.5;
+      my = e.clientY / window.innerHeight - 0.5;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          document.documentElement.style.setProperty('--mx', mx.toFixed(4));
+          document.documentElement.style.setProperty('--my', my.toFixed(4));
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('pointermove', handleMove, { passive: true });
+    return () => window.removeEventListener('pointermove', handleMove);
   }, []);
 
   useEffect(() => {
