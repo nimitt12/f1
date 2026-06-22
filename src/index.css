@@ -68,9 +68,35 @@
   --font-alt: "Syne", sans-serif;
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   background: transparent;
   overflow-x: hidden;
+}
+
+/* Keyboard focus — themed ring, only for keyboard users (never on mouse click).
+   Applied site-wide so interactive elements are reachable/visible without altering
+   the resting design. */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--racing);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible) {
+  outline: none;
 }
 
 body.theme-mercedes {
@@ -760,7 +786,7 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 28px;
-  animation: fadeUpSlow 1s ease both 0.2s;
+  animation: fadeUpSlow 0.6s ease both 0.05s;
   position: relative;
   z-index: 50;
 }
@@ -775,7 +801,7 @@ body {
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ink);
-  animation: checkerFadeIn 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.5s;
+  animation: checkerFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.12s;
 }
 
 .checker-flag {
@@ -805,7 +831,7 @@ body {
   display: flex;
   align-items: center;
   gap: 24px;
-  animation: fadeUpSlow 1s ease both 0.7s;
+  animation: fadeUpSlow 0.6s ease both 0.18s;
 }
 
 .greeting-box {
@@ -867,7 +893,7 @@ body {
 
 .hero-title .line1 span {
   display: inline-block;
-  animation: maskRevealUp 1.1s cubic-bezier(0.2, 0.9, 0.25, 1) both 0.9s;
+  animation: maskRevealUp 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) both 0.2s;
 }
 
 .hero-title .line2 {
@@ -883,7 +909,7 @@ body {
 
 .hero-title .line2 span {
   display: inline-block;
-  animation: maskRevealUp 1.1s cubic-bezier(0.2, 0.9, 0.25, 1) both 1.4s;
+  animation: maskRevealUp 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) both 0.32s;
 }
 
 .title-underline {
@@ -895,7 +921,7 @@ body {
   background: var(--racing);
   transform: scaleX(0);
   transform-origin: left;
-  animation: underlineDraw 1.2s cubic-bezier(0.3, 0.9, 0.3, 1) both 2.2s;
+  animation: underlineDraw 0.7s cubic-bezier(0.3, 0.9, 0.3, 1) both 0.5s;
 }
 
 .hero-sub {
@@ -907,7 +933,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  animation: fadeUpSlow 1s ease both 2.8s;
+  animation: fadeUpSlow 0.6s ease both 0.55s;
 }
 
 .nav-links a {
@@ -947,7 +973,7 @@ body {
   max-width: 1440px;
   padding: 0 36px;
   background: transparent;
-  animation: fadeUpSlow 1.1s ease both 3.2s;
+  animation: fadeUpSlow 0.7s ease both 0.6s;
 }
 
 .race-block {
@@ -1068,6 +1094,9 @@ body {
 .race-block.previous {
   background: linear-gradient(135deg, var(--carbon-2) 0%, #1a1a1a 100%);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Sits flush beneath the black season-progress card — square top corners
+     so it meets the flat card edge instead of cutting in a curve. */
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
   position: relative;
   overflow: hidden;
 }
@@ -1165,7 +1194,7 @@ body {
   font-family: var(--font-mono);
   font-size: 9px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.1em;
 }
 
@@ -1255,7 +1284,7 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
   margin-top: 2px;
 }
 
@@ -1358,19 +1387,19 @@ body {
   line-height: 1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
-  animation: numCountUp 0.8s ease both 3.8s;
+  animation: numCountUp 0.5s ease both 0.75s;
 }
 
 .cd-cell:nth-child(2) .cd-num {
-  animation-delay: 3.95s;
+  animation-delay: 0.82s;
 }
 
 .cd-cell:nth-child(3) .cd-num {
-  animation-delay: 4.1s;
+  animation-delay: 0.89s;
 }
 
 .cd-cell:nth-child(4) .cd-num {
-  animation-delay: 4.25s;
+  animation-delay: 0.96s;
 }
 
 .cd-label {
@@ -1386,7 +1415,7 @@ body {
   max-width: 1440px;
   margin: 0 auto;
   padding: 48px 36px 0;
-  animation: fadeUpSlow 1s ease both 3.5s;
+  animation: fadeUpSlow 0.7s ease both 0.7s;
 }
 
 .cal-head {
@@ -1835,7 +1864,7 @@ body {
   align-items: center;
   gap: 10px;
   margin-top: 6px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.56);
   font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
@@ -2191,7 +2220,7 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
   font-weight: 500;
 }
 
@@ -2858,7 +2887,7 @@ body {
 .switch-btn {
   background: transparent;
   border: none;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.52);
   padding: 10px 20px;
   border-radius: 10px;
   font-family: var(--font-mono);
@@ -3460,7 +3489,7 @@ body {
 .section-desc {
   font-family: var(--font-body);
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.62);
   max-width: 500px;
 }
 
@@ -3679,7 +3708,7 @@ body {
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* --- UNIVERSAL LOADER --- */
