@@ -3336,19 +3336,56 @@ body {
 .footer-wrap {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 80px 36px 48px;
+  padding: 48px 36px 56px;
 }
 
+/* Rich dark carbon panel, echoing the content cards above it */
 .footer {
-  border-top: 2px solid var(--ink);
-  padding-top: 64px;
+  position: relative;
+  padding: 56px 56px 30px;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 40%),
+    radial-gradient(130% 130% at 100% 0%, color-mix(in srgb, var(--racing) 15%, transparent), transparent 48%),
+    linear-gradient(180deg, #101013 0%, #08080a 100%);
+  box-shadow: var(--elev-3), 0 40px 90px rgba(0, 0, 0, 0.35);
+}
+
+/* Glowing accent top rail */
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--racing), var(--racing-hot), transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--racing) 55%, transparent);
+}
+
+/* Faint telemetry grid texture */
+.footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 75% 0%, #000, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle at 75% 0%, #000, transparent 70%);
 }
 
 .footer-main {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  gap: 64px;
-  margin-bottom: 80px;
+  gap: 56px;
+  margin-bottom: 48px;
 }
 
 .f-col .f-logo {
@@ -3356,29 +3393,43 @@ body {
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--ink);
-  margin-bottom: 24px;
+  color: #fff;
+  margin-bottom: 22px;
 }
 
 .f-col .f-logo span {
-  color: var(--racing);
+  background: linear-gradient(120deg, var(--racing-hot), var(--racing));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--racing) 45%, transparent));
 }
 
 .f-desc {
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.7;
-  color: var(--ink-2);
-  max-width: 360px;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 340px;
 }
 
 .f-h {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   color: var(--racing);
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   text-transform: uppercase;
+}
+
+.f-h::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--racing), transparent);
 }
 
 .f-col ul {
@@ -3388,65 +3439,84 @@ body {
 }
 
 .f-col ul li {
-  margin-bottom: 14px;
+  margin-bottom: 13px;
 }
 
 .f-col ul li a {
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 500;
-  color: var(--ink);
+  color: rgba(255, 255, 255, 0.78);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: color 0.25s var(--ease), transform 0.25s var(--ease);
   display: inline-block;
 }
 
 .f-col ul li a:hover {
-  color: var(--racing);
+  color: #fff;
   transform: translateX(6px);
 }
 
 .data-source {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .source-label {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--ink-3);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.38);
   text-transform: uppercase;
   margin-bottom: 6px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.16em;
 }
 
 .source-val {
   font-family: var(--font-display);
   font-size: 15px;
   font-weight: 600;
-  color: var(--ink);
+  color: #fff;
+}
+
+/* Live pulse on the "Refresh" value */
+.data-source:last-child .source-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.data-source:last-child .source-val::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--racing);
+  box-shadow: 0 0 8px var(--racing);
+  animation: pulseDot 1.8s ease infinite;
 }
 
 .f-legal-text {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.4);
   font-style: italic;
 }
 
 .footer-bottom {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 40px;
-  border-top: 1px solid var(--rule-light);
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 .f-copyright {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--ink-3);
+  color: rgba(255, 255, 255, 0.42);
   letter-spacing: 0.08em;
 }
 
@@ -3459,7 +3529,7 @@ body {
 .f-note {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--ink-3);
+  color: rgba(255, 255, 255, 0.42);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -3474,18 +3544,44 @@ body {
   border-radius: 50%;
   position: relative;
   top: -2px;
+  box-shadow: 0 0 7px var(--racing);
+  animation: pulseDot 1.8s ease infinite;
 }
 
 .f-brand {
   font-family: var(--font-display);
   font-size: 15px;
   font-style: italic;
-  color: var(--ink-2);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .f-brand em {
-  color: var(--racing);
-  font-weight: 500;
+  background: linear-gradient(120deg, var(--racing-hot), var(--racing));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .footer {
+    padding: 44px 28px 26px;
+  }
+  .footer-main {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-main {
+    grid-template-columns: 1fr;
+  }
 }
 
 .main-section,
