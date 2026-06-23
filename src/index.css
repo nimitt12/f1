@@ -7003,8 +7003,197 @@ body {
   }
 }
 
+/* ============================================================
+   Profile + menu — unified capsule.
+   The greeting card and the menu trigger are merged into a single
+   frosted-glass pill: greeting text + avatar on the left, a hairline
+   divider, then the hamburger lines that morph to an X when open.
+   The whole pill is the menu button. Living sheen, theme-tinted
+   hover lift, gradient name, glowing date pip, themed avatar ring.
+   ============================================================ */
+.profile-menu-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 6px 16px 6px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: right;
+  background:
+    linear-gradient(120deg,
+      rgba(255, 255, 255, 0.50) 0%,
+      rgba(255, 255, 255, 0.30) 38%,
+      color-mix(in srgb, var(--racing) 13%, rgba(255, 255, 255, 0.34)) 68%,
+      rgba(255, 255, 255, 0.44) 100%);
+  background-size: 220% 100%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    var(--elev-1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -7px 16px rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(14px) saturate(1.4);
+  transition:
+    transform 0.45s var(--ease),
+    box-shadow 0.45s var(--ease),
+    border-color 0.45s var(--ease);
+  animation: greetSheen 9s ease-in-out infinite;
+}
+
+.profile-menu-card.guest {
+  padding-left: 18px;
+}
+
+@keyframes greetSheen {
+  0%, 100% { background-position: 0% 0; }
+  50% { background-position: 100% 0; }
+}
+
+.profile-menu-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--racing) 38%, rgba(255, 255, 255, 0.6));
+  box-shadow:
+    0 16px 36px color-mix(in srgb, var(--racing) 18%, rgba(0, 0, 0, 0.12)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.profile-menu-card:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Greeting text */
+.profile-menu-card .greeting-text {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  line-height: 1.1;
+}
+
+/* Name leads with a subtle tonal gradient toward the theme color */
+.greeting-main {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.004em;
+  background: linear-gradient(
+    118deg,
+    var(--carbon) 26%,
+    color-mix(in srgb, var(--carbon) 48%, var(--racing)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Date line: muted with a small glowing theme pip leading it */
+.greeting-text .dateline {
+  color: color-mix(in srgb, var(--ink-muted) 82%, var(--racing) 18%);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  margin-top: 3px;
+}
+.greeting-text .dateline::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--racing);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--racing) 65%, transparent);
+  vertical-align: middle;
+  transform: translateY(-1px);
+}
+
+/* Avatar: themed double ring + soft theme glow, online pip, lifts on hover */
+.avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+.profile-menu-card .user-avatar {
+  display: block;
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 4px color-mix(in srgb, var(--racing) 60%, transparent),
+    0 6px 16px rgba(0, 0, 0, 0.2);
+}
+.profile-menu-card:hover .user-avatar {
+  transform: scale(1.06);
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 4px var(--racing),
+    0 8px 22px rgba(0, 0, 0, 0.24),
+    0 0 18px color-mix(in srgb, var(--racing) 42%, transparent);
+}
+
+/* Online dot: glossy radial sphere on the avatar corner */
+.avatar-wrap::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #7ef2b1 0%, #16c062 66%);
+  border: 2.5px solid var(--paper);
+  box-shadow: 0 0 0 0 rgba(47, 210, 122, 0.6);
+  animation: rlPulse 1.8s ease-out infinite;
+}
+
+/* Hairline divider between the profile and the menu trigger */
+.pmc-divider {
+  width: 1px;
+  height: 26px;
+  flex: none;
+  border-radius: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--ink) 22%, transparent) 50%,
+    transparent);
+}
+
+/* Hamburger lines living inside the pill */
+.hamburger-lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 22px;
+  height: 15px;
+  flex: none;
+}
+.hamburger-lines span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ink);
+  transform-origin: left center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.profile-menu-card:hover .hamburger-lines span {
+  background: var(--racing);
+}
+
+/* Morph to an X when the menu is open */
+.profile-menu-card.open .hamburger-lines span:nth-child(1) {
+  transform: rotate(45deg) translate(2px, -1px);
+  background: var(--racing);
+}
+.profile-menu-card.open .hamburger-lines span:nth-child(2) {
+  opacity: 0;
+  transform: translateX(8px);
+}
+.profile-menu-card.open .hamburger-lines span:nth-child(3) {
+  transform: rotate(-45deg) translate(2px, 1px);
+  background: var(--racing);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .greeting-box::after,
+  .avatar-wrap::after,
+  .profile-menu-card,
   .title-wrap::after {
     animation: none;
   }

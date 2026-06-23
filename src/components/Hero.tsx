@@ -82,30 +82,36 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
         </div>
 
         <div className="brand-right">
-          {user ? (
-            <div className="greeting-box">
-              <div className="greeting-text">
-                <span className="greeting-main">{greeting}</span>
-                <span className="dateline">{dateline}</span>
-              </div>
-              <img
-                src={user.picture}
-                alt={user.name}
-                className="user-avatar"
-              />
-            </div>
-          ) : (
-            <div className="dateline">{dateline}</div>
-          )}
-
           <button
-            className={`hamburger-btn ${isMenuOpen ? 'open' : ''}`}
+            className={`profile-menu-card ${isMenuOpen ? 'open' : ''} ${user ? '' : 'guest'}`}
             onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
-            aria-label="Toggle Menu"
+            aria-label="Open menu"
+            aria-expanded={isMenuOpen}
           >
-            <span></span>
-            <span></span>
-            <span></span>
+            {user ? (
+              <>
+                <span className="greeting-text">
+                  <span className="greeting-main">{greeting}</span>
+                  <span className="dateline">{dateline}</span>
+                </span>
+                <span className="avatar-wrap">
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    className="user-avatar"
+                  />
+                </span>
+              </>
+            ) : (
+              <span className="dateline">{dateline}</span>
+            )}
+
+            <span className="pmc-divider" aria-hidden="true"></span>
+            <span className="hamburger-lines" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
           </button>
         </div>
       </div>
