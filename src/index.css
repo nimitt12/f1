@@ -7611,16 +7611,17 @@ body {
   z-index: 1;
 }
 
-/* Circuit silhouette — the card's signature motif (real track geometry) */
+/* Circuit silhouette — confined to the lower region so it never crosses the
+   country/name text above it (keeps the card legible, not cluttered) */
 .cal-round > .cal-track {
   position: absolute;
-  top: 42px;
-  left: 14px;
-  right: 14px;
-  bottom: 56px;
+  top: 50%;
+  left: 16px;
+  right: 16px;
+  bottom: 92px;
   z-index: 0;
   color: var(--ink);
-  opacity: 0.13;
+  opacity: 0.12;
   pointer-events: none;
   transition: opacity 0.3s var(--ease), color 0.3s var(--ease);
 }
