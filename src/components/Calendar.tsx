@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { COUNTRY_FLAGS, fetchRaces, type Race } from '../data/races';
+import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 
 // Re-exported so existing consumers (App, RaceDetails) can keep importing the
 // canonical Race type from here; the definition now lives in src/data/races.ts.
@@ -141,9 +142,21 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
               const countryName = race.Circuit.Location.country.trim();
               const countryCode = COUNTRY_FLAGS[countryName];
               const countryEmoji = <Flag code={countryCode} />;
+              const trackPath = TRACK_PATHS[race.Circuit.circuitId || ''];
 
               return (
                 <div key={race.round} data-round={displayRound} className={`cal-round ${isDone && !isNext ? 'done' : ''} ${isNext ? 'next' : ''}`}>
+                  {trackPath && (
+                    <svg
+                      className="cal-track"
+                      viewBox={TRACK_VIEWBOX}
+                      fill="none"
+                      preserveAspectRatio="xMidYMid meet"
+                      aria-hidden="true"
+                    >
+                      <path d={trackPath} vectorEffect="non-scaling-stroke" />
+                    </svg>
+                  )}
                   <div className="cal-rnum">
                     <span className="cal-rnum-id">
                       R#{displayRound}
