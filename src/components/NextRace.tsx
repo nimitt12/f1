@@ -2,6 +2,23 @@ import React, { useState, useEffect } from 'react';
 import Loader from './Loader';
 import Tilt from './Tilt';
 import { COUNTRY_FLAGS, RACES as RACES_FALLBACK, fetchRaces, type Race } from '../data/races';
+import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
+
+const TrackSilhouette: React.FC<{ circuitId?: string }> = ({ circuitId }) => {
+  const path = TRACK_PATHS[circuitId || ''];
+  if (!path) return null;
+  return (
+    <svg
+      className="race-track-bg"
+      viewBox={TRACK_VIEWBOX}
+      fill="none"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+    >
+      <path d={path} vectorEffect="non-scaling-stroke" />
+    </svg>
+  );
+};
 
 const Flag: React.FC<{ code: string }> = ({ code }) => {
   if (!code || code.length !== 2 || code === '🏁') return <span style={{ fontSize: '24px' }}>🏁</span>;
@@ -121,6 +138,7 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
   return (
     <section className="race-hero">
       <div className="race-block upcoming">
+        <TrackSilhouette circuitId={nextRace.Circuit.circuitId} />
         <div className="race-grid">
           <div className="race-left">
             <div className="race-meta-row">
@@ -205,6 +223,7 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
       <div className="race-block previous" style={{
         marginTop: '0px',
       }}>
+        <TrackSilhouette circuitId={prevRace.Circuit.circuitId} />
         <div className="race-grid">
           <div className="race-left">
             <div className="race-meta-row">
