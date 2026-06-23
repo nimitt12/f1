@@ -4,18 +4,27 @@ import Tilt from './Tilt';
 import { COUNTRY_FLAGS, RACES as RACES_FALLBACK, fetchRaces, type Race } from '../data/races';
 import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 
-const TrackSilhouette: React.FC<{ circuitId?: string }> = ({ circuitId }) => {
+const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean }> = ({ circuitId, live }) => {
   const path = TRACK_PATHS[circuitId || ''];
   if (!path) return null;
   return (
     <svg
-      className="race-track-bg"
+      className={`race-track-bg ${live ? 'is-live' : ''}`}
       viewBox={TRACK_VIEWBOX}
       fill="none"
       preserveAspectRatio="xMidYMid meet"
       aria-hidden="true"
     >
-      <path d={path} vectorEffect="non-scaling-stroke" />
+      {/* Faint circuit outline */}
+      <path className="track-base" d={path} pathLength={100} vectorEffect="non-scaling-stroke" />
+      {live && (
+        <>
+          {/* Glowing light streak that laps the circuit */}
+          <path className="track-comet" d={path} pathLength={100} vectorEffect="non-scaling-stroke" />
+          {/* Bright leading dot at the head of the streak */}
+          <path className="track-spark" d={path} pathLength={100} vectorEffect="non-scaling-stroke" />
+        </>
+      )}
     </svg>
   );
 };
@@ -138,7 +147,7 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
   return (
     <section className="race-hero">
       <div className="race-block upcoming">
-        <TrackSilhouette circuitId={nextRace.Circuit.circuitId} />
+        <TrackSilhouette circuitId={nextRace.Circuit.circuitId} live />
         <div className="race-grid">
           <div className="race-left">
             <div className="race-meta-row">
