@@ -2481,12 +2481,13 @@ body {
 }
 
 .col-head {
-  padding: 24px 36px;
-  background: #000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 26px 36px;
+  background: linear-gradient(180deg, rgba(12, 12, 15, 0.96), rgba(6, 6, 8, 0.7));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
   z-index: 5;
+  backdrop-filter: blur(10px);
 }
 
 .col-num {
@@ -2514,12 +2515,26 @@ body {
 }
 
 .col-sub {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--paper-2);
-  margin-top: 9px;
+  margin-top: 11px;
+}
+
+.col-sub::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--racing);
+  box-shadow: 0 0 8px var(--racing);
+  animation: pulseDot 1.8s ease infinite;
 }
 
 .driver-row {
@@ -2771,233 +2786,333 @@ body {
 }
 
 .podium-block {
-  padding: 22px 24px;
-  border-bottom: 1px solid var(--rule-light);
+  padding: 22px 24px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, 0.025), transparent 60%);
 }
 
 .podium-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 15px;
-  letter-spacing: 0.16em;
+  font-size: 12px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--paper);
-  margin-bottom: 14px;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.podium-head::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--racing);
+  box-shadow: 0 0 8px var(--racing);
 }
 
 .podium-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
+/* Leaderboard rows with a proportional points bar behind the content */
 .pod-row {
   display: grid;
-  grid-template-columns: 32px 1fr auto;
+  grid-template-columns: 40px 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 14px;
+  padding: 13px 16px;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.022);
   overflow: hidden;
-  animation: podiumFloat 6s ease-in-out infinite;
+  transition:
+    transform 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    background 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
 }
 
-.pod-row:nth-child(2) {
-  animation-delay: 1s;
-}
-.pod-row:nth-child(3) {
-  animation-delay: 2s;
-}
-
-.pod-row::after {
-  content: "";
+.pod-bar {
   position: absolute;
-  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  animation: podiumSweep 8s infinite linear;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
   pointer-events: none;
+  border-radius: 14px 0 0 14px;
+  opacity: 0.16;
+  width: 0;
+  animation: podBarGrow 1.1s var(--ease-out) both 0.2s;
 }
 
-.pod-row:hover {
-  transform: translateX(3px);
+@keyframes podBarGrow {
+  from { transform: scaleX(0); transform-origin: left; }
+  to { transform: scaleX(1); transform-origin: left; }
+}
+
+.pod-row > *:not(.pod-bar) {
+  position: relative;
+  z-index: 1;
 }
 
 .pod-row.p1 {
-  background: linear-gradient(90deg, rgba(212, 160, 23, 0.15), transparent);
+  border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+}
+.pod-row.p1 .pod-bar {
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0.24;
+}
+.pod-row.p2 .pod-bar {
+  background: linear-gradient(90deg, #c8c8d2, transparent);
+}
+.pod-row.p3 .pod-bar {
+  background: linear-gradient(90deg, #c8843f, transparent);
 }
 
-.pod-row.p2 {
-  background: linear-gradient(90deg, rgba(160, 160, 160, 0.12), transparent);
+.pod-row:hover {
+  transform: translateX(4px);
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
-.pod-row.p3 {
-  background: linear-gradient(90deg, rgba(176, 108, 48, 0.12), transparent);
-}
-
+/* Medallic position badges */
 .pod-badge {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
   font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 700;
-  text-align: center;
-  padding: 6px 0;
-  color: #fff;
-  letter-spacing: 0.04em;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #1a1205;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25),
+    0 4px 10px rgba(0, 0, 0, 0.35);
 }
 
 .p1 .pod-badge {
-  background: #d4a017;
-  animation: podiumPulse 3s infinite ease-in-out;
+  background: linear-gradient(150deg, #ffe79a 0%, #f5c042 45%, #b8860b 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25),
+    0 0 18px color-mix(in srgb, var(--gold) 55%, transparent);
 }
-
 .p2 .pod-badge {
-  background: #a0a0a0;
+  background: linear-gradient(150deg, #f4f4f7 0%, #c2c2cc 50%, #8c8c96 100%);
+}
+.p3 .pod-badge {
+  background: linear-gradient(150deg, #f0b878 0%, #c8843f 50%, #8a5422 100%);
+  color: #fff;
 }
 
-.p3 .pod-badge {
-  background: #b06c30;
+.pod-info {
+  min-width: 0;
 }
 
 .pod-driver-name {
   font-family: var(--font-display);
   font-size: 18px;
-  font-weight: 500;
-  color: #fff; /* Force white for visibility */
+  font-weight: 600;
+  color: #fff;
   letter-spacing: -0.01em;
-  line-height: 1;
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pod-driver-team {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
-  margin-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 5px;
 }
 
 .pod-time {
   font-family: var(--font-display);
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.8); /* Light gray */
-  font-weight: 500;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  color: #fff;
+}
+
+.pod-pts-val {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.pod-pts-unit {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .news-block {
-  padding: 24px;
+  padding: 22px 24px 26px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .news-item {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 24px;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.012));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 22px 24px 22px 26px;
   overflow: hidden;
+  transition:
+    transform 0.4s var(--ease-out),
+    border-color 0.35s var(--ease),
+    box-shadow 0.35s var(--ease),
+    background 0.35s var(--ease);
 }
 
+/* Accent rail */
 .news-item::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--carbon-3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: rgba(255, 255, 255, 0.12);
+  transition: all 0.35s var(--ease);
+}
+
+.news-item.lead {
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--racing) 13%, transparent), transparent 52%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+  border-color: color-mix(in srgb, var(--racing) 22%, rgba(255, 255, 255, 0.08));
 }
 
 .news-item.lead::before {
-  background: var(--racing);
+  background: linear-gradient(180deg, var(--racing), var(--racing-hot));
+  box-shadow: 0 0 14px var(--racing);
 }
 
 .news-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
 }
 
 .news-item:hover::before {
-  width: 6px;
+  top: 0;
+  bottom: 0;
   background: var(--racing);
-  box-shadow: 0 0 15px var(--racing);
+  box-shadow: 0 0 16px var(--racing);
 }
 
 .news-meta {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .news-kicker {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 4px 8px;
-  background: rgba(225, 6, 0, 0.15);
+  padding: 4px 9px;
+  background: color-mix(in srgb, var(--racing) 16%, transparent);
   color: var(--racing-hot);
-  border: 1px solid rgba(225, 6, 0, 0.3);
-  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--racing) 32%, transparent);
+  border-radius: 5px;
   font-weight: 700;
 }
 
 .news-item.neutral .news-kicker {
   background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .news-date {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.4);
   font-weight: 500;
 }
 
 .news-num {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.15);
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.1);
   font-weight: 800;
+  letter-spacing: 0.02em;
   margin-left: auto;
 }
 
 .news-headline {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 600;
   line-height: 1.35;
   color: #fff;
   letter-spacing: -0.01em;
-  margin-bottom: 12px;
+  margin-bottom: 11px;
+  transition: color 0.3s var(--ease);
 }
 
 .news-item.lead .news-headline {
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 700;
+}
+
+.news-item:hover .news-headline {
   color: var(--racing-hot-ticker);
 }
 
 .news-body {
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.55);
   display: -webkit-box;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.news-go {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--racing-hot);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.news-item:hover .news-go {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* News Modal Premium UI */
@@ -3387,7 +3502,10 @@ body {
 
 .col,
 .col:last-child {
-  background: #000 !important;
+  background:
+    radial-gradient(130% 80% at 0% 0%, rgba(255, 255, 255, 0.04), transparent 42%),
+    radial-gradient(120% 120% at 100% 0%, color-mix(in srgb, var(--racing) 9%, transparent), transparent 46%),
+    linear-gradient(180deg, #0c0c0f 0%, #060607 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 32px;
   backdrop-filter: none;
@@ -7057,13 +7175,7 @@ body {
   background: linear-gradient(90deg, var(--racing), var(--racing-hot));
 }
 
-/* --- News intel --- */
-.news-item {
-  transition: transform 0.4s var(--ease-out), background 0.3s var(--ease);
-}
-.news-item:hover {
-  transform: translateX(3px);
-}
+/* --- News intel: hover lift handled in the base rule above --- */
 
 /* ============================================================
    NextRace — premium pass.

@@ -177,16 +177,36 @@ const NewsIntel: React.FC = () => {
         <div className="podium-list">
           {podiumLoading ? (
             <Loader label="Updating podium" size={28} variant="inline" className="news-podium-loader" />
-          ) : podiumResults.map((result) => (
-            <div key={result.position} className={`pod-row p${result.position}`}>
-              <div className="pod-badge">P{result.position}</div>
-              <div>
-                <div className="pod-driver-name">{result.Driver.givenName} {result.Driver.familyName}</div>
-                <div className="pod-driver-team">{result.Constructor.name} · #{result.Driver.permanentNumber}</div>
-              </div>
-              <div className="pod-time">{result.Time?.time || 'DNF'}</div>
-            </div>
-          ))}
+          ) : (() => {
+            const maxPoints = podiumResults.reduce(
+              (m, r) => Math.max(m, parseInt(r.Time?.time || '0', 10) || 0),
+              0,
+            );
+            return podiumResults.map((result) => {
+              const pts = parseInt(result.Time?.time || '0', 10) || 0;
+              const pct = maxPoints ? Math.max(10, Math.round((pts / maxPoints) * 100)) : 0;
+              return (
+                <div key={result.position} className={`pod-row p${result.position}`}>
+                  <span className="pod-bar" style={{ width: `${pct}%` }} aria-hidden="true"></span>
+                  <div className="pod-badge">P{result.position}</div>
+                  <div className="pod-info">
+                    <div className="pod-driver-name">{result.Driver.givenName} {result.Driver.familyName}</div>
+                    <div className="pod-driver-team">{result.Constructor.name} · #{result.Driver.permanentNumber}</div>
+                  </div>
+                  <div className="pod-time">
+                    {result.Time?.time ? (
+                      <>
+                        <span className="pod-pts-val">{pts}</span>
+                        <span className="pod-pts-unit">PTS</span>
+                      </>
+                    ) : (
+                      'DNF'
+                    )}
+                  </div>
+                </div>
+              );
+            });
+          })()}
         </div>
       </div>
 
@@ -210,6 +230,7 @@ const NewsIntel: React.FC = () => {
             <div className="news-content-wrap">
               <h3 className="news-headline">{item.title}</h3>
               <p className="news-body">{item.summary}</p>
+              <span className="news-go" aria-hidden="true">Read Release →</span>
             </div>
           </article>
         ))}
