@@ -4611,13 +4611,15 @@ body {
   position: fixed;
   inset: 0;
   z-index: 999999;
-  background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+  background:
+    radial-gradient(120% 90% at 50% 38%, #16131f 0%, #0a0810 45%, #050406 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   transition:
-    opacity 0.5s ease-in-out,
-    visibility 0.5s ease-in-out;
+    opacity 0.65s cubic-bezier(0.7, 0, 0.84, 0),
+    visibility 0.65s ease;
 }
 
 .boot-loader.fade-out {
@@ -4626,66 +4628,302 @@ body {
   pointer-events: none;
 }
 
+/* Clean "launch forward" exit once the lights are out */
+.boot-loader.fade-out .boot-content {
+  animation: bootLaunch 0.65s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+}
+
+@keyframes bootLaunch {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(1.14);
+    filter: blur(8px);
+  }
+}
+
+/* Ambient layers ease away for a clean clear-out */
+.boot-loader.fade-out .boot-aura,
+.boot-loader.fade-out .boot-grid,
+.boot-loader.fade-out .boot-vignette {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* Ambient color blooms drifting behind the content */
+.boot-aura {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.boot-aura-a {
+  width: 60vmax;
+  height: 60vmax;
+  top: -20vmax;
+  left: 50%;
+  background: radial-gradient(circle, var(--racing) 0%, transparent 68%);
+  transform: translateX(-60%);
+  animation: bootAuraA 9s ease-in-out infinite alternate;
+}
+
+.boot-aura-b {
+  width: 50vmax;
+  height: 50vmax;
+  bottom: -18vmax;
+  left: 50%;
+  background: radial-gradient(circle, #ff1801 0%, transparent 68%);
+  opacity: 0.4;
+  transform: translateX(-40%);
+  animation: bootAuraB 11s ease-in-out infinite alternate;
+}
+
+@keyframes bootAuraA {
+  from { transform: translateX(-62%) translateY(0) scale(1); }
+  to { transform: translateX(-52%) translateY(4vmax) scale(1.12); }
+}
+
+@keyframes bootAuraB {
+  from { transform: translateX(-44%) translateY(0) scale(1.05); }
+  to { transform: translateX(-34%) translateY(-3vmax) scale(0.95); }
+}
+
+/* Subtle perspective grid for that telemetry feel */
+.boot-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 72%);
+  opacity: 0.6;
+}
+
+.boot-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+/* Full-screen flash when the lights go out */
+.boot-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.9) 0%, rgba(168, 85, 247, 0.35) 30%, transparent 60%);
+}
+
+.boot-loader.go .boot-flash {
+  animation: bootFlash 0.7s ease-out forwards;
+}
+
+@keyframes bootFlash {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 .boot-content {
+  position: relative;
+  z-index: 2;
   text-align: center;
+  animation: bootContentIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes bootContentIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
 .boot-title {
+  position: relative;
   font-family: var(--font-alt);
-  font-size: 64px;
+  font-size: 72px;
   color: #fff;
-  margin-bottom: 40px;
+  margin-bottom: 48px;
   letter-spacing: -0.02em;
+  font-weight: 800;
+  text-shadow: 0 0 38px rgba(255, 255, 255, 0.18);
 }
 
-.boot-title span:not(.dot) {
+.boot-title .boot-pit {
   font-style: italic;
   font-weight: 800;
-  color: var(--racing);
+  background: linear-gradient(120deg, var(--racing-hot) 0%, var(--racing) 55%, var(--racing-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 26px color-mix(in srgb, var(--racing) 55%, transparent));
 }
 
 .boot-title .dot {
   color: var(--racing);
+  filter: drop-shadow(0 0 16px var(--racing));
+}
+
+/* Sheen sweep across the wordmark */
+.boot-title::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.7) 50%, transparent 62%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  mix-blend-mode: screen;
+  background-size: 250% 100%;
+  animation: bootSheen 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bootSheen {
+  0% { background-position: 180% 0; }
+  55%, 100% { background-position: -80% 0; }
 }
 
 .starting-lights {
   display: flex;
-  gap: 15px;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 34px;
 }
 
-.light-box {
-  width: 40px;
-  height: 40px;
-  background: #111;
+/* The gantry rail holding the five light pods */
+.lights-gantry {
+  display: flex;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #1a1a1d 0%, #0c0c0e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.7);
+}
+
+.light-pod {
+  position: relative;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  padding: 4px;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
+  background: radial-gradient(circle at 50% 35%, #1c1c1f 0%, #050505 75%);
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.9),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The little hood/visor above each light */
+.light-hood {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 12px;
+  border-radius: 38px 38px 6px 6px;
+  background: linear-gradient(180deg, #2a2a2e 0%, #131315 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .light {
-  width: 100%;
-  height: 100%;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #222;
-  transition: background 0.1s;
+  background: radial-gradient(circle at 38% 32%, #3a1010 0%, #1a0606 70%);
+  transition:
+    background 0.18s ease,
+    box-shadow 0.25s ease;
 }
 
 .light.on {
-  background: #ff1801;
+  background: radial-gradient(circle at 38% 32%, #ffd9d3 0%, #ff3b22 38%, #ff1801 70%);
   box-shadow:
-    0 0 20px #ff1801,
-    inset 0 0 10px rgba(255, 255, 255, 0.5);
+    0 0 16px 2px rgba(255, 24, 1, 0.85),
+    0 0 38px 6px rgba(255, 24, 1, 0.45),
+    inset 0 0 8px rgba(255, 255, 255, 0.6);
+  animation: bootLightPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bootLightPop {
+  0% { transform: scale(0.7); }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* Thin telemetry progress bar */
+.boot-progress {
+  width: 320px;
+  max-width: 70vw;
+  height: 3px;
+  margin: 0 auto 22px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.boot-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--racing-deep), var(--racing), var(--racing-hot));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--racing) 70%, transparent);
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .boot-status {
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 0.3em;
-  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.34em;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.boot-status.go-text {
+  color: #ff1801;
+  letter-spacing: 0.5em;
   font-weight: 800;
+  text-shadow: 0 0 22px rgba(255, 24, 1, 0.7);
+  animation: bootGoText 0.5s ease-out;
+}
+
+@keyframes bootGoText {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.boot-caret {
+  display: inline-block;
+  margin-left: 2px;
+  animation: bootCaret 1s steps(1) infinite;
+}
+
+@keyframes bootCaret {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-aura,
+  .boot-title::after,
+  .boot-caret,
+  .light.on {
+    animation: none;
+  }
 }
 
 /* --- HAMBURGER MENU & OVERLAY --- */
@@ -6652,25 +6890,9 @@ body {
   box-shadow: var(--elev-dark);
 }
 
-/* Glowing team-accent rail down the left edge — the signature the old
-   thick red top-border used to carry, but softer and more crafted. */
+/* (Left team-accent rail removed per design — keep the upcoming block's edge clean.) */
 .race-block.upcoming::after {
-  content: "";
-  display: block;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: auto;
-  width: 4px;
-  height: auto;
-  background: linear-gradient(180deg, var(--racing), var(--racing-hot));
-  box-shadow: 0 0 22px var(--racing);
-  background-color: transparent;
-  background-size: auto;
-  background-position: 0 0;
-  opacity: 1;
-  mask-image: none;
-  -webkit-mask-image: none;
+  display: none;
 }
 
 /* Faded checker motif, top-right — kept as an F1 nod but dialled right back
