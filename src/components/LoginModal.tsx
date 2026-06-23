@@ -69,13 +69,25 @@ const LoginModal: React.FC<LoginModalProps> = ({
           </h3>
           <p className="modal-text">{subtitle}</p>
           <div className="modal-action">
-            <GoogleLogin 
+            <GoogleLogin
               onSuccess={handleSuccess}
               onError={() => console.log('Login Failed')}
               theme="filled_black"
               shape="pill"
               width="250"
             />
+          </div>
+          <div className="modal-secure">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M6 10V8a6 6 0 1112 0v2m-13 0h14a1 1 0 011 1v8a1 1 0 01-1 1H5a1 1 0 01-1-1v-8a1 1 0 011-1z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Secure Google sign-in
           </div>
         </div>
       </div>

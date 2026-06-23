@@ -103,7 +103,13 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
                 </span>
               </>
             ) : (
-              <span className="dateline">{dateline}</span>
+              <span className="greeting-text guest-greeting">
+                <span className="guest-signin">
+                  Sign In
+                  <span className="guest-signin-arrow" aria-hidden="true">→</span>
+                </span>
+                <span className="dateline">{dateline}</span>
+              </span>
             )}
 
             <span className="pmc-divider" aria-hidden="true"></span>
@@ -169,13 +175,28 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
                 </>
               ) : (
                 <div className="menu-login-wrap">
-                  <div style={{ marginBottom: '16px', fontFamily: '"JetBrains Mono", monospace', fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>SIGN IN TO PITWALL</div>
-                  <GoogleLogin
-                    onSuccess={handleLoginSuccess}
-                    onError={() => console.log('Login Failed')}
-                    theme="filled_black"
-                    shape="pill"
-                  />
+                  <div className="menu-login-label">Sign in to Pitwall</div>
+                  <p className="menu-login-sub">Unlock favorite driver tracking, personalized race times, and exclusive paddock insights.</p>
+                  <div className="modal-action">
+                    <GoogleLogin
+                      onSuccess={handleLoginSuccess}
+                      onError={() => console.log('Login Failed')}
+                      theme="filled_black"
+                      shape="pill"
+                    />
+                  </div>
+                  <div className="modal-secure">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M6 10V8a6 6 0 1112 0v2m-13 0h14a1 1 0 011 1v8a1 1 0 01-1 1H5a1 1 0 01-1-1v-8a1 1 0 011-1z"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Secure Google sign-in
+                  </div>
                 </div>
               )}
             </div>

@@ -3680,8 +3680,10 @@ body {
 .battle-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(12px);
+  background:
+    radial-gradient(120% 90% at 50% 30%, rgba(20, 20, 26, 0.55), rgba(0, 0, 0, 0.9)),
+    rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(14px);
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -3690,101 +3692,233 @@ body {
 }
 
 .battle-modal-card {
-  background: #111;
+  background:
+    linear-gradient(165deg, #17171c 0%, #101013 48%, #0a0a0c 100%);
   width: 90%;
   max-width: 440px;
-  border-radius: 32px;
+  border-radius: 28px;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 50px 150px rgba(0, 0, 0, 0.8);
-  animation: modalScale 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 50px 150px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: modalScale 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ambient accent bloom glowing from the top of the card */
+.battle-modal-card::before {
+  content: "";
+  position: absolute;
+  top: -45%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130%;
+  height: 90%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--racing) 24%, transparent) 0%,
+    transparent 68%
+  );
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
 }
 
 @keyframes modalScale {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.92) translateY(10px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
+/* Header band — carbon-fibre weave with a glowing accent hairline + sheen */
 .modal-checker {
-  height: 60px;
-  background: repeating-linear-gradient(
-    45deg,
-    #222,
-    #222 20px,
-    #111 20px,
-    #111 40px
-  );
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  height: 56px;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 13px),
+    repeating-linear-gradient(65deg, rgba(0, 0, 0, 0.25) 0 1px, transparent 1px 13px),
+    linear-gradient(180deg, #1a1a1f 0%, #0e0e11 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.modal-checker::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.07) 50%, transparent 62%);
+  background-size: 250% 100%;
+  animation: modalSheen 5.5s ease-in-out infinite;
+}
+
+.modal-checker::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--racing), transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--racing) 70%, transparent);
+}
+
+@keyframes modalSheen {
+  0% { background-position: 180% 0; }
+  55%, 100% { background-position: -80% 0; }
 }
 
 .modal-close {
   position: absolute;
-  top: 10px;
+  top: 12px;
   right: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  color: #fff;
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 22px;
+  line-height: 1;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   cursor: pointer;
   z-index: 10;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.35s var(--ease);
 }
 
 .modal-close:hover {
   background: var(--racing);
+  border-color: var(--racing);
+  color: #fff;
   transform: rotate(90deg);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--racing) 55%, transparent);
 }
 
 .modal-content {
-  padding: 40px;
+  position: relative;
+  z-index: 1;
+  padding: 38px 40px 40px;
   text-align: center;
 }
 
 .modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.3em;
   color: var(--racing);
   text-transform: uppercase;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   font-weight: 800;
+}
+
+.modal-eyebrow::before,
+.modal-eyebrow::after {
+  content: "";
+  width: 26px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--racing));
+}
+.modal-eyebrow::after {
+  background: linear-gradient(90deg, var(--racing), transparent);
 }
 
 .modal-title {
   font-family: var(--font-alt);
-  font-size: 32px;
+  font-size: 33px;
   font-weight: 800;
   color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
 }
 
 .modal-title em {
   font-style: italic;
-  color: var(--racing);
+  background: linear-gradient(120deg, var(--racing-hot), var(--racing));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px color-mix(in srgb, var(--racing) 45%, transparent));
 }
 
 .modal-text {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 32px;
+  color: rgba(255, 255, 255, 0.58);
+  margin-bottom: 30px;
+  max-width: 330px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .modal-action {
+  position: relative;
   display: flex;
   justify-content: center;
+}
+
+/* Soft accent halo behind the Google button */
+.modal-action::before {
+  content: "";
+  position: absolute;
+  inset: -10px -24px;
+  background: radial-gradient(
+    60% 120% at 50% 50%,
+    color-mix(in srgb, var(--racing) 28%, transparent),
+    transparent 70%
+  );
+  filter: blur(12px);
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.modal-action > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Reassurance line under the sign-in button */
+.modal-secure {
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.modal-secure svg {
+  width: 11px;
+  height: 11px;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-checker::before {
+    animation: none;
+  }
 }
 
 .battle-container {
@@ -5058,6 +5192,64 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* Guest sign-in block — matches the LoginModal's premium treatment */
+.menu-login-wrap {
+  position: relative;
+  text-align: center;
+  padding: 26px 22px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(130% 90% at 50% 0%, color-mix(in srgb, var(--racing) 13%, transparent), transparent 62%),
+    rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.menu-login-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--racing), transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--racing) 60%, transparent);
+}
+
+.menu-login-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--racing);
+  margin-bottom: 8px;
+}
+
+.menu-login-label::before,
+.menu-login-label::after {
+  content: "";
+  width: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--racing));
+}
+.menu-login-label::after {
+  background: linear-gradient(90deg, var(--racing), transparent);
+}
+
+.menu-login-sub {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 auto 20px;
+  max-width: 260px;
 }
 
 .menu-action-btn {
@@ -7385,6 +7577,36 @@ body {
 
 .profile-menu-card.guest {
   padding-left: 18px;
+}
+
+/* Guest "Sign In" affordance — sits where the name shows when logged in */
+.guest-signin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  background: linear-gradient(
+    118deg,
+    var(--carbon) 18%,
+    color-mix(in srgb, var(--carbon) 35%, var(--racing)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.guest-signin-arrow {
+  -webkit-text-fill-color: var(--racing);
+  color: var(--racing);
+  font-weight: 700;
+  transition: transform 0.4s var(--ease);
+}
+
+.profile-menu-card.guest:hover .guest-signin-arrow {
+  transform: translateX(4px);
 }
 
 @keyframes greetSheen {
