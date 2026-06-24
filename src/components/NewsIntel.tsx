@@ -10,88 +10,13 @@ interface NewsItem {
   fullContent: string;
   category: string;
   pubDate: string;
-}
-
-interface RaceResult {
-  position: string;
-  Driver: {
-    givenName: string;
-    familyName: string;
-    permanentNumber: string;
-    code?: string;
-  };
-  Constructor: {
-    constructorId: string;
-    name: string;
-  };
-  Time?: {
-    time: string;
-  };
-}
-
-interface ApiDriverRanking {
-  id: string;
-  driver_id: string;
-  season: string;
-  rounds: string;
-  wins: string;
-  points: string;
-  position: string;
-  given_name: string;
-  family_name: string;
-  code: string;
-  number: string;
-  nationality: string;
-  constructor_name: string;
+  image?: string;
 }
 
 const NewsIntel: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
-  
-  const [podiumResults, setPodiumResults] = useState<RaceResult[]>([]);
-  const [raceInfo, setRaceInfo] = useState<{ name: string; circuit: string } | null>(null);
-  const [podiumLoading, setPodiumLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPodium = async () => {
-      try {
-        const response = await fetch('https://pitwall-backend-dq9r.onrender.com/drivers/get-all-drivers-season-rankings');
-        const data: ApiDriverRanking[] = await response.json();
-        
-        // Map top 3 from season rankings to the podium display
-        const top3 = data.slice(0, 3).map((item: ApiDriverRanking) => ({
-          position: item.position,
-          Driver: {
-            givenName: item.given_name,
-            familyName: item.family_name,
-            permanentNumber: item.number,
-            code: item.code
-          },
-          Constructor: {
-            constructorId: item.code, 
-            name: item.constructor_name
-          },
-          Time: {
-            time: `${item.points} PTS`
-          }
-        }));
-
-        setRaceInfo({
-          name: "Top 3 Championship Contenders",
-          circuit: "Season 2026"
-        });
-        setPodiumResults(top3);
-      } catch (err) {
-        console.error('Failed to fetch dynamic podium', err);
-      } finally {
-        setPodiumLoading(false);
-      }
-    };
-
-    fetchPodium();
-  }, []);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -102,37 +27,70 @@ const NewsIntel: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Pull an image out of an RSS <item> wherever the feed happens to put one:
+    // <enclosure>, the media: namespace, or an <img> embedded in the HTML body.
+    const extractImage = (item: Element): string | undefined => {
+      const enclosure = item.querySelector('enclosure');
+      const encUrl = enclosure?.getAttribute('url');
+      if (encUrl && /^image\//i.test(enclosure?.getAttribute('type') || 'image/')) {
+        return encUrl;
+      }
+
+      // media:content / media:thumbnail (namespaced — getElementsByTagName keeps the prefix)
+      const mediaTags = ['media:content', 'media:thumbnail'];
+      for (const tag of mediaTags) {
+        const el = item.getElementsByTagName(tag)[0];
+        const url = el?.getAttribute('url');
+        if (url) return url;
+      }
+
+      // First <img> inside description or content:encoded HTML
+      const htmlBlob =
+        item.getElementsByTagName('content:encoded')[0]?.textContent ||
+        item.querySelector('description')?.textContent ||
+        '';
+      const imgMatch = htmlBlob.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (imgMatch) return imgMatch[1];
+
+      return undefined;
+    };
+
     const fetchNews = async () => {
       try {
-        const response = await fetch('/fia-news');
+        const response = await fetch('/f1-news');
         const xmlText = await response.text();
-        
+
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
         const items = xmlDoc.querySelectorAll('item');
-        
+
         const parsedItems: NewsItem[] = Array.from(items).slice(0, 10).map((item, index) => {
           const title = item.querySelector('title')?.textContent || '';
           const link = item.querySelector('link')?.textContent || '';
-          const pubDate = item.querySelector('pubDate')?.textContent || '';
-          
+          const pubDate =
+            item.querySelector('pubDate')?.textContent ||
+            item.getElementsByTagName('dc:date')[0]?.textContent ||
+            '';
+
           const rawDescription = item.querySelector('description')?.textContent || '';
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = rawDescription;
-          
+
           // Full content (cleaned but not truncated)
           const fullContent = tempDiv.querySelector('p')?.textContent || tempDiv.textContent || '';
-          
+
           // Truncated summary for the list
           let summary = fullContent;
           if (summary.length > 160) {
             summary = summary.substring(0, 157) + '...';
           }
 
-          let category = 'FIA Official';
-          if (title.toLowerCase().includes('f1') || title.toLowerCase().includes('formula 1')) category = 'Formula 1';
-          if (title.toLowerCase().includes('wrc')) category = 'WRC';
-          if (title.toLowerCase().includes('circuit')) category = 'Circuit';
+          let category = 'Formula 1';
+          const t = title.toLowerCase();
+          if (t.includes('f1 academy') || t.includes('academy')) category = 'F1 Academy';
+          else if (t.includes('f2') || t.includes('formula 2')) category = 'Formula 2';
+          else if (t.includes('f3') || t.includes('formula 3')) category = 'Formula 3';
+          else if (t.includes('fantasy')) category = 'F1 Fantasy';
 
           return {
             id: `news-${index}`,
@@ -141,14 +99,14 @@ const NewsIntel: React.FC = () => {
             summary,
             fullContent,
             category,
-            pubDate
+            pubDate,
+            image: extractImage(item),
           };
         });
 
-        console.log("🚀 ~ fetchNews ~ parsedItems:", parsedItems)
         setNews(parsedItems);
       } catch (err) {
-        console.error('Failed to fetch FIA news:', err);
+        console.error('Failed to fetch F1 news:', err);
       } finally {
         setLoading(false);
       }
@@ -167,47 +125,7 @@ const NewsIntel: React.FC = () => {
         <div className="col-name">
           Paddock <em>Intel</em>
         </div>
-        <div className="col-sub">Live FIA Feed · Top 10 Press Releases</div>
-      </div>
-
-      <div className="podium-block">
-        <div className="podium-head">
-          {podiumLoading ? 'Fetching Intel...' : `Season Intel · ${raceInfo?.name}`}
-        </div>
-        <div className="podium-list">
-          {podiumLoading ? (
-            <Loader label="Updating podium" size={28} variant="inline" className="news-podium-loader" />
-          ) : (() => {
-            const maxPoints = podiumResults.reduce(
-              (m, r) => Math.max(m, parseInt(r.Time?.time || '0', 10) || 0),
-              0,
-            );
-            return podiumResults.map((result) => {
-              const pts = parseInt(result.Time?.time || '0', 10) || 0;
-              const pct = maxPoints ? Math.max(10, Math.round((pts / maxPoints) * 100)) : 0;
-              return (
-                <div key={result.position} className={`pod-row p${result.position}`}>
-                  <span className="pod-bar" style={{ width: `${pct}%` }} aria-hidden="true"></span>
-                  <div className="pod-badge">P{result.position}</div>
-                  <div className="pod-info">
-                    <div className="pod-driver-name">{result.Driver.givenName} {result.Driver.familyName}</div>
-                    <div className="pod-driver-team">{result.Constructor.name} · #{result.Driver.permanentNumber}</div>
-                  </div>
-                  <div className="pod-time">
-                    {result.Time?.time ? (
-                      <>
-                        <span className="pod-pts-val">{pts}</span>
-                        <span className="pod-pts-unit">PTS</span>
-                      </>
-                    ) : (
-                      'DNF'
-                    )}
-                  </div>
-                </div>
-              );
-            });
-          })()}
-        </div>
+        <div className="col-sub">Live Formula 1 Feed · Top 10 Stories</div>
       </div>
 
       <div className="news-block">
@@ -222,6 +140,19 @@ const NewsIntel: React.FC = () => {
             onClick={() => setSelectedNews(item)}
             style={{ cursor: 'pointer' }}
           >
+            {item.image && (
+              <div className="news-thumb">
+                <img
+                  src={item.image}
+                  alt=""
+                  loading="lazy"
+                  onError={(e) => {
+                    const wrap = e.currentTarget.closest('.news-thumb') as HTMLElement | null;
+                    if (wrap) wrap.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
             <div className="news-meta">
               <span className="news-kicker">{item.category}</span>
               <span className="news-date">{formatDate(item.pubDate)}</span>
@@ -230,14 +161,14 @@ const NewsIntel: React.FC = () => {
             <div className="news-content-wrap">
               <h3 className="news-headline">{item.title}</h3>
               <p className="news-body">{item.summary}</p>
-              <span className="news-go" aria-hidden="true">Read Release →</span>
+              <span className="news-go" aria-hidden="true">Read Story →</span>
             </div>
           </article>
         ))}
 
         {!loading && news.length === 0 && (
           <div style={{ padding: '20px', fontSize: '12px', opacity: 0.5 }}>
-            No recent intel available from FIA.
+            No recent intel available from Formula 1.
           </div>
         )}
       </div>
@@ -247,7 +178,20 @@ const NewsIntel: React.FC = () => {
         <div className="news-modal-overlay" onClick={() => setSelectedNews(null)}>
           <div className="news-modal-window" onClick={e => e.stopPropagation()}>
             <button className="news-modal-close" onClick={() => setSelectedNews(null)}>×</button>
-            
+
+            {selectedNews.image && (
+              <div className="news-modal-hero">
+                <img
+                  src={selectedNews.image}
+                  alt=""
+                  onError={(e) => {
+                    const wrap = e.currentTarget.closest('.news-modal-hero') as HTMLElement | null;
+                    if (wrap) wrap.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+
             <div className="news-modal-meta">
               <span className="news-kicker">{selectedNews.category}</span>
               <span className="news-date">{formatDate(selectedNews.pubDate)}</span>
@@ -266,7 +210,7 @@ const NewsIntel: React.FC = () => {
                 className="news-modal-link-btn"
                 onClick={() => window.open(selectedNews.link, '_blank')}
               >
-                READ ORIGINAL PRESS RELEASE ON FIA.COM
+                READ FULL STORY ON FORMULA1.COM
               </button>
             </div>
           </div>

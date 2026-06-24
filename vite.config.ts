@@ -9,10 +9,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/fia-news': {
-        target: 'https://www.fia.com',
+      '/f1-news': {
+        target: 'https://www.formula1.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/fia-news/, '/rss/press-release'),
+        rewrite: (path) => path.replace(/^\/f1-news/, '/en/latest/all.xml'),
       },
     },
   },

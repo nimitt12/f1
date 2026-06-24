@@ -8,6 +8,7 @@ import NextRace from './components/NextRace';
 import Parallax from './components/Parallax';
 import { useLiveRace } from './hooks/useLiveRace';
 import Calendar from './components/Calendar';
+import ChampionshipLeaders from './components/ChampionshipLeaders';
 import DriversStandings from './components/DriversStandings';
 import ConstructorsStandings from './components/ConstructorsStandings';
 import NewsIntel from './components/NewsIntel';
@@ -260,6 +261,9 @@ const App: React.FC = () => {
                   window.scrollTo(0, 0);
                 }} />
               )}
+            </Parallax>
+            <Parallax speed={0.04} delay={40}>
+              <ChampionshipLeaders />
             </Parallax>
             <Parallax speed={0.035} delay={60}>
               <Calendar onRaceSelect={(race) => {

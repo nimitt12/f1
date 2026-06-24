@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/fia-news",
-      "destination": "https://www.fia.com/rss/press-release"
+      "source": "/f1-news",
+      "destination": "https://www.formula1.com/en/latest/all.xml"
     },
     {
       "source": "/(.*)",

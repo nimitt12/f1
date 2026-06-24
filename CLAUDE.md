@@ -33,7 +33,7 @@ Several components hardcode the production backend URL (`https://pitwall-backend
 
 **Data fetching.** No data-fetching library or shared API client — every component calls `fetch` directly against backend REST endpoints (`/drivers/get-all-drivers-season-rankings`, `/constructors/get-all-constructors-season-rankings`, `/results/get-all-results/:season/:round`, `/results/get-all-qualifying-results/:season/:round`, `/profile/:id`, etc.) inside its own `useEffect`. Each component owns its own loading/error state; there is no shared cache or query layer.
 
-**FIA news proxy.** `/fia-news` is rewritten to `https://www.fia.com/rss/press-release` both in dev (`vite.config.ts` server proxy) and in production (`vercel.json` rewrites) to avoid CORS — keep these two in sync if the upstream URL changes. [src/components/NewsIntel.tsx](src/components/NewsIntel.tsx) fetches the rewritten path.
+**F1 news proxy.** `/f1-news` is rewritten to `https://www.formula1.com/en/latest/all.xml` both in dev (`vite.config.ts` server proxy) and in production (`vercel.json` rewrites) to avoid CORS — keep these two in sync if the upstream URL changes. [src/components/NewsIntel.tsx](src/components/NewsIntel.tsx) fetches the rewritten path, parses the RSS, and extracts per-item images (enclosure / `media:*` / inline `<img>`) with the channel `<image>` as a fallback.
 
 **Theming.** A season/team color theme (`default`, plus each constructor) is applied as a `theme-<id>` class on `document.body` and persisted to `localStorage` (`f1_theme`) via the `ThemeSwitcher` defined inline in [src/App.tsx](src/App.tsx). Theme colors are CSS custom properties (`--<team>`), not JS constants — see [src/index.css](src/index.css).
 

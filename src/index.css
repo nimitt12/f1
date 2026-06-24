@@ -3062,6 +3062,41 @@ body {
   box-shadow: 0 0 16px var(--racing);
 }
 
+/* Feed artwork — bleeds to the card edges above the meta row */
+.news-thumb {
+  position: relative;
+  margin: -22px -24px 18px -26px;
+  aspect-ratio: 16 / 8.2;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.news-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.01);
+  transition: transform 0.6s var(--ease-out);
+}
+
+.news-item:hover .news-thumb img {
+  transform: scale(1.06);
+}
+
+/* gentle fade so the headline reads cleanly under the image */
+.news-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0) 55%, rgba(10, 10, 10, 0.55) 100%);
+  pointer-events: none;
+}
+
+.news-item.lead .news-thumb {
+  aspect-ratio: 16 / 9;
+}
+
 .news-meta {
   display: flex;
   align-items: center;
@@ -3203,6 +3238,23 @@ body {
 .news-modal-close:hover {
   background: var(--racing);
   transform: scale(1.1);
+}
+
+.news-modal-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  background: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  flex-shrink: 0;
+}
+
+.news-modal-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .news-modal-meta {
@@ -8355,11 +8407,11 @@ body {
 
 .cal-title em {
   font-weight: 800;
-  background: linear-gradient(118deg, var(--racing), var(--racing-hot));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: var(--racing);
+  color: var(--racing);
 }
 
 /* --- Nav buttons: crafted carbon tiles --- */
@@ -8633,4 +8685,432 @@ body {
 .cal-details-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px color-mix(in srgb, var(--racing) 30%, transparent);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Championship Leaders — premium leader spotlight above the calendar
+   ════════════════════════════════════════════════════════════════════════ */
+.cl-section {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 88px 36px 0;
+}
+
+.cl-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  margin-bottom: 34px;
+}
+
+.cl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-1);
+}
+
+.cl-eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--racing);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--racing) 55%, transparent);
+  animation: clPulse 2.4s var(--ease) infinite;
+}
+
+@keyframes clPulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--racing) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 9px color-mix(in srgb, var(--racing) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--racing) 0%, transparent); }
+}
+
+.cl-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.05;
+}
+
+.cl-title em {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--racing);
+}
+
+.cl-meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.cl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+
+/* ── Card shell ──────────────────────────────────────────────────────── */
+.cl-card {
+  --team-color: var(--racing);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 30px 32px 32px;
+  border-radius: 20px;
+  background:
+    radial-gradient(130% 120% at 100% 0%,
+      color-mix(in srgb, var(--team-color) 26%, transparent) 0%,
+      transparent 52%),
+    linear-gradient(165deg, #16161a 0%, #0c0c0e 60%, #08080a 100%);
+  border: 1px solid color-mix(in srgb, var(--team-color) 26%, rgba(255, 255, 255, 0.07));
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    0 2px 0 rgba(255, 255, 255, 0.05) inset,
+    0 0 50px color-mix(in srgb, var(--team-color) 10%, transparent) inset;
+  opacity: 0;
+  transform: translateY(34px) scale(0.985);
+  transition: transform 0.85s var(--ease-out), opacity 0.85s var(--ease-out),
+    box-shadow 0.45s var(--ease);
+  will-change: transform, opacity;
+}
+
+.cl-section.is-visible .cl-card {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.cl-section.is-visible .cl-grid > .cl-card:nth-child(2) {
+  transition-delay: 0.12s;
+}
+
+.cl-card:hover {
+  box-shadow:
+    0 34px 80px rgba(0, 0, 0, 0.55),
+    0 2px 0 rgba(255, 255, 255, 0.06) inset,
+    0 0 70px color-mix(in srgb, var(--team-color) 18%, transparent) inset;
+}
+
+/* top accent rail in team color */
+.cl-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--team-color) 30%,
+    color-mix(in srgb, var(--team-color) 60%, #fff) 50%,
+    var(--team-color) 70%,
+    transparent);
+  opacity: 0.9;
+  z-index: 4;
+}
+
+/* breathing radial glow behind content */
+.cl-card-glow {
+  position: absolute;
+  top: -40%;
+  right: -25%;
+  width: 70%;
+  height: 130%;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--team-color) 40%, transparent) 0%,
+    transparent 65%);
+  filter: blur(14px);
+  z-index: 0;
+  opacity: 0.55;
+  animation: clBreathe 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes clBreathe {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.5; }
+  50%      { transform: scale(1.12) translateY(-6px); opacity: 0.72; }
+}
+
+/* slow diagonal sheen sweep */
+.cl-card-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.06) 48%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 52%,
+    transparent 65%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.cl-section.is-visible .cl-card-sheen {
+  animation: clSheen 6.5s ease-in-out 1.2s infinite;
+}
+
+@keyframes clSheen {
+  0%   { transform: translateX(-120%); }
+  18%  { transform: translateX(120%); }
+  100% { transform: translateX(120%); }
+}
+
+.cl-card > *:not(.cl-card-glow):not(.cl-card-sheen):not(.cl-watermark) {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Card header ─────────────────────────────────────────────────────── */
+.cl-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.cl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #fff 72%, transparent);
+}
+
+.cl-badge-icon {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--team-color);
+  background: color-mix(in srgb, var(--team-color) 16%, rgba(255, 255, 255, 0.04));
+  border: 1px solid color-mix(in srgb, var(--team-color) 32%, transparent);
+}
+
+.cl-badge-icon svg {
+  width: 15px;
+  height: 15px;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--team-color) 60%, transparent));
+}
+
+.cl-p1 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--team-color);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--team-color) 55%, transparent);
+}
+
+/* ── Name block ──────────────────────────────────────────────────────── */
+.cl-name-wrap {
+  margin-bottom: 14px;
+}
+
+.cl-firstname {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, #fff 60%, transparent);
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+
+.cl-lastname {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.4vw, 44px);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 2px 24px color-mix(in srgb, var(--team-color) 30%, transparent);
+}
+
+.cl-cons-name {
+  font-size: clamp(26px, 3.6vw, 38px);
+}
+
+/* ── Subline (code / number / flag) ──────────────────────────────────── */
+.cl-subline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: color-mix(in srgb, #fff 66%, transparent);
+}
+
+.cl-code {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.cl-num { color: color-mix(in srgb, #fff 55%, transparent); }
+
+.cl-nat {
+  letter-spacing: 0.1em;
+  font-size: 11.5px;
+}
+
+.cl-dot-sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(in srgb, #fff 32%, transparent);
+}
+
+.cl-flag {
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  vertical-align: middle;
+}
+
+.cl-flag-fallback { font-size: 14px; }
+
+.cl-team-pill {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.cl-team-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #fff 50%, transparent);
+  padding: 6px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 26px;
+  width: 100%;
+}
+
+/* ── Stat row ────────────────────────────────────────────────────────── */
+.cl-stats {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 4px;
+  align-items: end;
+}
+
+.cl-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cl-stat:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.cl-stat-val {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.cl-stat-main .cl-stat-val {
+  font-size: 46px;
+  font-weight: 700;
+  color: var(--team-color);
+  text-shadow: 0 0 26px color-mix(in srgb, var(--team-color) 45%, transparent);
+}
+
+.cl-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #fff 42%, transparent);
+}
+
+/* ── Watermark number / lettermark ───────────────────────────────────── */
+.cl-watermark {
+  position: absolute;
+  right: -8px;
+  bottom: -38px;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 200px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--team-color) 12%, transparent);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+}
+
+.cl-watermark-text {
+  font-size: 140px;
+  bottom: -18px;
+}
+
+/* ── Loading state ───────────────────────────────────────────────────── */
+.cl-card.is-loading {
+  min-height: 280px;
+}
+
+.cl-card.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent);
+  animation: clShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes clShimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cl-card-glow,
+  .cl-card-sheen,
+  .cl-eyebrow-dot { animation: none !important; }
+  .cl-card { transition: opacity 0.4s ease; transform: none; }
+}
+
+@media (max-width: 860px) {
+  .cl-section { padding: 64px 20px 0; }
+  .cl-grid { grid-template-columns: 1fr; gap: 18px; }
+  .cl-card { padding: 26px 24px 28px; }
+  .cl-watermark { font-size: 150px; bottom: -28px; }
+  .cl-watermark-text { font-size: 110px; }
+}
+
+@media (max-width: 420px) {
+  .cl-stat { padding: 0 10px; }
+  .cl-stat-main .cl-stat-val { font-size: 38px; }
 }
