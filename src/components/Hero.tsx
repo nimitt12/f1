@@ -77,9 +77,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
 
       <div className="hero-top">
         <div className="brand-eyebrow">
-          <span className="checker-flag"></span>
-          <span className="live-badge">Live Edition</span>
-          <span className="live-badge season">Season 2026</span>
+          <span className="live-badge">Season 2026</span>
         </div>
 
         <div className="brand-right">

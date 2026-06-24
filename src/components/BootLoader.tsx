@@ -38,7 +38,7 @@ const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
 
       <div className="boot-content">
         <h1 className="boot-title">
-          <span className="boot-pit">Pit</span>Wall<span className="dot">.</span>
+          <span className="boot-my">My</span><span className="boot-word"><span className="boot-pit">Pit</span>Wall<span className="dot">.</span></span>
         </h1>
 
         <div className="starting-lights">

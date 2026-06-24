@@ -4,6 +4,18 @@ import Tilt from './Tilt';
 import { COUNTRY_FLAGS, RACES as RACES_FALLBACK, fetchRaces, type Race } from '../data/races';
 import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 
+// Dots that lap the circuit, each at its own pace and start offset so they keep
+// drifting apart and bunching up — a continuous, random-looking loop. Two theme
+// tones (core + bright accent) keep it cohesive and premium across themes.
+const TRACK_DOTS = [
+  { color: 'var(--racing-hot-ticker)', dur: 6.2, delay: 0 },
+  { color: 'var(--racing)', dur: 7.8, delay: -1.1 },
+  { color: 'var(--racing-hot-ticker)', dur: 5.6, delay: -2.4 },
+  { color: 'var(--racing)', dur: 8.4, delay: -3.0 },
+  { color: 'var(--racing-hot-ticker)', dur: 6.9, delay: -4.3 },
+  { color: 'var(--racing)', dur: 7.2, delay: -5.1 },
+];
+
 const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean }> = ({ circuitId, live }) => {
   const path = TRACK_PATHS[circuitId || ''];
   if (!path) return null;
@@ -17,14 +29,21 @@ const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean }> = ({ cir
     >
       {/* Faint circuit outline */}
       <path className="track-base" d={path} pathLength={100} vectorEffect="non-scaling-stroke" />
-      {live && (
-        <>
-          {/* Glowing light streak that laps the circuit */}
-          <path className="track-comet" d={path} pathLength={100} vectorEffect="non-scaling-stroke" />
-          {/* Bright leading dot at the head of the streak */}
-          <path className="track-spark" d={path} pathLength={100} vectorEffect="non-scaling-stroke" />
-        </>
-      )}
+      {live &&
+        TRACK_DOTS.map((dot, i) => (
+          <path
+            key={i}
+            className="track-dot"
+            d={path}
+            pathLength={100}
+            vectorEffect="non-scaling-stroke"
+            style={{
+              ['--dot-color' as string]: dot.color,
+              animationDuration: `${dot.dur}s`,
+              animationDelay: `${dot.delay}s`,
+            }}
+          />
+        ))}
     </svg>
   );
 };

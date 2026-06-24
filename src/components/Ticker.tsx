@@ -35,9 +35,9 @@ const Ticker: React.FC = () => {
       {results.map((r) => (
         <React.Fragment key={r.id}>
           <span className="tick">
-            <span className="sym">P{r.position}</span>{' '}
-            <span className="val">{`${r.given_name} ${r.family_name}`.toUpperCase()}</span>{' '}
-            <span className="pts">{r.points} PTS</span>
+            <span className="sym">P{r.position}</span>
+            <span className="val">{`${r.given_name} ${r.family_name}`.toUpperCase()}</span>
+            <span className="pts"><span className="pts-num">{r.points}</span><span className="pts-unit">PTS</span></span>
           </span>
           <span className="tick tick-dot">◆</span>
         </React.Fragment>
@@ -50,10 +50,12 @@ const Ticker: React.FC = () => {
 
   return (
     <div className="ticker-wrap">
+      <div className="ticker-fade-l" />
       <div className="ticker-track">
         {renderItems()}
         {renderItems()}
       </div>
+      <div className="ticker-fade-r" />
     </div>
   );
 };
