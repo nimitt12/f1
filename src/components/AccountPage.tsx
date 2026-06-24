@@ -41,6 +41,7 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
   const [favConstructor, setFavConstructor] = useState<string>('');
   const [favDrivers, setFavDrivers] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const fetchPrefs = async () => {
@@ -89,9 +90,13 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
       if (!response.ok) {
         throw new Error('Server responded with an error status');
       }
-      
+
       setIsSaving(false);
-      onClose();
+      setSaved(true);
+      setTimeout(() => {
+        setSaved(false);
+        onClose();
+      }, 1100);
     } catch (error) {
       console.error('Error saving preferences to backend:', error);
       alert('Failed to save preferences. Please try again.');
@@ -220,12 +225,12 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
                 </div>
               </div>
 
-              <button 
-                className={`save-btn-large ${isSaving ? 'loading' : ''}`}
+              <button
+                className={`save-btn-large ${isSaving ? 'loading' : ''} ${saved ? 'saved' : ''}`}
                 onClick={handleSave}
-                disabled={isSaving}
+                disabled={isSaving || saved}
               >
-                {isSaving ? 'SYNCING DATA...' : 'SAVE ALL PREFERENCES'}
+                {saved ? 'PREFERENCES SAVED ✓' : isSaving ? 'SYNCING DATA...' : 'SAVE ALL PREFERENCES'}
               </button>
             </div>
 
