@@ -273,7 +273,7 @@ const App: React.FC = () => {
               }} />
             </Parallax>
             <Parallax speed={0.05}>
-              <DriverBattle user={user} setUser={setUser} />
+              <DriverBattle />
             </Parallax>
 
             <Parallax speed={0.03} delay={80}>

@@ -3965,6 +3965,349 @@ body {
   box-shadow: 0 8px 24px rgba(225, 6, 0, 0.35);
 }
 
+/* ── Driver picker trigger ───────────────────────────────────────────── */
+.battle-pick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ink);
+  color: #fff;
+  border: 1px solid var(--ink);
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease),
+    background 0.35s var(--ease);
+}
+
+.battle-pick-btn:hover {
+  transform: translateY(-2px);
+  background: var(--racing);
+  border-color: var(--racing);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--racing) 38%, transparent);
+}
+
+.battle-pick-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* Cards are now clickable — reset native button chrome */
+.battle-card {
+  -webkit-appearance: none;
+  appearance: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.battle-card:focus-visible {
+  outline: 2px solid var(--team-color, var(--racing));
+  outline-offset: -4px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Driver picker popup
+   ════════════════════════════════════════════════════════════════════════ */
+.dpick-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(8, 8, 10, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: dpickFade 0.25s ease;
+}
+
+@keyframes dpickFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.dpick-window {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #15151a 0%, #0c0c0e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: dpickPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dpickPop {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dpick-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.25s var(--ease);
+}
+
+.dpick-close:hover {
+  background: var(--racing);
+  color: #fff;
+  border-color: var(--racing);
+}
+
+.dpick-head {
+  padding: 28px 30px 18px;
+  flex-shrink: 0;
+}
+
+.dpick-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.dpick-sub {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 6px;
+}
+
+/* selected slots preview */
+.dpick-slots {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 30px 20px;
+  flex-shrink: 0;
+}
+
+.dpick-slot {
+  --team-color: #666;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  transition: all 0.3s var(--ease);
+}
+
+.dpick-slot.filled {
+  background: color-mix(in srgb, var(--team-color) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--team-color) 55%, transparent);
+  cursor: pointer;
+}
+
+.dpick-slot-tag {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--team-color);
+}
+
+.dpick-slot.filled .dpick-slot-tag {
+  text-shadow: 0 0 14px color-mix(in srgb, var(--team-color) 60%, transparent);
+}
+
+.dpick-slot-name {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.dpick-slot-empty {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.dpick-vs {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  z-index: 2;
+}
+
+/* driver list */
+.dpick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 4px 30px 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.dpick-grid::-webkit-scrollbar { width: 6px; }
+.dpick-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 3px;
+}
+
+.dpick-driver {
+  --team-color: #fff;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 3px solid var(--team-color);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s var(--ease);
+}
+
+.dpick-driver:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-1px);
+}
+
+.dpick-driver.selected {
+  background: color-mix(in srgb, var(--team-color) 16%, transparent);
+  border-color: color-mix(in srgb, var(--team-color) 55%, transparent);
+  border-left-color: var(--team-color);
+}
+
+.dpick-driver-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--team-color);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.dpick-driver-num {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--team-color);
+  min-width: 30px;
+  text-align: center;
+}
+
+.dpick-driver-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dpick-driver-name {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dpick-driver-team {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.dpick-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 30px 24px;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.dpick-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dpick-compare {
+  background: var(--racing);
+  color: #fff;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 11px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+
+.dpick-compare:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--racing) 42%, transparent);
+}
+
+.dpick-compare:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .dpick-grid,
+  .dpick-slots { grid-template-columns: 1fr; }
+  .dpick-vs { display: none; }
+}
+
 .loading-clash {
   font-family: var(--font-mono);
   font-size: 14px;
@@ -4236,12 +4579,32 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: #050505;
-  border: 1px solid var(--ink);
-  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
   overflow: hidden;
   position: relative;
   height: 520px;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.5),
+    0 2px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+/* Center divider — a soft luminous seam instead of a hard line */
+.battle-container::after {
+  content: "";
+  position: absolute;
+  top: 8%;
+  bottom: 8%;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    transparent,
+    rgba(255, 255, 255, 0.14) 30%,
+    rgba(255, 255, 255, 0.14) 70%,
+    transparent);
+  z-index: 24;
+  pointer-events: none;
 }
 
 .battle-card {
@@ -4251,45 +4614,88 @@ body {
   flex-direction: column;
   justify-content: flex-end;
   padding: 40px;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.5s var(--ease);
+}
+
+.battle-card:hover {
+  filter: brightness(1.08);
+}
+
+.battle-card:hover .battle-driver-img {
+  transform: translateX(var(--img-shift, -50%)) scale(1.04);
+}
+
+.battle-card:hover .driver-placeholder {
+  transform: translate(-50%, -50%) scale(1.05);
 }
 
 .driver-placeholder {
   position: absolute;
-  top: 50%;
+  top: 46%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 180px;
-  height: 180px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  width: 200px;
+  height: 200px;
+  background:
+    radial-gradient(circle at 50% 32%,
+      color-mix(in srgb, var(--team-color) 20%, rgba(255, 255, 255, 0.03)),
+      rgba(255, 255, 255, 0.012) 70%);
+  border: 1px solid color-mix(in srgb, var(--team-color) 34%, rgba(255, 255, 255, 0.05));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-alt);
-  font-size: 64px;
+  font-family: var(--font-display);
+  font-size: 62px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.1);
-  letter-spacing: -0.05em;
+  color: color-mix(in srgb, var(--team-color) 55%, rgba(255, 255, 255, 0.14));
+  letter-spacing: -0.04em;
   z-index: 1;
+  box-shadow:
+    inset 0 0 70px color-mix(in srgb, var(--team-color) 14%, transparent),
+    0 0 60px color-mix(in srgb, var(--team-color) 10%, transparent);
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .battle-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+  background: linear-gradient(180deg, transparent 38%, rgba(0, 0, 0, 0.85) 100%);
   z-index: 2;
 }
 
+/* Team-tinted ambient glow baked into each side */
 .battle-card.p1 {
-  background: linear-gradient(135deg, #111 0%, #000 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  --img-shift: -50%;
+  background:
+    radial-gradient(95% 75% at 32% 26%, color-mix(in srgb, var(--team-color) 20%, transparent), transparent 62%),
+    linear-gradient(135deg, #141414 0%, #000 72%);
 }
 
 .battle-card.p2 {
-  background: linear-gradient(225deg, #111 0%, #000 100%);
+  --img-shift: 50%;
+  background:
+    radial-gradient(95% 75% at 68% 26%, color-mix(in srgb, var(--team-color) 20%, transparent), transparent 62%),
+    linear-gradient(225deg, #141414 0%, #000 72%);
+}
+
+/* Thin team-color accent rail along the top of each card */
+.battle-card.p1::after,
+.battle-card.p2::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 3;
+  background: linear-gradient(90deg, var(--team-color), transparent);
+}
+
+.battle-card.p2::after {
+  background: linear-gradient(270deg, var(--team-color), transparent);
 }
 
 .battle-image-wrap {
@@ -4303,25 +4709,24 @@ body {
 
 .battle-bg-name {
   position: absolute;
-  top: 20px;
-  font-family: var(--font-body);
-  font-size: 200px;
-  font-weight: 900;
-  opacity: 25%;
-  color: var(--racing);
-  letter-spacing: -0.05em;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 170px;
+  font-weight: 800;
   line-height: 1;
   z-index: 0;
   text-transform: uppercase;
-}
-
-.p1 .battle-bg-name {
-  left: 400px;
-  text-align: left;
-}
-.p2 .battle-bg-name {
-  right: 368px;
-  text-align: right;
+  letter-spacing: -0.04em;
+  text-align: center;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--team-color) 40%, transparent) 0%,
+    color-mix(in srgb, var(--team-color) 4%, transparent) 78%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .battle-driver-img {
@@ -4352,31 +4757,49 @@ body {
 
 .battle-pos {
   font-family: var(--font-display);
-  font-size: 110px;
+  font-size: 76px;
   font-weight: 800;
-  color: var(--team-color);
-  background: rgba(0, 0, 0, 0.5);
+  line-height: 1;
+  color: transparent;
+  background: linear-gradient(180deg, var(--team-color), color-mix(in srgb, var(--team-color) 45%, #000));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   display: inline-block;
-  border-radius: 4px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 4px 16px color-mix(in srgb, var(--team-color) 35%, transparent));
 }
 
 .battle-name {
   font-family: var(--font-display);
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
   color: #fff;
   font-style: italic;
-  line-height: 1;
+  line-height: 1.02;
   letter-spacing: -0.01em;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
 }
 
 .battle-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   text-transform: uppercase;
-  color: var(--ink-1);
-  letter-spacing: 0.15em;
-  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 0.18em;
+}
+
+.battle-team::before {
+  content: "";
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--team-color);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--team-color) 70%, transparent);
 }
 
 .p1 .battle-info {
@@ -4386,81 +4809,103 @@ body {
   text-align: right;
 }
 
+.p2 .battle-team {
+  flex-direction: row-reverse;
+}
+
 .battle-vs {
   position: absolute;
-  top: 50%;
+  top: 38%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 25;
 }
 
 .vs-circle {
-  width: 50px;
-  height: 50px;
-  background: var(--racing);
+  width: 58px;
+  height: 58px;
+  background: radial-gradient(circle at 50% 35%, #1a1a1d, #0a0a0c);
   color: #fff;
-  font-family: var(--font-body);
-  font-weight: 900;
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.04em;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px rgba(225, 6, 0, 0.6);
-  border: 4px solid #000;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 0 0 6px rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    0 0 26px color-mix(in srgb, var(--racing) 45%, transparent);
 }
 
 .battle-stats-overlay {
   position: absolute;
-  bottom: 40px;
+  bottom: 36px;
   left: 50%;
   transform: translateX(-50%);
-  width: 100%;
-  max-width: 460px;
+  width: calc(100% - 80px);
+  max-width: 440px;
   z-index: 30;
-  background: rgba(15, 15, 15, 0.8);
-  backdrop-filter: blur(30px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 24px;
+  background: rgba(12, 12, 14, 0.72);
+  backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 22px 26px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  gap: 4px;
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
 }
 
 .battle-stat-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
   align-items: center;
-  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.battle-stat-row:last-child {
+  border-bottom: none;
 }
 
 .stat-label {
   font-family: var(--font-mono);
-  font-size: 18px;
+  font-size: 10.5px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.42);
+  letter-spacing: 0.16em;
   text-align: center;
-  flex: 1;
 }
 
 .stat-val {
-  font-family: var(--font-mono);
-  font-size: 18px;
+  font-family: var(--font-display);
+  font-size: 24px;
   font-weight: 700;
-  color: #fff;
-  width: 60px;
   text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.35s var(--ease), text-shadow 0.35s var(--ease), opacity 0.35s var(--ease);
 }
 
-.stat-val.v1 {
-  color: #00d2be;
-  text-shadow: 0 0 10px rgba(0, 210, 190, 0.3);
+.stat-val.v1 { color: var(--p1-color, #fff); }
+.stat-val.v2 { color: var(--p2-color, #fff); }
+
+.stat-val:not(.leading) {
+  opacity: 0.4;
+  font-weight: 600;
 }
-.stat-val.v2 {
-  color: #00d2be;
-  text-shadow: 0 0 10px rgba(0, 210, 190, 0.3);
+
+.stat-val.v1.leading {
+  text-shadow: 0 0 20px color-mix(in srgb, var(--p1-color, #fff) 55%, transparent);
+}
+
+.stat-val.v2.leading {
+  text-shadow: 0 0 20px color-mix(in srgb, var(--p2-color, #fff) 55%, transparent);
 }
 
 /* ==========================================================================

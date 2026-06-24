@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import LoginModal from './LoginModal';
+import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Loader from './Loader';
 import antonelliImg from '../assets/ant.png';
 import russellImg from '../assets/rus.png';
@@ -23,7 +23,8 @@ interface ApiDriverRanking {
 }
 
 interface BattleDriver {
-  id: string;
+  driverId: string;
+  slot: string;
   number: string;
   name: string;
   team: string;
@@ -49,7 +50,7 @@ const TEAM_COLORS: Record<string, string> = {
   williams: '#64C4FF',
   haas: '#B6BABD',
   rb: '#6692FF',
-  audi: '#000000',
+  audi: '#F50537',
   cadillac: '#FFD700',
 };
 
@@ -67,114 +68,40 @@ const NAME_TO_SLUG: Record<string, string> = {
   'Cadillac F1 Team': 'cadillac',
 };
 
-const FAVORITE_MAP: Record<string, string> = {
-  'hamilton': 'HAM',
-  'russell': 'RUS',
-  'leclerc': 'LEC',
-  'sainz': 'SAI',
-  'verstappen': 'VER',
-  'norris': 'NOR',
-  'piastri': 'PIA',
-  'alonso': 'ALO',
-  'gasly': 'GAS',
-  'antonelli': 'ANT',
-  'bearman': 'BEA',
-  'hadjar': 'HAD',
-  'bortoleto': 'BOR',
-};
+const teamSlug = (constructorName: string) =>
+  NAME_TO_SLUG[constructorName] || constructorName.toLowerCase().replace(/ /g, '_');
 
-interface AuthUser {
-  id: string;
-  name: string;
-  picture: string;
-  email: string;
-}
+const toBattleDriver = (d: ApiDriverRanking): BattleDriver => ({
+  driverId: d.driver_id,
+  slot: `P${d.position}`,
+  number: d.number,
+  name: `${d.given_name} ${d.family_name}`,
+  team: d.constructor_name.toUpperCase(),
+  pts: parseInt(d.points) || 0,
+  wins: parseInt(d.wins) || 0,
+  podiums: parseInt(d.wins) || 0, // Using wins as podiums until API provides it
+  color: TEAM_COLORS[teamSlug(d.constructor_name)] || '#ffffff',
+  image: DRIVER_IMAGES[d.code] || null,
+});
 
-interface DriverBattleProps {
-  user: AuthUser | null;
-  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
-}
+const initials = (name: string) => name.split(' ').map((n) => n[0]).join('');
 
-const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
-  const [drivers, setDrivers] = useState<BattleDriver[]>([]);
+const DriverBattle: React.FC = () => {
+  const [allDrivers, setAllDrivers] = useState<ApiDriverRanking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'championship' | 'favorites'>('championship');
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selected, setSelected] = useState<[string, string] | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [draft, setDraft] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchBattleData = async () => {
+    const fetchDrivers = async () => {
       setLoading(true);
       try {
         const response = await fetch(`${BACKEND_URL}/drivers/get-all-drivers-season-rankings`);
-        const allStandings: ApiDriverRanking[] = await response.json();
-        
-        let targetDrivers: ApiDriverRanking[] = [];
-
-        if (viewMode === 'favorites' && user) {
-          let favDrivers: string[] = [];
-          try {
-            const profileRes = await fetch(`${BACKEND_URL}/profile/${user.id}`);
-            if (profileRes.ok) {
-              const profileData = await profileRes.json();
-              favDrivers = profileData?.fav_drivers || [];
-            }
-          } catch (profileErr) {
-            console.error('Failed to fetch user preferences from backend', profileErr);
-          }
-
-          if (favDrivers && favDrivers.length > 0) {
-            const favCodes = favDrivers.map((id: string) => FAVORITE_MAP[id] || id.toUpperCase());
-            
-            // Filter and sort by user's preference order
-            targetDrivers = favCodes.map((code: string) => 
-              allStandings.find(d => d.code.toUpperCase() === code.toUpperCase())
-            ).filter(Boolean) as ApiDriverRanking[];
-            
-            if (targetDrivers.length < 2) {
-              const missing = 2 - targetDrivers.length;
-              const fillers = allStandings.filter(d => !targetDrivers.find(td => td.driver_id === d.driver_id)).slice(0, missing);
-              targetDrivers = [...targetDrivers, ...fillers];
-            }
-          } else {
-            targetDrivers = allStandings.slice(0, 2);
-          }
-        } else {
-          targetDrivers = allStandings.slice(0, 2);
-        }
-
-        const battleData = targetDrivers.slice(0, 2).map((d) => {
-          const teamId = NAME_TO_SLUG[d.constructor_name] || d.constructor_name.toLowerCase().replace(/ /g, '_');
-          const isP1 = d.position === "1";
-          const isP2 = d.position === "2";
-          
-          return {
-            id: isP1 ? 'P1' : (isP2 ? 'P2' : d.position === "3" ? 'P3' : `P${d.position}`),
-            number: d.number,
-            name: `${d.given_name} ${d.family_name}`,
-            team: d.constructor_name.toUpperCase(),
-            pts: parseInt(d.points),
-            wins: parseInt(d.wins),
-            podiums: parseInt(d.wins), // Temporarily using wins as podiums until API provides it
-            color: TEAM_COLORS[teamId] || '#ffffff',
-            image: DRIVER_IMAGES[d.code] || null // No fallback to other drivers
-          };
-        });
-        
-        // Final safety: ensure we have 2 drivers
-        if (battleData.length < 2) {
-          setDrivers(allStandings.slice(0, 2).map((d: ApiDriverRanking, idx: number) => ({
-            id: `P${idx + 1}`,
-            number: d.number,
-            name: `${d.given_name} ${d.family_name}`,
-            team: d.constructor_name.toUpperCase(),
-            pts: parseInt(d.points),
-            wins: parseInt(d.wins),
-            podiums: parseInt(d.wins),
-            color: TEAM_COLORS[NAME_TO_SLUG[d.constructor_name]] || '#ffffff',
-            image: DRIVER_IMAGES[d.code] || null
-          })));
-        } else {
-          setDrivers(battleData);
+        const data: ApiDriverRanking[] = await response.json();
+        setAllDrivers(data);
+        if (data.length >= 2) {
+          setSelected([data[0].driver_id, data[1].driver_id]);
         }
       } catch (err) {
         console.error('Battle data fetch failed', err);
@@ -182,14 +109,53 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
         setLoading(false);
       }
     };
-    fetchBattleData();
-  }, [viewMode, user]);
+    fetchDrivers();
+  }, []);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPickerOpen(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
+
+  const drivers = useMemo<BattleDriver[]>(() => {
+    if (!selected) return [];
+    return selected
+      .map((id) => {
+        const found = allDrivers.find((d) => d.driver_id === id);
+        return found ? toBattleDriver(found) : null;
+      })
+      .filter(Boolean) as BattleDriver[];
+  }, [selected, allDrivers]);
+
+  const openPicker = () => {
+    setDraft(selected ? [...selected] : []);
+    setPickerOpen(true);
+  };
+
+  // Toggle a driver in the draft; cap at 2 with FIFO replacement.
+  const toggleDraft = (driverId: string) => {
+    setDraft((prev) => {
+      if (prev.includes(driverId)) return prev.filter((id) => id !== driverId);
+      if (prev.length < 2) return [...prev, driverId];
+      return [prev[1], driverId];
+    });
+  };
+
+  const applyDraft = () => {
+    if (draft.length === 2) {
+      setSelected([draft[0], draft[1]]);
+      setPickerOpen(false);
+    }
+  };
 
   if (loading || drivers.length < 2) {
     return (
       <section className="driver-battle-section">
         <div className="battle-header">
-           <h2 className="battle-title">Driver's <em>Clash</em></h2>
+          <h2 className="battle-title">Driver's <em>Clash</em></h2>
         </div>
         <div className="battle-container" style={{ opacity: 0.5, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Loader label="Synchronizing data" />
@@ -201,97 +167,159 @@ const DriverBattle: React.FC<DriverBattleProps> = ({ user, setUser }) => {
   const stats = [
     { label: 'Championship Points', key: 'pts' },
     { label: 'Grand Prix Wins', key: 'wins' },
-    { label: 'Podiums', key: 'podiums' }
+    { label: 'Podiums', key: 'podiums' },
   ];
 
   return (
     <section className="driver-battle-section">
       <div className="battle-header">
         <h2 className="battle-title">Driver's <em>Clash</em></h2>
-        
-        <div className="battle-switcher">
-          <button 
-            className={`switch-btn ${viewMode === 'championship' ? 'active' : ''}`}
-            onClick={() => setViewMode('championship')}
-          >
-            Championship Leaders
-          </button>
-          <button 
-            className={`switch-btn ${viewMode === 'favorites' ? 'active' : ''}`}
-            onClick={() => {
-              if (!user) {
-                setShowLoginModal(true);
-                return;
-              }
-              setViewMode('favorites');
-            }}
-          >
-            My Favorites
-          </button>
-        </div>
-      </div>
 
-      <LoginModal 
-        isOpen={showLoginModal} 
-        onClose={() => setShowLoginModal(false)}
-        onLoginSuccess={(u) => {
-          setUser(u);
-          setShowLoginModal(false);
-          setViewMode('favorites');
-        }}
-      />
+        <button className="battle-pick-btn" onClick={openPicker}>
+          <span className="battle-pick-icon" aria-hidden="true">⇄</span>
+          Select Drivers
+        </button>
+      </div>
 
       <div className="battle-container">
         {/* Driver 1 */}
-        <div className="battle-card p1" style={{ '--team-color': drivers[0].color } as React.CSSProperties}>
+        <button
+          className="battle-card p1"
+          onClick={openPicker}
+          style={{ '--team-color': drivers[0].color } as React.CSSProperties}
+        >
           <div className="battle-image-wrap">
-             <div className="battle-bg-name">{drivers[0].id.toUpperCase()}</div>
-             {drivers[0].image ? (
-               <img src={drivers[0].image} alt={drivers[0].name} className="battle-driver-img" />
-             ) : (
-               <div className="driver-placeholder">{drivers[0].name.split(' ').map(n => n[0]).join('')}</div>
-             )}
+            <div className="battle-bg-name">{drivers[0].slot}</div>
+            {drivers[0].image ? (
+              <img src={drivers[0].image} alt={drivers[0].name} className="battle-driver-img" />
+            ) : (
+              <div className="driver-placeholder">{initials(drivers[0].name)}</div>
+            )}
           </div>
           <div className="battle-info">
             <div className="battle-pos">{drivers[0].number}</div>
             <h3 className="battle-name">{drivers[0].name}</h3>
             <span className="battle-team">{drivers[0].team}</span>
           </div>
-        </div>
+        </button>
 
         {/* VS Divider */}
         <div className="battle-vs">
-           <div className="vs-circle">VS</div>
+          <div className="vs-circle">VS</div>
         </div>
 
         {/* Driver 2 */}
-        <div className="battle-card p2" style={{ '--team-color': drivers[1].color } as React.CSSProperties}>
+        <button
+          className="battle-card p2"
+          onClick={openPicker}
+          style={{ '--team-color': drivers[1].color } as React.CSSProperties}
+        >
           <div className="battle-image-wrap">
-             <div className="battle-bg-name">{drivers[1].id.toUpperCase()}</div>
-             {drivers[1].image ? (
-               <img src={drivers[1].image} alt={drivers[1].name} className="battle-driver-img" />
-             ) : (
-               <div className="driver-placeholder">{drivers[1].name.split(' ').map(n => n[0]).join('')}</div>
-             )}
+            <div className="battle-bg-name">{drivers[1].slot}</div>
+            {drivers[1].image ? (
+              <img src={drivers[1].image} alt={drivers[1].name} className="battle-driver-img" />
+            ) : (
+              <div className="driver-placeholder">{initials(drivers[1].name)}</div>
+            )}
           </div>
           <div className="battle-info">
             <div className="battle-pos">{drivers[1].number}</div>
             <h3 className="battle-name">{drivers[1].name}</h3>
             <span className="battle-team">{drivers[1].team}</span>
           </div>
-        </div>
+        </button>
 
         {/* Stats Overlay */}
-        <div className="battle-stats-overlay">
-          {stats.map((stat, idx) => (
-            <div key={idx} className="battle-stat-row">
-              <div className="stat-val v1">{drivers[0][stat.key as keyof typeof drivers[0]]}</div>
-              <div className="stat-label">{stat.label}</div>
-              <div className="stat-val v2">{drivers[1][stat.key as keyof typeof drivers[1]]}</div>
-            </div>
-          ))}
+        <div
+          className="battle-stats-overlay"
+          style={{ '--p1-color': drivers[0].color, '--p2-color': drivers[1].color } as React.CSSProperties}
+        >
+          {stats.map((stat, idx) => {
+            const v1 = drivers[0][stat.key as keyof BattleDriver] as number;
+            const v2 = drivers[1][stat.key as keyof BattleDriver] as number;
+            return (
+              <div key={idx} className="battle-stat-row">
+                <div className={`stat-val v1 ${v1 >= v2 ? 'leading' : ''}`}>{v1}</div>
+                <div className="stat-label">{stat.label}</div>
+                <div className={`stat-val v2 ${v2 >= v1 ? 'leading' : ''}`}>{v2}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
+
+      {/* Driver picker popup */}
+      {pickerOpen && createPortal(
+        <div className="dpick-overlay" onClick={() => setPickerOpen(false)}>
+          <div className="dpick-window" onClick={(e) => e.stopPropagation()}>
+            <button className="dpick-close" onClick={() => setPickerOpen(false)}>×</button>
+
+            <div className="dpick-head">
+              <h3 className="dpick-title">Pick Two Drivers</h3>
+              <p className="dpick-sub">Choose the two drivers you want to compare</p>
+            </div>
+
+            <div className="dpick-slots">
+              {[0, 1].map((i) => {
+                const id = draft[i];
+                const d = id ? allDrivers.find((x) => x.driver_id === id) : null;
+                const color = d ? (TEAM_COLORS[teamSlug(d.constructor_name)] || '#fff') : '#666';
+                return (
+                  <div
+                    key={i}
+                    className={`dpick-slot ${d ? 'filled' : ''}`}
+                    style={{ '--team-color': color } as React.CSSProperties}
+                    onClick={() => id && toggleDraft(id)}
+                  >
+                    <span className="dpick-slot-tag">P{i + 1}</span>
+                    {d ? (
+                      <span className="dpick-slot-name">{d.given_name} {d.family_name}</span>
+                    ) : (
+                      <span className="dpick-slot-empty">Tap a driver below</span>
+                    )}
+                  </div>
+                );
+              })}
+              <div className="dpick-vs">VS</div>
+            </div>
+
+            <div className="dpick-grid">
+              {allDrivers.map((d) => {
+                const color = TEAM_COLORS[teamSlug(d.constructor_name)] || '#fff';
+                const order = draft.indexOf(d.driver_id);
+                const isSel = order !== -1;
+                return (
+                  <button
+                    key={d.driver_id}
+                    className={`dpick-driver ${isSel ? 'selected' : ''}`}
+                    style={{ '--team-color': color } as React.CSSProperties}
+                    onClick={() => toggleDraft(d.driver_id)}
+                  >
+                    {isSel && <span className="dpick-driver-badge">P{order + 1}</span>}
+                    <span className="dpick-driver-num">{d.number}</span>
+                    <span className="dpick-driver-info">
+                      <span className="dpick-driver-name">{d.given_name} {d.family_name}</span>
+                      <span className="dpick-driver-team">{d.constructor_name}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="dpick-footer">
+              <span className="dpick-count">{draft.length}/2 selected</span>
+              <button
+                className="dpick-compare"
+                disabled={draft.length !== 2}
+                onClick={applyDraft}
+              >
+                Compare →
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 };
