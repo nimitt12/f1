@@ -141,8 +141,6 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
     return () => clearInterval(interval);
   }, [nextRace]);
 
-  const fastestLapDriver = results.find(r => r.fastest_lap_rank === "1");
-
   const formatDateRange = (race: Race) => {
     const d = new Date(race.date);
     const start = race.FirstPractice ? new Date(race.FirstPractice.date) : d;
@@ -226,59 +224,45 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
       </div>
       <div className="season-progress-container">
         <div className="sp-card">
-          <div className="sp-header">
-            <div className="sp-percent">
-              {percentage}<span>%</span>
-            </div>
-            <div className="sp-meta">
-              <div className="sp-count">
-                <strong>{completedGPs}</strong> / {totalGPs}
-              </div>
-              <div className="sp-label">Grand Prix Completed</div>
-            </div>
+          <div className="sp-percent">
+            {percentage}<span>%</span>
           </div>
           <div className="sp-bar">
             {Array.from({ length: totalGPs }).map((_, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`sp-tick ${i < completedGPs ? 'active' : ''}`}
                 style={{ animationDelay: `${i * 0.05}s` }}
               ></div>
             ))}
           </div>
+          <div className="sp-meta">
+            <div className="sp-count">
+              <strong>{completedGPs}</strong> / {totalGPs}
+            </div>
+            <div className="sp-label">Grand Prix Completed</div>
+          </div>
         </div>
       </div>
-      <div className="race-block previous" style={{
-        marginTop: '0px',
-      }}>
+      <div className="race-block previous">
         <TrackSilhouette circuitId={prevRace.Circuit.circuitId} />
-        <div className="race-grid">
-          <div className="race-left">
-            <div className="race-meta-row">
-              <span className="race-round">◆ Round {prevRace.round.padStart(2, '0')} · Completed</span>
-              <span className="race-flag-big"><Flag code={COUNTRY_FLAGS[prevRace.Circuit.Location.country] || '🏁'} /></span> 
-            </div>
-            <h2 className="race-name-previous">
-              {prevRace.raceName.replace(' Grand Prix', '')} <span>Grand Prix</span> 
-            </h2>
-            <div className="race-circuit">
-              <strong>{prevRace.Circuit.circuitName}</strong> · {prevRace.Circuit.Location.locality}
-            </div>
-            <div className="race-circuit">Round {prevRace.round} of {totalGPs} · Season Event</div>
-
-            <div className="race-stats">
-              <div className="race-stat">
-                <div className="race-stat-label">Fastest Lap</div>
-                <div className="race-stat-val">
-                  {fastestLapDriver 
-                    ? `${fastestLapDriver.fastest_lap_time} | ${fastestLapDriver.family_name}`
-                    : 'Fetching...'}
-                </div>
+        <div className="prev-inner">
+          <div className="prev-header">
+            <div className="prev-id">
+              <div className="race-meta-row">
+                <span className="race-round">◆ Round {prevRace.round.padStart(2, '0')} · Completed</span>
+                <span className="race-flag-big"><Flag code={COUNTRY_FLAGS[prevRace.Circuit.Location.country] || '🏁'} /></span>
+              </div>
+              <h2 className="race-name-previous">
+                {prevRace.raceName.replace(' Grand Prix', '')} <span>Grand Prix</span>
+              </h2>
+              <div className="prev-circuit">
+                <strong>{prevRace.Circuit.circuitName}</strong> · {prevRace.Circuit.Location.locality} · Round {prevRace.round} of {totalGPs}
               </div>
             </div>
 
             {onRaceSelect && (
-              <button 
+              <button
                 className="nr-view-results-btn"
                 onClick={() => onRaceSelect(prevRace)}
               >
@@ -288,46 +272,45 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
             )}
           </div>
 
-          <div className="race-right winner-showcase">
-            <div className="podium-cards">
-              {results.length > 0 ? (
-                <>
-                  {/* P1 Winner */}
-                  {results.slice(0, 1).map(winner => (
-                    <div key={winner.id} className="winner-card p1-featured">
-                      <div className="winner-badge">P1</div>
-                      <div className="winner-info">
-                        <div className="winner-name">{winner.given_name} {winner.family_name}</div>
-                        <div className="winner-team">{winner.team_name}</div>
-                      </div>
-                      <div className="winner-stats-mini">
-                        <span className="ws-val">{winner.time}</span>
-                        <span className="ws-pts">+{winner.points}</span>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  <div className="podium-sub-grid">
-                    {/* P2 & P3 */}
-                    {results.slice(1, 3).map((podium, idx) => (
-                      <div key={podium.id} className={`podium-mini-card p${idx + 2}`}>
-                        <span className="pm-pos">P{idx + 2}</span>
-                        <div className="pm-info">
-                          <span className="pm-name">{podium.family_name}</span>
-                          <span className="pm-team">{podium.team_name}</span>
-                        </div>
-                        <span className="pm-time">{podium.time}</span>
-                      </div>
-                    ))}
+          {results.length > 0 ? (
+            <div className="podium-row">
+              {/* P1 Winner */}
+              {results.slice(0, 1).map(winner => (
+                <div key={winner.id} className="winner-card p1-featured">
+                  <div className="winner-badge">P1</div>
+                  <div className="winner-info">
+                    <div className="winner-name">{winner.given_name} {winner.family_name}</div>
+                    <div className="winner-team">{winner.team_name}</div>
                   </div>
-                </>
-              ) : (
-                <div className="winner-card p1-featured">
-                  <Loader label="Loading results" size={32} />
+                  <div className="winner-stats-mini">
+                    <span className="ws-val">{winner.time}</span>
+                    <span className="ws-pts">+{winner.points}</span>
+                  </div>
                 </div>
-              )}
+              ))}
+
+              {/* P2 & P3 */}
+              {results.slice(1, 3).map((podium, idx) => (
+                <div key={podium.id} className={`podium-mini-card p${idx + 2}`}>
+                  <span className="pm-pos">P{idx + 2}</span>
+                  <div className="pm-info">
+                    <span className="pm-name">{podium.family_name}</span>
+                    <span className="pm-team">{podium.team_name}</span>
+                  </div>
+                  <div className="pm-foot">
+                    <span className="pm-time">{podium.time}</span>
+                    <span className="pm-gap">+{podium.points} PTS</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          ) : (
+            <div className="podium-row">
+              <div className="winner-card p1-featured">
+                <Loader label="Loading results" size={32} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -1738,6 +1738,8 @@ body {
   /* Sits flush beneath the black season-progress card — square top corners
      so it meets the flat card edge instead of cutting in a curve. */
   border-radius: 0 0 var(--r-lg) var(--r-lg);
+  margin-top: 0;
+  padding-top: 30px;
   position: relative;
   overflow: hidden;
 }
@@ -1863,7 +1865,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   transition: all 0.3s ease;
   animation: fadeUpSlow 0.8s ease-out both 0.5s;
 }
@@ -2195,7 +2197,7 @@ body {
 .cal-section {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 48px 36px 0;
+  padding: 88px 36px 0;
   animation: fadeUpSlow 0.7s ease both 0.7s;
 }
 
@@ -3744,40 +3746,43 @@ body {
 }
 
 .sp-card {
+  display: flex;
+  align-items: center;
+  gap: 30px;
   background: #000;
-  padding: 32px 40px;
+  padding: 18px 36px;
   position: relative;
   overflow: hidden;
 }
 
-.sp-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 24px;
-}
-
 .sp-percent {
   font-family: var(--font-display);
-  font-size: 50px;
+  font-size: 36px;
   font-weight: 400;
   line-height: 1;
   color: var(--racing);
   letter-spacing: -0.04em;
+  flex-shrink: 0;
 }
 
 .sp-percent span {
-  font-size: 42px;
-  margin-left: 2px;
+  color: var(--racing);
+  /* Reset the transparent fill inherited from the gradient-clipped parent —
+     the span has no background of its own, so it would render invisible. */
+  -webkit-text-fill-color: var(--racing);
+  font-size: 22px;
+  margin-left: 1px;
+  opacity: 0.7;
 }
 
 .sp-meta {
   text-align: right;
+  flex-shrink: 0;
 }
 
 .sp-count {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 20px;
   color: #fff;
   font-weight: 300;
   letter-spacing: -0.02em;
@@ -3789,24 +3794,26 @@ body {
 
 .sp-label {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 12px;
   color: #fff;
   font-weight: 400;
-  margin-top: 4px;
+  margin-top: 2px;
   opacity: 0.9;
 }
 
 .sp-bar {
+  flex: 1;
   display: flex;
-  gap: 8px;
-  height: 40px;
+  gap: 3px;
+  height: 18px;
 }
 
 .sp-tick {
   flex: 1;
-  height: 55%;
+  height: 100%;
   background: #1a1a1a;
-  border-radius: 6px;
+  border-radius: 2px;
+  transform: skewX(-16deg);
   transition: all 0.3s ease;
   animation: tickPop 0.5s ease both;
 }
@@ -3819,11 +3826,11 @@ body {
 @keyframes tickPop {
   0% {
     opacity: 0;
-    transform: translateY(10px) scaleY(0.5);
+    transform: skewX(-16deg) translateY(10px) scaleY(0.5);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scaleY(1);
+    transform: skewX(-16deg) translateY(0) scaleY(1);
   }
 }
 
@@ -6375,14 +6382,14 @@ a.menu-action-btn {
 
 /* Previous Race Results Button - Restored & Enhanced */
 .nr-view-results-btn {
-  margin-top: 32px;
+  margin-top: 36px;
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: rgba(168, 85, 247, 0.08);
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  color: var(--racing);
-  padding: 12px 24px;
+  background: color-mix(in srgb, var(--racing) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--racing) 30%, transparent);
+  color: var(--racing-hot);
+  padding: 13px 26px;
   border-radius: 12px;
   font-family: var(--font-display);
   font-size: 12px;
@@ -6391,15 +6398,32 @@ a.menu-action-btn {
   letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(10px);
 }
 
 .nr-view-results-btn:hover {
-  background: var(--racing);
+  background: linear-gradient(135deg, var(--racing-hot), var(--racing));
   color: #fff;
   border-color: var(--racing);
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 40px rgba(168, 85, 247, 0.25);
+  box-shadow: 0 15px 40px color-mix(in srgb, var(--racing) 32%, transparent);
+}
+
+/* Graceful fading hairline above the button — keeps the left column's vertical
+   rhythm now that the fastest-lap stat block is gone. */
+.race-block.previous .race-left .nr-view-results-btn {
+  position: relative;
+}
+
+.race-block.previous .race-left .nr-view-results-btn::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: -20px;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--racing) 45%, transparent), transparent 75%);
 }
 
 .nr-view-results-btn svg {
@@ -7433,7 +7457,7 @@ body {
 /* --- Season progress: cohesive carbon card + premium pill ticks --- */
 .sp-card {
   background:
-    radial-gradient(140% 200% at 100% 0%, rgba(255, 255, 255, 0.045), transparent 52%),
+    radial-gradient(140% 200% at 0% 50%, rgba(255, 255, 255, 0.045), transparent 52%),
     linear-gradient(135deg, #101012 0%, #050506 100%);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -7449,20 +7473,20 @@ body {
 
 .sp-label {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 10px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   opacity: 0.55;
 }
 
 .sp-bar {
-  height: 34px;
-  gap: 6px;
+  height: 18px;
+  gap: 3px;
 }
 
 .sp-tick {
   height: 100%;
-  border-radius: 999px;
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
@@ -7470,7 +7494,7 @@ body {
 .sp-tick.active {
   background: linear-gradient(180deg, var(--racing-hot), var(--racing));
   box-shadow:
-    0 0 16px color-mix(in srgb, var(--racing) 70%, transparent),
+    0 0 12px color-mix(in srgb, var(--racing) 60%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
@@ -7478,6 +7502,22 @@ body {
    progress edge reads clearly. */
 .sp-tick.active:last-of-type {
   background: linear-gradient(180deg, #fff, var(--racing-hot));
+}
+
+/* Stack on narrow screens: percent + count on top, bar wraps full-width below. */
+@media (max-width: 600px) {
+  .sp-card {
+    flex-wrap: wrap;
+    gap: 16px 20px;
+    padding: 16px 22px;
+  }
+  .sp-percent {
+    font-size: 30px;
+  }
+  .sp-bar {
+    order: 3;
+    flex-basis: 100%;
+  }
 }
 
 /* --- Previous race card: warmer carbon, gold winner accents kept --- */
@@ -7512,7 +7552,7 @@ body {
 /* --- P1 winner: champion gold card --- */
 .winner-card.p1-featured {
   position: relative;
-  padding: 24px 26px;
+  padding: 18px 22px;
   border-radius: var(--r-lg);
   background:
     radial-gradient(130% 170% at 0% 0%, rgba(212, 160, 23, 0.18), transparent 55%),
@@ -7553,11 +7593,11 @@ body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--gold-ticker);
-  margin-bottom: 10px;
+  margin-bottom: 7px;
 }
 
 .winner-card.p1-featured .winner-name {
-  font-size: 26px;
+  font-size: 22px;
   letter-spacing: -0.01em;
 }
 
@@ -7570,9 +7610,9 @@ body {
 
 /* --- Champion medallion --- */
 .winner-badge {
-  width: 46px;
-  height: 46px;
-  font-size: 13px;
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
   font-weight: 800;
   color: #2a1c02;
   background: radial-gradient(circle at 36% 30%, #ffeaa8 0%, var(--gold) 52%, #9c7410 100%);
@@ -7589,13 +7629,43 @@ body {
   box-shadow: 0 2px 8px rgba(212, 160, 23, 0.35);
 }
 
+/* Gold gradient hairline above the winner's time/points row */
+.winner-card.p1-featured .winner-stats-mini {
+  border-top: none;
+  position: relative;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.winner-card.p1-featured .winner-stats-mini::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.5) 45%, rgba(212, 160, 23, 0.25));
+}
+
 /* --- P2 / P3 medal cards --- */
 .podium-mini-card {
   position: relative;
   overflow: hidden;
   padding-left: 18px;
-  background: rgba(255, 255, 255, 0.025);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
+    rgba(255, 255, 255, 0.025);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: fadeUpSlow 0.7s ease-out both 0.62s;
   transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.podium-mini-card.p3 {
+  animation-delay: 0.72s;
+}
+
+.podium-mini-card:hover {
+  transform: translateY(-3px);
 }
 
 .podium-mini-card::before {
@@ -7630,24 +7700,239 @@ body {
   color: rgba(244, 241, 234, 0.55);
 }
 
-/* --- Fastest lap: iconic F1 purple, regardless of active team theme --- */
-.race-block.previous .race-stat::before {
-  background: #b388ff;
-  opacity: 0.9;
-  box-shadow: 0 0 10px rgba(140, 80, 255, 0.7);
+/* ============================================================
+   Previous race — full redesign: an editorial header band sitting
+   above a single unified podium row (P1 featured + P2/P3 medal cards).
+   ============================================================ */
+.prev-inner {
+  position: relative;
+  z-index: 1;
 }
 
-.race-block.previous .race-stat {
-  background: rgba(140, 80, 255, 0.08);
-  border-color: rgba(140, 80, 255, 0.22);
+.prev-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px 40px;
+  flex-wrap: wrap;
+  padding-bottom: 26px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.race-block.previous .race-stat .race-stat-label {
-  color: #c9b3ff;
+.prev-id {
+  min-width: 0;
 }
 
-.race-block.previous .race-stat .race-stat-val {
+.prev-circuit {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: rgba(244, 241, 234, 0.6);
+  margin-top: 14px;
+}
+
+.prev-circuit strong {
   color: #fff;
+  font-weight: 600;
+}
+
+/* Button lives in the header band now — drop the old top margin + hairline. */
+.prev-header .nr-view-results-btn {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.prev-header .nr-view-results-btn::before {
+  display: none;
+}
+
+/* --- Unified podium row: P1 featured wider, P2 / P3 equal medal cards --- */
+.podium-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.podium-row .winner-card.p1-featured {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  padding: 15px 16px 14px;
+  padding-left: 18px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  /* Same dark carbon surface as the P2/P3 medal cards — gold now lives only in
+     the accent rail / medallion, so all three read as one consistent set. */
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
+    rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: fadeUpSlow 0.7s ease-out both 0.5s;
+}
+
+/* Drop the gold light-sweep that made P1 stand apart from the others. */
+.podium-row .winner-card.p1-featured::after {
+  display: none;
+}
+
+/* Gold medal accent rail, matching P2 silver / P3 bronze. */
+.podium-row .winner-card.p1-featured::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #ffe9a8, var(--gold));
+  box-shadow: 0 0 12px rgba(212, 160, 23, 0.45);
+}
+
+/* Medallion sits in-flow at the top-centre, like the P2 / P3 position labels. */
+.podium-row .winner-card.p1-featured .winner-badge {
+  position: static;
+  margin: 0 auto;
+  animation: none;
+}
+
+/* No "Race Winner" eyebrow — keep the three cards structurally identical. */
+.podium-row .winner-card.p1-featured .winner-info::before {
+  display: none;
+}
+
+.podium-row .winner-card.p1-featured .winner-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.podium-row .winner-card.p1-featured .winner-name {
+  font-size: 16px;
+}
+
+.podium-row .winner-card.p1-featured .winner-stats-mini {
+  gap: 10px;
+  margin-top: 11px;
+  padding-top: 10px;
+}
+
+.podium-row .winner-card.p1-featured .winner-stats-mini::before {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.podium-row .winner-card.p1-featured .ws-val {
+  font-size: 12.5px;
+}
+
+/* While results load, the lone winner card spans the whole row. */
+.podium-row > .winner-card.p1-featured:only-child {
+  grid-column: 1 / -1;
+}
+
+.podium-row .podium-mini-card {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+  gap: 0;
+  padding: 15px 16px 14px;
+  padding-left: 18px;
+  border-radius: var(--r-md);
+}
+
+/* Position labels become circular medallions, matching the P1 badge. */
+.podium-row .pm-pos {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.podium-row .podium-mini-card.p2 .pm-pos {
+  color: #20232a;
+  background: radial-gradient(circle at 36% 30%, #ffffff 0%, #c6c8d0 52%, #74767e 100%);
+  border: 2px solid rgba(245, 247, 250, 0.6);
+  box-shadow:
+    0 6px 18px rgba(180, 184, 196, 0.4),
+    0 0 0 5px rgba(200, 202, 210, 0.1);
+}
+
+.podium-row .podium-mini-card.p3 .pm-pos {
+  color: #2a1808;
+  background: radial-gradient(circle at 36% 30%, #f3cda0 0%, #cd7f32 52%, #7c4a1f 100%);
+  border: 2px solid rgba(240, 205, 165, 0.55);
+  box-shadow:
+    0 6px 18px rgba(205, 127, 50, 0.42),
+    0 0 0 5px rgba(205, 127, 50, 0.1);
+}
+
+.podium-row .pm-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.podium-row .pm-name {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.podium-row .pm-team {
+  margin-top: 0;
+}
+
+.podium-row .pm-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.podium-row .pm-time {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: rgba(244, 241, 234, 0.82);
+  margin: 0;
+}
+
+.podium-row .pm-gap {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(244, 241, 234, 0.55);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .podium-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 @keyframes goldSweep {
@@ -7780,13 +8065,13 @@ body {
   border-color: color-mix(in srgb, var(--racing) 35%, rgba(255, 255, 255, 0.5));
 }
 
-/* --- Title: tonal gradient + soft glow on the wordmark --- */
+/* --- Title: solid wordmark with soft glow --- */
 .hero-title .line2 span {
-  background: linear-gradient(118deg, var(--racing) 18%, var(--racing-hot) 95%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: var(--racing);
+  color: var(--racing);
   filter: drop-shadow(0 6px 18px color-mix(in srgb, var(--racing) 22%, transparent));
 }
 
@@ -8063,10 +8348,13 @@ body {
 
 /* --- Header --- */
 .cal-title {
-  font-size: 30px;
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .cal-title em {
+  font-weight: 800;
   background: linear-gradient(118deg, var(--racing), var(--racing-hot));
   -webkit-background-clip: text;
   background-clip: text;
