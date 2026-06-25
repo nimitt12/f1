@@ -43,7 +43,7 @@ const formatDateTime = (dateStr?: string, timeStr?: string) => {
 const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
   const [results, setResults] = useState<RaceResult[] | null>(null);
   const [loadingResults, setLoadingResults] = useState(false);
-  const [activeTab, setActiveTab] = useState<'race' | 'qualifying' | 'analytics'>('race');
+  const [activeTab, setActiveTab] = useState<'race' | 'qualifying'>('race');
 
   useEffect(() => {
     if (!race) return;
@@ -95,7 +95,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
     { name: 'Race', data: { date: race.date, time: race.time }, isMain: true, tab: 'race' },
   ] as SessionInfo[]).filter(s => !!s.data);
 
-  const scrollToResults = (tab?: 'race' | 'qualifying' | 'analytics') => {
+  const scrollToResults = (tab?: 'race' | 'qualifying') => {
     if (tab) setActiveTab(tab);
     const element = document.querySelector('.rd-results-section');
     if (element) {
@@ -219,17 +219,11 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
               >
                 Race
               </button>
-              <button 
+              <button
                 className={`rd-tab ${activeTab === 'qualifying' ? 'active' : ''}`}
                 onClick={() => setActiveTab('qualifying')}
               >
                 Qualifying
-              </button>
-              <button 
-                className={`rd-tab ${activeTab === 'analytics' ? 'active' : ''}`}
-                onClick={() => setActiveTab('analytics')}
-              >
-                Analytics
               </button>
             </div>
 
@@ -287,11 +281,13 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
                     </div>
                   </div>
                 ) : null}
+
+                {results && results.length > 0 && (
+                  <RaceAnalytics results={results} />
+                )}
               </>
-            ) : activeTab === 'qualifying' ? (
-              <QualifyingResults season={race.season} round={race.round} />
             ) : (
-              <RaceAnalytics results={results || []} />
+              <QualifyingResults season={race.season} round={race.round} />
             )}
           </div>
         )}
@@ -606,11 +602,6 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           <span className="ra-card-label">Top Speed Zone</span>
           <span className="ra-card-value">334.2</span>
           <span className="ra-card-sub">KM/H // Turn 17</span>
-        </div>
-        <div className="ra-card">
-          <span className="ra-card-label">Points Scored</span>
-          <span className="ra-card-value">{results.reduce((acc, r) => acc + Number(r.points), 0)}</span>
-          <span className="ra-card-sub">Total Grid Points</span>
         </div>
         <div className="ra-card">
           <span className="ra-card-label">Volatility Score</span>
