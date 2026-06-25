@@ -113,8 +113,16 @@ const ThemeSwitcher: React.FC = () => {
   );
 };
 
+// Race details live at `/race/:season/:round` so the view is shareable and
+// survives a refresh. Parse that shape out of the current path; null otherwise.
+const parseRacePath = (path: string): { season: string; round: string } | null => {
+  const m = path.match(/^\/race\/([^/]+)\/([^/]+)\/?$/);
+  return m ? { season: m[1], round: m[2] } : null;
+};
+
 const App: React.FC = () => {
   const isAdminPortal = window.location.pathname === '/admin-portal';
+  const initialRacePath = parseRacePath(window.location.pathname);
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     const savedUser = localStorage.getItem('f1_user');
     if (!savedUser) return null;
@@ -138,11 +146,23 @@ const App: React.FC = () => {
     }
   });
   const [view, setView] = useState<'dashboard' | 'account' | 'race_details'>(() => {
-    return (localStorage.getItem('f1_view') as any) || 'dashboard';
+    // The URL is the source of truth for race details; only fall back to the
+    // persisted view (account/dashboard) when the path isn't a race route.
+    if (initialRacePath) return 'race_details';
+    const saved = localStorage.getItem('f1_view') as any;
+    return saved === 'race_details' ? 'dashboard' : saved || 'dashboard';
   });
   const [selectedRace, setSelectedRace] = useState<Race | null>(() => {
     const saved = localStorage.getItem('f1_selected_race');
-    return saved ? JSON.parse(saved) : null;
+    const parsed: Race | null = saved ? JSON.parse(saved) : null;
+    // On a deep link / refresh, only trust the cached race if it matches the
+    // path; otherwise it'll be resolved from the calendar once it loads.
+    if (initialRacePath) {
+      return parsed && String(parsed.season) === initialRacePath.season && String(parsed.round) === initialRacePath.round
+        ? parsed
+        : null;
+    }
+    return parsed;
   });
   const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
   const [showBoot, setShowBoot] = useState(true);
@@ -160,6 +180,58 @@ const App: React.FC = () => {
       localStorage.removeItem('f1_selected_race');
     }
   }, [view, selectedRace]);
+
+  // Open a race's details and reflect it in the URL (`/race/:season/:round`).
+  const openRaceDetails = (race: Race) => {
+    setSelectedRace(race);
+    setView('race_details');
+    window.history.pushState({}, '', `/race/${race.season}/${race.round}`);
+    window.scrollTo(0, 0);
+  };
+
+  // Leave race details, returning to the dashboard at the root URL.
+  const closeRaceDetails = () => {
+    setView('dashboard');
+    setSelectedRace(null);
+    window.history.pushState({}, '', '/');
+  };
+
+  // When deep-linked to `/race/:season/:round` (refresh / shared link) the
+  // selected race isn't in memory yet — resolve it from the calendar once it
+  // loads. If the round doesn't exist, fall back to the dashboard.
+  useEffect(() => {
+    if (view !== 'race_details' || selectedRace || races.length === 0) return;
+    const target = parseRacePath(window.location.pathname);
+    if (!target) return;
+    const found = races.find(
+      (r) => String(r.season) === target.season && String(r.round) === target.round
+    );
+    if (found) {
+      setSelectedRace(found);
+    } else {
+      setView('dashboard');
+      window.history.replaceState({}, '', '/');
+    }
+  }, [races, view, selectedRace]);
+
+  // Keep the view in sync with browser back/forward navigation.
+  useEffect(() => {
+    const onPopState = () => {
+      const target = parseRacePath(window.location.pathname);
+      if (target) {
+        setView('race_details');
+        const found = races.find(
+          (r) => String(r.season) === target.season && String(r.round) === target.round
+        );
+        setSelectedRace(found ?? null);
+      } else {
+        setView('dashboard');
+        setSelectedRace(null);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [races]);
 
   // Performant scroll tracking for parallax background
   useEffect(() => {
@@ -262,29 +334,17 @@ const App: React.FC = () => {
                 <RaceLive
                   race={liveRace}
                   races={races}
-                  onRaceSelect={(race) => {
-                    setSelectedRace(race);
-                    setView('race_details');
-                    window.scrollTo(0, 0);
-                  }}
+                  onRaceSelect={openRaceDetails}
                 />
               ) : (
-                <NextRace onRaceSelect={(race) => {
-                  setSelectedRace(race);
-                  setView('race_details');
-                  window.scrollTo(0, 0);
-                }} />
+                <NextRace onRaceSelect={openRaceDetails} />
               )}
             </Parallax>
             <Parallax speed={0.04} delay={40}>
               <ChampionshipLeaders />
             </Parallax>
             <Parallax speed={0.035} delay={60}>
-              <Calendar onRaceSelect={(race) => {
-                setSelectedRace(race);
-                setView('race_details');
-                window.scrollTo(0, 0);
-              }} />
+              <Calendar onRaceSelect={openRaceDetails} />
             </Parallax>
             <Parallax speed={0.04}>
               <StatsRibbon />
@@ -316,12 +376,19 @@ const App: React.FC = () => {
             onClose={() => setView('dashboard')} 
           />
         ) : (
-          <RaceDetails 
-            race={selectedRace} 
-            onBack={() => {
-              setView('dashboard');
-              setSelectedRace(null);
-            }} 
+          <RaceDetails
+            race={selectedRace}
+            onBack={closeRaceDetails}
+            user={user as any}
+            setUser={setUser as any}
+            onOpenSettings={() => setView('account')}
+            onHomeNavigate={(hash) => {
+              closeRaceDetails();
+              // Defer until the dashboard has mounted, then scroll to the section.
+              setTimeout(() => {
+                document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
+              }, 80);
+            }}
           />
         )}
       </div>

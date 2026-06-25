@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import type { Race } from '../data/races';
+import type { AuthUser } from './Hero';
+import SiteHeader from './SiteHeader';
 import QualifyingResults from './QualifyingResults';
 import Loader from './Loader';
 
 interface RaceDetailsProps {
   race: Race | null;
   onBack: () => void;
+  user: AuthUser | null;
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
+  onOpenSettings: () => void;
+  onHomeNavigate: (hash: string) => void;
 }
 
 interface RaceResult {
@@ -55,7 +61,7 @@ const formatDateTime = (dateStr?: string, timeStr?: string) => {
   return { date: dateFormatted, time: timeFormatted };
 };
 
-const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
+const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, onOpenSettings, onHomeNavigate }) => {
   const [results, setResults] = useState<RaceResult[] | null>(null);
   const [loadingResults, setLoadingResults] = useState(false);
   const [activeTab, setActiveTab] = useState<'race' | 'qualifying'>('race');
@@ -125,12 +131,20 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
 
   return (
     <div className="race-details-page">
-      <nav className="rd-top-nav">
-        <button className="rd-back-btn" onClick={onBack}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Back
-        </button>
-      </nav>
+      <div className="rd-site-header">
+        <SiteHeader
+          user={user}
+          setUser={setUser}
+          onOpenSettings={onOpenSettings}
+          onHomeNavigate={onHomeNavigate}
+          leftSlot={
+            <button className="rd-back-btn" onClick={onBack}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              Back
+            </button>
+          }
+        />
+      </div>
 
       <div className="rd-hero-section">
         <div className="rd-hero-content">
