@@ -184,6 +184,100 @@
   }
 }
 
+/* --- FULL-WIDTH HEADER PILL (mobile only) --- */
+@media (max-width: 600px) {
+  .brand-right {
+    width: 100%;
+  }
+
+  /* Stretch the profile/menu pill across the top and split greeting (left)
+     from the avatar + hamburger (right). */
+  .profile-menu-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .profile-menu-card .greeting-text {
+    margin-right: auto;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  /* Guest "Sign In" affordance should also read left-to-right when full width */
+  .profile-menu-card.guest .guest-signin {
+    justify-content: flex-start;
+  }
+
+  /* Race details header: a BACK button shares the row, so the full-width pill
+     above would push it onto a second line. Keep BACK (left) + a compact pill
+     (right) on a single row, and drop the greeting so it always fits. */
+  .race-details-page .hero-top {
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .race-details-page .brand-right {
+    width: auto;
+  }
+
+  .race-details-page .profile-menu-card {
+    width: auto;
+  }
+
+  .race-details-page .profile-menu-card .greeting-text,
+  .race-details-page .profile-menu-card .pmc-divider {
+    display: none;
+  }
+}
+
+/* Hide the decorative circuit track + lapping-dot animation on mobile —
+   it bleeds behind the race info card and reads as clutter on small screens. */
+@media (max-width: 600px) {
+  .race-track-bg {
+    display: none;
+  }
+}
+
+/* --- CALENDAR HEADER (mobile only) ---
+   The 48px title + meta + nav don't fit on one row, so the "22 ROUNDS"
+   meta gets squeezed and wraps. Stack the title, then put the meta and
+   nav buttons on their own row beneath it. */
+@media (max-width: 600px) {
+  .cal-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .cal-title {
+    font-size: 34px;
+    text-align: center;
+  }
+
+  .cal-head-right {
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .cal-meta {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Trim the carbon nav tiles so they don't dominate the row */
+  .cal-nav {
+    gap: 6px;
+  }
+
+  .cal-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 540px) {
   .cd-num {
     font-size: 32px;
@@ -255,7 +349,7 @@
   }
 
   .cal-section {
-    padding: 30px 12px 0;
+    padding: 30px 12px 32px;
   }
 
   .race-hero {
@@ -511,6 +605,9 @@
     order: 2;
     position: static;
     transform: none;
+    /* Base rule pins width to calc(100% - 80px); reset it so the stacked
+       panel spans the full card instead of leaving a gap on the right. */
+    width: 100%;
     max-width: 100%;
     border-radius: 0;
     padding: 32px 24px;
