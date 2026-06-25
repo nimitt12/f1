@@ -61,38 +61,52 @@ const ThemeSwitcher: React.FC = () => {
 
   const currentTheme = themes.find(t => t.id === theme);
 
+  // The "default" theme has no single livery colour, so we render it as a
+  // multi-colour spectrum chip; every team maps to its own CSS custom prop.
+  const chipFor = (id: string) =>
+    id === 'default'
+      ? 'conic-gradient(from 140deg, #a855f7, #ef4444, #f59e0b, #22c55e, #3b82f6, #a855f7)'
+      : `var(--${id})`;
+  const accentFor = (id: string) => (id === 'default' ? '#a855f7' : `var(--${id})`);
+
   return (
-    <div 
-      className="theme-switcher" 
-      onClick={() => setIsOpen(!isOpen)} 
+    <div
+      className={`theme-switcher ${isOpen ? 'open' : ''}`}
+      onClick={() => setIsOpen(!isOpen)}
       ref={containerRef}
     >
+      <div
+        className="ts-trigger-swatch"
+        style={{ background: chipFor(theme), '--ts-active': accentFor(theme) } as React.CSSProperties}
+      ></div>
+      <span className="ts-label">{currentTheme?.label}</span>
       <div className="ts-icon">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.688-1.688h1.906c3.106 0 5.64-2.534 5.64-5.64 0-4.75-4.03-8.72-8.703-8.72Z"/>
         </svg>
       </div>
-      <span className="ts-label">{currentTheme?.label}</span>
-      
+
       {isOpen && (
-        <div className="ts-menu">
-          {themes.map(t => (
-            <div 
-              key={t.id} 
-              className={`ts-item ${theme === t.id ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setTheme(t.id);
-                setIsOpen(false);
-              }}
-            >
-              <span>{t.label}</span>
-              <div 
-                className="ts-color-dot" 
-                style={{ background: `var(--${t.id === 'default' ? 'racing' : t.id})` }}
-              ></div>
-            </div>
-          ))}
+        <div className="ts-menu" onClick={(e) => e.stopPropagation()}>
+          <div className="ts-menu-head">Season Palette</div>
+          <div className="ts-swatch-grid">
+            {themes.map(t => (
+              <button
+                key={t.id}
+                type="button"
+                className={`ts-swatch ${theme === t.id ? 'active' : ''}`}
+                style={{ '--sw': accentFor(t.id), '--chip': chipFor(t.id) } as React.CSSProperties}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTheme(t.id);
+                  setIsOpen(false);
+                }}
+              >
+                <span className="ts-swatch-chip"></span>
+                <span className="ts-swatch-name">{t.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
