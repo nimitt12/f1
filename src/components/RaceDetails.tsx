@@ -152,6 +152,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
           <div className="rd-bg-stripe"></div>
           <div className="rd-bg-stripe"></div>
         </div>
+        <div className="rd-hero-roundmark" aria-hidden="true">{String(race.round).padStart(2, '0')}</div>
       </div>
 
       <div className="rd-content-body">
@@ -243,46 +244,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
                   <Loader label="Loading official results" />
                 ) : results && results.length > 0 ? (
                   <div className="rd-results-container">
-                    <div className="rd-podium">
-                      {results[1] && (
-                        <div className={`rd-podium-spot rd-p2 theme-${results[1].team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                          <div className="rd-spot-glow"></div>
-                          <span className="rd-podium-pos">P2</span>
-                          <div className="rd-podium-info">
-                            <span className="rd-podium-name">{results[1].given_name} <strong>{results[1].family_name}</strong></span>
-                            <span className="rd-podium-team">{results[1].team_name}</span>
-                          </div>
-                          <div className="rd-podium-pts">+{results[1].points} <span>PTS</span></div>
-                        </div>
-                      )}
-                      {results[0] && (
-                        <div className={`rd-podium-spot rd-p1 theme-${results[0].team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                          <div className="rd-spot-glow"></div>
-                          <div className="rd-winner-crown">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-                          </div>
-                          <span className="rd-podium-pos">P1</span>
-                          <div className="rd-podium-info">
-                            <span className="rd-podium-name">{results[0].given_name} <strong>{results[0].family_name}</strong></span>
-                            <span className="rd-podium-team">{results[0].team_name}</span>
-                          </div>
-                          <div className="rd-podium-pts">+{results[0].points} <span>PTS</span></div>
-                        </div>
-                      )}
-                      {results[2] && (
-                        <div className={`rd-podium-spot rd-p3 theme-${results[2].team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                          <div className="rd-spot-glow"></div>
-                          <span className="rd-podium-pos">P3</span>
-                          <div className="rd-podium-info">
-                            <span className="rd-podium-name">{results[2].given_name} <strong>{results[2].family_name}</strong></span>
-                            <span className="rd-podium-team">{results[2].team_name}</span>
-                          </div>
-                          <div className="rd-podium-pts">+{results[2].points} <span>PTS</span></div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="qr-table-container" style={{ marginTop: '40px' }}>
+                    <div className="qr-table-container">
                       <table className="qr-table">
                         <thead>
                           <tr>
@@ -294,24 +256,32 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {results.slice(3).map((r) => (
-                            <tr key={r.id} className={`qr-row theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                              <td className="qr-td-pos">
-                                <span className="qr-pos-num">{r.position}</span>
-                              </td>
-                              <td className="qr-td-driver">
-                                <div className="qr-driver-cell">
-                                  <span className="qr-driver-code">{r.code}</span>
-                                  <span className="qr-driver-fullname">{r.given_name} {r.family_name}</span>
-                                </div>
-                              </td>
-                              <td className="qr-td-team">{r.team_name}</td>
-                              <td className="qr-td-time">{r.time || r.status}</td>
-                              <td className="qr-td-pts" style={{ fontWeight: 800, color: 'var(--racing)', textAlign: 'right', paddingRight: '24px' }}>
-                                {Number(r.points) > 0 ? `+${r.points}` : '0'}
-                              </td>
-                            </tr>
-                          ))}
+                          {results.map((r) => {
+                            const pos = Number(r.position);
+                            const podiumClass = pos === 1 ? 'qr-row--p1' : pos === 2 ? 'qr-row--p2' : pos === 3 ? 'qr-row--p3' : '';
+                            return (
+                              <tr key={r.id} className={`qr-row ${podiumClass} theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
+                                <td className="qr-td-pos">
+                                  <span className="qr-pos-num">
+                                    {pos === 1 ? (
+                                      <svg className="qr-pos-trophy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                                    ) : r.position}
+                                  </span>
+                                </td>
+                                <td className="qr-td-driver">
+                                  <div className="qr-driver-cell">
+                                    <span className="qr-driver-code">{r.code}</span>
+                                    <span className="qr-driver-fullname">{r.given_name} {r.family_name}</span>
+                                  </div>
+                                </td>
+                                <td className="qr-td-team">{r.team_name}</td>
+                                <td className="qr-td-time">{r.time || r.status}</td>
+                                <td className="qr-td-pts" style={{ fontWeight: 800, color: 'var(--racing)', textAlign: 'right', paddingRight: '24px' }}>
+                                  {Number(r.points) > 0 ? `+${r.points}` : '0'}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>

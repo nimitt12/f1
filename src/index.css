@@ -6352,12 +6352,48 @@ a.menu-action-btn {
 /* Cinematic Hero Section */
 .rd-hero-section {
   position: relative;
-  min-height: 400px;
-  padding: 40px 5vw 80px;
+  min-height: 440px;
+  padding: 56px 5vw 88px;
   display: flex;
   align-items: flex-end;
-  background: linear-gradient(135deg, var(--paper-2) 0%, var(--paper) 100%);
+  background:
+    radial-gradient(80% 120% at 88% 0%, color-mix(in srgb, var(--racing) 16%, transparent) 0%, transparent 55%),
+    radial-gradient(70% 100% at 0% 100%, color-mix(in srgb, var(--racing) 10%, transparent) 0%, transparent 50%),
+    linear-gradient(135deg, var(--paper-2) 0%, var(--paper) 60%, var(--paper-2) 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--carbon) 8%, transparent);
   overflow: hidden;
+}
+
+/* Fine engineering grid + vignette layered over the hero */
+.rd-hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--carbon) 4%, transparent) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--carbon) 4%, transparent) 0 1px, transparent 1px 64px);
+  mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 78%);
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 78%);
+  pointer-events: none;
+}
+
+/* Giant ghosted round number, anchored top-right behind the content */
+.rd-hero-roundmark {
+  position: absolute;
+  top: -4%;
+  right: 3vw;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(12rem, 28vw, 26rem);
+  font-weight: 900;
+  font-style: italic;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--carbon) 9%, transparent);
+  user-select: none;
+  pointer-events: none;
 }
 
 .rd-hero-content {
@@ -6396,9 +6432,18 @@ a.menu-action-btn {
   text-transform: uppercase;
   line-height: 0.9;
   color: var(--carbon);
-  margin-bottom: 25px;
+  margin-bottom: 28px;
   display: flex;
   flex-direction: column;
+}
+
+/* Last word of the race name picks up the racing accent for emphasis */
+.rd-title-word:last-child {
+  background: linear-gradient(120deg, var(--racing) 0%, var(--racing-hot) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--racing);
 }
 
 .rd-title-word {
@@ -6407,13 +6452,20 @@ a.menu-action-btn {
 
 .rd-hero-meta-grid {
   display: flex;
-  gap: 60px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .rd-hero-meta-item {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .rd-meta-label {
@@ -6441,22 +6493,38 @@ a.menu-action-btn {
 }
 
 .rd-hero-flag {
-  height: 100px;
+  height: 110px;
   width: auto;
-  border-radius: 8px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 0 0 6px rgba(255, 255, 255, 0.25);
   position: relative;
   z-index: 2;
 }
 
 .rd-flag-glow {
   position: absolute;
-  inset: -20px;
+  inset: -24px;
   background: var(--racing);
-  filter: blur(60px);
-  opacity: 0.2;
+  filter: blur(64px);
+  opacity: 0.28;
   border-radius: 50%;
   z-index: 1;
+}
+
+/* Soft reflection beneath the flag */
+.rd-hero-flag-wrap::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -22px;
+  height: 28px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.18), transparent 70%);
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* Background Stripes */
@@ -6514,6 +6582,7 @@ a.menu-action-btn {
 }
 
 .rd-section-title {
+  position: relative;
   font-family: var(--font-display);
   font-size: 28px;
   font-weight: 800;
@@ -6521,6 +6590,20 @@ a.menu-action-btn {
   text-transform: uppercase;
   color: var(--carbon);
   white-space: nowrap;
+  padding-left: 20px;
+}
+
+.rd-section-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 78%;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--racing), var(--racing-hot));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--racing) 55%, transparent);
 }
 
 .rd-section-title em {
@@ -6562,6 +6645,17 @@ a.menu-action-btn {
   overflow: hidden;
 }
 
+.rd-session-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.55) 50%, transparent 62%);
+  transform: translateX(-130%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
 .rd-session-card:hover {
   transform: translateY(-12px) scale(1.02);
   background: #fff;
@@ -6569,6 +6663,10 @@ a.menu-action-btn {
   box-shadow:
     0 30px 70px rgba(0, 0, 0, 0.1),
     0 0 0 1px var(--racing);
+}
+
+.rd-session-card:hover::after {
+  transform: translateX(130%);
 }
 
 .rd-card-accent {
@@ -6662,9 +6760,18 @@ a.menu-action-btn {
 
 /* Main Event Card Overrides */
 .rd-session-card.main-event {
-  background: var(--carbon);
+  background:
+    radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--racing) 32%, transparent) 0%, transparent 55%),
+    linear-gradient(160deg, #18181c 0%, var(--carbon) 60%, #050506 100%);
   color: #fff;
   border-color: var(--carbon-3);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.rd-session-card.main-event::after {
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.14) 50%, transparent 62%);
 }
 
 .rd-session-card.main-event .rd-session-name,
@@ -7112,37 +7219,46 @@ a.menu-action-btn {
 
 /* Tab Styles for Race Details */
 .rd-tabs {
-  display: flex;
-  gap: 16px;
+  display: inline-flex;
+  gap: 6px;
   margin-bottom: 32px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  padding-bottom: 16px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .rd-tab {
   background: transparent;
   border: none;
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink-2);
   cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 10px 22px;
+  border-radius: 11px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 
 .rd-tab:hover {
   color: var(--racing);
-  background: rgba(var(--racing-rgb), 0.05);
+  background: rgba(var(--racing-rgb), 0.07);
 }
 
 .rd-tab.active {
-  color: #fff;
+  color: #0a0a0a;
+  font-weight: 800;
   background: var(--racing);
-  box-shadow: 0 4px 12px rgba(var(--racing-rgb), 0.3);
+  border: 1px solid color-mix(in srgb, var(--racing-hot) 70%, #fff);
+  box-shadow:
+    0 8px 22px color-mix(in srgb, var(--racing) 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--racing) 40%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 /* Qualifying Results Premium Screen Styles */
@@ -7285,9 +7401,13 @@ a.menu-action-btn {
 
 .qr-table-container {
   background: #fff;
-  border-radius: 20px;
+  border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.07),
+    0 2px 8px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .qr-table {
@@ -7297,13 +7417,15 @@ a.menu-action-btn {
 
 .qr-table th {
   text-align: left;
-  padding: 20px 24px;
-  background: rgba(0, 0, 0, 0.02);
+  padding: 18px 24px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.035), rgba(0, 0, 0, 0.015));
   font-family: var(--font-display);
   font-size: 11px;
   font-weight: 800;
   color: var(--ink-2);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .qr-row {
@@ -7329,6 +7451,50 @@ a.menu-action-btn {
   font-size: 12px;
   font-weight: 800;
 }
+
+/* ── Podium rows highlighted inline within the classification table ── */
+.qr-row--p1 { background: linear-gradient(90deg, rgba(212, 160, 23, 0.14), rgba(212, 160, 23, 0.03) 55%, transparent 80%); }
+.qr-row--p2 { background: linear-gradient(90deg, rgba(150, 156, 168, 0.16), rgba(150, 156, 168, 0.03) 55%, transparent 80%); }
+.qr-row--p3 { background: linear-gradient(90deg, rgba(205, 127, 50, 0.14), rgba(205, 127, 50, 0.03) 55%, transparent 80%); }
+
+.qr-row--p1:hover { background: linear-gradient(90deg, rgba(212, 160, 23, 0.2), rgba(212, 160, 23, 0.04) 55%, transparent 80%); }
+.qr-row--p2:hover { background: linear-gradient(90deg, rgba(150, 156, 168, 0.22), rgba(150, 156, 168, 0.04) 55%, transparent 80%); }
+.qr-row--p3:hover { background: linear-gradient(90deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.04) 55%, transparent 80%); }
+
+/* Left accent rail in the medal colour */
+.qr-row--p1 .qr-td-pos { box-shadow: inset 4px 0 0 #d4a017; }
+.qr-row--p2 .qr-td-pos { box-shadow: inset 4px 0 0 #9ba0ab; }
+.qr-row--p3 .qr-td-pos { box-shadow: inset 4px 0 0 #cd7f32; }
+
+/* Medal-styled position badge */
+.qr-row--p1 .qr-pos-num,
+.qr-row--p2 .qr-pos-num,
+.qr-row--p3 .qr-pos-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+.qr-row--p1 .qr-pos-num {
+  background: linear-gradient(145deg, #f6da5e, #d4a017);
+  color: #3a2c00;
+  box-shadow: 0 3px 10px rgba(212, 160, 23, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.qr-row--p2 .qr-pos-num {
+  background: linear-gradient(145deg, #eceef3, #b3b8c2);
+  color: #33363d;
+  box-shadow: 0 3px 10px rgba(150, 156, 168, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.qr-row--p3 .qr-pos-num {
+  background: linear-gradient(145deg, #e6a877, #cd7f32);
+  color: #3a1d00;
+  box-shadow: 0 3px 10px rgba(205, 127, 50, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.qr-pos-trophy { display: block; }
+
+/* Slightly stronger driver name on the podium rows */
+.qr-row--p1 .qr-driver-fullname,
+.qr-row--p2 .qr-driver-fullname,
+.qr-row--p3 .qr-driver-fullname { font-weight: 800; }
 
 .qr-td-driver { padding: 20px 24px; }
 .qr-driver-cell { display: flex; align-items: center; gap: 12px; }
@@ -9736,4 +9902,171 @@ body {
 @media (max-width: 420px) {
   .cl-stat { padding: 0 10px; }
   .cl-stat-main .cl-stat-val { font-size: 38px; }
+}
+
+/* ============================================================
+   RACE DETAILS — DARK THEME
+   The public dashboard is dark carbon; the race-details page was
+   light ("paper"), which read as a jarring flash when navigating
+   in from the homepage. Everything below re-skins the Race tab
+   (page bg, hero, schedule cards, tabs, classification table) to a
+   dark carbon palette so it's continuous with the rest of the app.
+   The Analytics tab (.ra-*) was already dark. Scoped under
+   .race-details-page so nothing else is affected.
+   ============================================================ */
+
+/* Page + nav */
+.race-details-page {
+  background: #08080a;
+}
+.race-details-page .rd-top-nav {
+  background: linear-gradient(to bottom, #0c0c0e 0%, transparent 100%);
+}
+
+/* Back button → dark glass */
+.race-details-page .rd-back-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--paper);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.race-details-page .rd-back-btn:hover {
+  background: var(--racing);
+  border-color: var(--racing);
+  color: #fff;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--racing) 35%, transparent);
+}
+
+/* Hero → dark cinematic */
+.race-details-page .rd-hero-section {
+  background:
+    radial-gradient(80% 120% at 88% 0%, color-mix(in srgb, var(--racing) 26%, transparent) 0%, transparent 55%),
+    radial-gradient(70% 100% at 0% 100%, color-mix(in srgb, var(--racing) 14%, transparent) 0%, transparent 50%),
+    linear-gradient(160deg, #16161a 0%, #0b0b0d 60%, #060607 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.race-details-page .rd-hero-section::before {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 64px);
+}
+.race-details-page .rd-hero-roundmark {
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.07);
+}
+.race-details-page .rd-hero-title {
+  color: var(--paper);
+}
+.race-details-page .rd-meta-value {
+  color: #fff;
+}
+.race-details-page .rd-meta-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+.race-details-page .rd-hero-meta-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Section titles */
+.race-details-page .rd-section-title {
+  color: var(--paper);
+}
+.race-details-page .rd-section-line {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0%, transparent 100%);
+}
+
+/* Schedule cards → dark glass (main-event keeps its own dark+glow look) */
+.race-details-page .rd-session-card:not(.main-event) {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.race-details-page .rd-session-card:not(.main-event):hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--racing);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--racing);
+}
+.race-details-page .rd-session-card:not(.main-event)::after {
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.12) 50%, transparent 62%);
+}
+.race-details-page .rd-session-name,
+.race-details-page .rd-time-val {
+  color: #fff;
+}
+.race-details-page .rd-date-row,
+.race-details-page .rd-time-zone {
+  color: rgba(255, 255, 255, 0.5);
+}
+.race-details-page .rd-session-icon {
+  background: color-mix(in srgb, var(--racing) 16%, transparent);
+}
+
+/* Tabs → dark glass */
+.race-details-page .rd-tabs {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.race-details-page .rd-tab {
+  color: rgba(255, 255, 255, 0.55);
+}
+.race-details-page .rd-tab.active {
+  color: #0a0a0a;
+}
+.race-details-page .rd-tab:hover {
+  color: var(--racing-hot);
+  background: color-mix(in srgb, var(--racing) 12%, transparent);
+}
+
+/* Classification / qualifying table → dark */
+.race-details-page .qr-table-container {
+  background: linear-gradient(180deg, #131316 0%, #0c0c0e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.race-details-page .qr-table th {
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.race-details-page .qr-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.race-details-page .qr-row:hover {
+  background: color-mix(in srgb, var(--racing) 8%, transparent);
+}
+.race-details-page .qr-driver-fullname {
+  color: #fff;
+}
+.race-details-page .qr-td-team {
+  color: rgba(255, 255, 255, 0.45);
+}
+.race-details-page .qr-td-time {
+  color: rgba(255, 255, 255, 0.82);
+}
+.race-details-page .qr-td-time.knocked-out {
+  color: rgba(255, 255, 255, 0.3);
+}
+/* Plain (non-podium) position badge → light chip for contrast on dark */
+.race-details-page .qr-row:not(.qr-row--p1):not(.qr-row--p2):not(.qr-row--p3) .qr-pos-num {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Qualifying header text */
+.race-details-page .qr-title {
+  color: var(--paper);
+}
+.race-details-page .qr-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+}
+.race-details-page .qr-no-data {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+}
+.race-details-page .qr-header-line {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0%, transparent 100%);
 }

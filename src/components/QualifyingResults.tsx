@@ -62,9 +62,6 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round }) 
     );
   }
 
-  const top3 = results.slice(0, 3);
-  const theRest = results.slice(3);
-
   return (
     <div className="qualifying-results-screen">
       <div className="qr-header">
@@ -73,26 +70,6 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round }) 
           <div className="qr-subtitle">Classification // Round {round}</div>
         </div>
         <div className="qr-header-line"></div>
-      </div>
-
-      <div className="qr-top-hero">
-        {[top3[1], top3[0], top3[2]].map((r) => {
-          if (!r) return null;
-          return (
-            <div key={r.driver_number} className={`qr-hero-card pos-${r.position} theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
-              <div className="qr-card-blur"></div>
-              <div className="qr-pos-badge">P{r.position}</div>
-              <div className="qr-driver-info">
-                <span className="qr-driver-name">{r.given_name} <strong>{r.family_name}</strong></span>
-                <span className="qr-team-name">{r.team_name}</span>
-              </div>
-              <div className="qr-best-time">
-                <span className="qr-time-label">BEST</span>
-                <span className="qr-time-val">{r.q3 || r.q2 || r.q1}</span>
-              </div>
-            </div>
-          );
-        })}
       </div>
 
       <div className="qr-table-container">
@@ -108,23 +85,31 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round }) 
             </tr>
           </thead>
           <tbody>
-            {theRest.map((r) => (
-              <tr key={r.driver_number} className={`qr-row theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
-                <td className="qr-td-pos">
-                  <span className="qr-pos-num">{r.position}</span>
-                </td>
-                <td className="qr-td-driver">
-                  <div className="qr-driver-cell">
-                    <span className="qr-driver-code">{r.code}</span>
-                    <span className="qr-driver-fullname">{r.given_name} {r.family_name}</span>
-                  </div>
-                </td>
-                <td className="qr-td-team">{r.team_name}</td>
-                <td className={`qr-td-time ${!r.q1 ? 'knocked-out' : ''}`}>{r.q1 || '—'}</td>
-                <td className={`qr-td-time ${!r.q2 ? 'knocked-out' : ''}`}>{r.q2 || '—'}</td>
-                <td className={`qr-td-time ${!r.q3 ? 'knocked-out' : ''}`}>{r.q3 || '—'}</td>
-              </tr>
-            ))}
+            {results.map((r) => {
+              const pos = Number(r.position);
+              const podiumClass = pos === 1 ? 'qr-row--p1' : pos === 2 ? 'qr-row--p2' : pos === 3 ? 'qr-row--p3' : '';
+              return (
+                <tr key={r.driver_number} className={`qr-row ${podiumClass} theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
+                  <td className="qr-td-pos">
+                    <span className="qr-pos-num">
+                      {pos === 1 ? (
+                        <svg className="qr-pos-trophy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                      ) : r.position}
+                    </span>
+                  </td>
+                  <td className="qr-td-driver">
+                    <div className="qr-driver-cell">
+                      <span className="qr-driver-code">{r.code}</span>
+                      <span className="qr-driver-fullname">{r.given_name} {r.family_name}</span>
+                    </div>
+                  </td>
+                  <td className="qr-td-team">{r.team_name}</td>
+                  <td className={`qr-td-time ${!r.q1 ? 'knocked-out' : ''}`}>{r.q1 || '—'}</td>
+                  <td className={`qr-td-time ${!r.q2 ? 'knocked-out' : ''}`}>{r.q2 || '—'}</td>
+                  <td className={`qr-td-time ${!r.q3 ? 'knocked-out' : ''}`}>{r.q3 || '—'}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
