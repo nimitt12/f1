@@ -2522,7 +2522,11 @@ body {
 
 .col-head {
   padding: 26px 36px;
-  background: linear-gradient(180deg, rgba(12, 12, 15, 0.96), rgba(6, 6, 8, 0.7));
+  background:
+    repeating-linear-gradient(125deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 13px),
+    linear-gradient(180deg, #18181c 0%, #0e0e11 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
@@ -2583,7 +2587,12 @@ body {
   align-items: center;
   gap: 16px;
   padding: 10px 36px;
-  background: #000;
+  background:
+    linear-gradient(90deg, #000 0%, #000 26%, transparent 60%),
+    repeating-linear-gradient(125deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 13px),
+    #000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2603,12 +2612,24 @@ body {
 }
 
 .driver-row:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background:
+    rgba(255, 255, 255, 0.03),
+    linear-gradient(90deg, #000 0%, #000 26%, transparent 60%),
+    repeating-linear-gradient(125deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 13px),
+    #000;
   transform: translateX(4px);
 }
 
 .driver-row.leader {
-  background: linear-gradient(90deg, var(--team-color) -20%, #000 70%);
+  background:
+    linear-gradient(90deg, var(--team-color) -20%, transparent 62%),
+    linear-gradient(90deg, #000 0%, #000 30%, transparent 64%),
+    repeating-linear-gradient(125deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 13px),
+    #000;
   padding: 48px 36px;
 }
 
@@ -2731,7 +2752,12 @@ body {
 
 .con-row {
   padding: 20px 36px;
-  background: #000;
+  background:
+    linear-gradient(90deg, #000 0%, #000 26%, transparent 60%),
+    repeating-linear-gradient(125deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 13px),
+    #000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2751,12 +2777,24 @@ body {
 }
 
 .con-row:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background:
+    rgba(255, 255, 255, 0.03),
+    linear-gradient(90deg, #000 0%, #000 26%, transparent 60%),
+    repeating-linear-gradient(125deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 13px),
+    #000;
   transform: translateX(4px);
 }
 
 .con-row.leader {
-  background: linear-gradient(90deg, var(--team-color) -20%, #000 70%);
+  background:
+    linear-gradient(90deg, var(--team-color) -20%, transparent 62%),
+    linear-gradient(90deg, #000 0%, #000 30%, transparent 64%),
+    repeating-linear-gradient(125deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 13px),
+    #000;
   padding: 48px 36px;
 }
 
