@@ -272,6 +272,9 @@ const App: React.FC = () => {
                 window.scrollTo(0, 0);
               }} />
             </Parallax>
+            <Parallax speed={0.04}>
+              <StatsRibbon />
+            </Parallax>
             <Parallax speed={0.05}>
               <DriverBattle />
             </Parallax>
@@ -291,9 +294,6 @@ const App: React.FC = () => {
               </section>
             </Parallax>
 
-            <Parallax speed={0.04}>
-              <StatsRibbon />
-            </Parallax>
             <Footer />
           </>
         ) : view === 'account' ? (

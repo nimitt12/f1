@@ -7,6 +7,11 @@
 }
 
 :root {
+  /* Unified layout rhythm — horizontal gutter + vertical gap between
+     top-level sections. Both scale down at the breakpoints below so spacing
+     stays proportional across resolutions. */
+  --gutter: 36px;
+  --section-gap: 60px;
   --carbon: #0a0a0a;
   --carbon-2: #131313;
   --carbon-3: #1d1d1d;
@@ -66,6 +71,17 @@
   --font-body: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-alt: "Syne", sans-serif;
+}
+
+/* Responsive layout rhythm — scale gutter + section gap with viewport. */
+@media (max-width: 1024px) {
+  :root { --gutter: 28px; --section-gap: 48px; }
+}
+@media (max-width: 768px) {
+  :root { --gutter: 20px; --section-gap: 38px; }
+}
+@media (max-width: 480px) {
+  :root { --gutter: 16px; --section-gap: 30px; }
 }
 
 html {
@@ -1612,7 +1628,7 @@ body {
 .race-hero {
   margin: 0 auto;
   max-width: 1440px;
-  padding: 0 36px;
+  padding: 0 var(--gutter);
   background: transparent;
   animation: fadeUpSlow 0.7s ease both 0.6s;
 }
@@ -2197,7 +2213,7 @@ body {
 .cal-section {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 88px 36px 0;
+  padding: var(--section-gap) var(--gutter) 0;
   animation: fadeUpSlow 0.7s ease both 0.7s;
 }
 
@@ -2457,7 +2473,7 @@ body {
 .main-section {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 56px 36px 0;
+  padding: var(--section-gap) var(--gutter) 0;
 }
 
 .main-grid {
@@ -2465,6 +2481,11 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 32px;
   background: transparent;
+}
+
+/* Stack the two standings columns once they get too narrow side-by-side. */
+@media (max-width: 1024px) {
+  .main-grid { grid-template-columns: 1fr; gap: 28px; }
 }
 
 .col {
@@ -3387,7 +3408,7 @@ body {
 .stats-ribbon {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0px 36px 0;
+  padding: var(--section-gap) var(--gutter) 0;
 }
 
 .stats-grid {
@@ -3466,7 +3487,7 @@ body {
 .footer-wrap {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 48px 36px 56px;
+  padding: var(--section-gap) var(--gutter) 56px;
 }
 
 /* Rich dark carbon panel, echoing the content cards above it */
@@ -3717,7 +3738,7 @@ body {
 .main-section,
 .intel-section {
   background: transparent !important;
-  padding: 0 36px 64px;
+  padding: var(--section-gap) var(--gutter) 0;
   max-width: 1440px;
   margin: 0px auto 0;
 }
@@ -3926,8 +3947,8 @@ body {
 
 .driver-battle-section {
   max-width: 1440px;
-  margin: 64px auto;
-  padding: 0 36px;
+  margin: 0 auto;
+  padding: var(--section-gap) var(--gutter) 0;
 }
 
 .battle-header {
@@ -9296,7 +9317,7 @@ body {
 .cl-section {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 88px 36px 0;
+  padding: var(--section-gap) var(--gutter) 0;
 }
 
 .cl-head {
@@ -9706,7 +9727,6 @@ body {
 }
 
 @media (max-width: 860px) {
-  .cl-section { padding: 64px 20px 0; }
   .cl-grid { grid-template-columns: 1fr; gap: 18px; }
   .cl-card { padding: 26px 24px 28px; }
   .cl-watermark { font-size: 150px; bottom: -28px; }
