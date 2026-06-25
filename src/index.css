@@ -32,7 +32,7 @@
   --mclaren: #ff8700;
   --redbull: #0600ef;
   --williams: #005aff;
-  --haas: #ffffff;
+  --haas: #a2a9ac;
   --alpine: #F080B8;
   --audi: #f72a2a;
   --racingbulls: #6692ff;
@@ -10078,4 +10078,279 @@ body {
 }
 .race-details-page .qr-header-line {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0%, transparent 100%);
+}
+
+/* ============================================================
+   DEEP ANALYTICS — PREMIUM GRAPH REFINEMENT
+   Scoped to .race-details-page so it layers cleanly over the
+   base .ra-* charts: theme-tinted depth, richer elevation,
+   gradient accents, brighter data ink. Loaded last.
+   ============================================================ */
+
+/* Stat cards + chart panels → tinted carbon with soft top sheen */
+.race-details-page .ra-card,
+.race-details-page .ra-chart-box {
+  background:
+    radial-gradient(135% 95% at 100% 0%, color-mix(in srgb, var(--racing) 10%, transparent) 0%, transparent 55%),
+    linear-gradient(180deg, #16161b 0%, #0b0b0e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.race-details-page .ra-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.race-details-page .ra-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--racing) 38%, transparent);
+  box-shadow:
+    0 32px 74px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--racing) 25%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Card accent underline → gradient sweep with glow */
+.race-details-page .ra-card::after {
+  height: 2px;
+  opacity: 0.95;
+  background: linear-gradient(90deg, transparent, var(--racing) 38%, var(--racing-hot) 62%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--racing) 70%, transparent);
+}
+
+/* Headline figures → metallic gradient text */
+.race-details-page .ra-card-value {
+  background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--racing-hot) 55%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+.race-details-page .ra-card-label {
+  color: color-mix(in srgb, var(--racing-hot) 50%, var(--ink-3));
+}
+
+/* Chart titles → gradient accent bar */
+.race-details-page .ra-chart-title::before {
+  background: linear-gradient(180deg, var(--racing-hot), var(--racing-deep));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--racing) 80%, transparent);
+}
+
+/* Plot backdrops → theme-tinted radial depth with vignette */
+.race-details-page .ra-svg-container,
+.race-details-page .ra-scatterplot-container {
+  background:
+    radial-gradient(85% 130% at 50% 0%, color-mix(in srgb, var(--racing) 13%, transparent) 0%, transparent 60%),
+    radial-gradient(circle at 50% 45%, #16161c 0%, #060608 100%);
+  border: 1px solid color-mix(in srgb, var(--racing) 16%, rgba(255, 255, 255, 0.06));
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+/* Grid lattice → faint theme tint, fades at the edges */
+.race-details-page .ra-grid-pattern {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--racing) 10%, rgba(255, 255, 255, 0.05)) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--racing) 10%, rgba(255, 255, 255, 0.05)) 1px, transparent 1px);
+  -webkit-mask-image: radial-gradient(ellipse 75% 75% at center, #000 50%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 75% at center, #000 50%, transparent 100%);
+}
+
+/* Data ink → brighter, more legible */
+.race-details-page .ra-legend-item {
+  color: rgba(255, 255, 255, 0.78);
+}
+.race-details-page .ra-legend-color {
+  box-shadow: 0 0 8px currentColor;
+}
+.race-details-page .ra-axis-label {
+  fill: rgba(255, 255, 255, 0.55);
+}
+.race-details-page .ra-telemetry-overlay {
+  color: color-mix(in srgb, var(--racing-hot) 70%, #ffffff);
+  opacity: 0.5;
+}
+
+/* ============================================================
+   RACE TAB — QUICK-JUMP SUB-NAV
+   Pill links under the Race/Qualifying tabs that smooth-scroll
+   to each section (classification + analytics blocks).
+   ============================================================ */
+.rd-quicknav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 900px;
+  margin: 0 auto 40px;
+}
+
+.rd-quicknav-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-right: 4px;
+}
+
+.race-details-page .rd-quicknav-link {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 7px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.race-details-page .rd-quicknav-link:hover {
+  color: #0a0a0a;
+  background: var(--racing);
+  border-color: color-mix(in srgb, var(--racing-hot) 70%, #fff);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--racing) 45%, transparent);
+  transform: translateY(-1px);
+}
+
+.race-details-page .rd-quicknav-link:active {
+  transform: translateY(0);
+}
+
+/* Land jumped-to sections a little below the viewport top */
+.race-details-page [id^="rd-sec-"] {
+  scroll-margin-top: 24px;
+}
+
+/* ============================================================
+   WEEKEND SCHEDULE — PREMIUM CARD REFINEMENT
+   Richer tinted surfaces, hairline accents, premium icon chips
+   and a header/detail divider. Scoped to the dark details page.
+   ============================================================ */
+
+.race-details-page .rd-session-card {
+  gap: 18px;
+  border-radius: 22px;
+  padding: 26px 26px 28px;
+}
+
+/* Non-main cards → tinted carbon with soft top-right bleed */
+.race-details-page .rd-session-card:not(.main-event) {
+  background:
+    radial-gradient(135% 95% at 100% 0%, color-mix(in srgb, var(--racing) 10%, transparent) 0%, transparent 55%),
+    linear-gradient(180deg, #161619 0%, #0b0b0e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Top hairline accent that lights up on hover */
+.race-details-page .rd-session-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--racing) 55%, transparent), transparent);
+  opacity: 0.55;
+  transition: opacity 0.4s ease;
+  z-index: 2;
+}
+.race-details-page .rd-session-card:hover::before {
+  opacity: 1;
+}
+
+/* Refined corner mark */
+.race-details-page .rd-card-accent {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, transparent 56%, color-mix(in srgb, var(--racing) 24%, transparent) 56%);
+}
+.race-details-page .rd-session-card:hover .rd-card-accent {
+  background: linear-gradient(135deg, transparent 56%, var(--racing) 56%);
+}
+
+/* Stronger lift + racing glow on hover */
+.race-details-page .rd-session-card:not(.main-event):hover {
+  transform: translateY(-10px);
+  background:
+    radial-gradient(135% 95% at 100% 0%, color-mix(in srgb, var(--racing) 16%, transparent) 0%, transparent 55%),
+    linear-gradient(180deg, #1b1b20 0%, #0d0d11 100%);
+  border-color: color-mix(in srgb, var(--racing) 55%, transparent);
+  box-shadow:
+    0 36px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--racing) 45%, transparent),
+    0 18px 50px color-mix(in srgb, var(--racing) 22%, transparent);
+}
+
+/* Premium icon chip */
+.race-details-page .rd-session-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--racing) 28%, transparent), color-mix(in srgb, var(--racing) 8%, transparent));
+  border: 1px solid color-mix(in srgb, var(--racing) 30%, transparent);
+  color: var(--racing-hot);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.race-details-page .rd-session-card:hover .rd-session-icon {
+  background: var(--racing);
+  color: #0a0a0a;
+  border-color: color-mix(in srgb, var(--racing-hot) 70%, #fff);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--racing) 50%, transparent);
+  transform: rotate(-8deg) scale(1.05);
+}
+
+/* Header spacing + type */
+.race-details-page .rd-card-header {
+  gap: 12px;
+}
+.race-details-page .rd-session-name {
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+/* Header / detail divider */
+.race-details-page .rd-session-body {
+  position: relative;
+  padding-top: 20px;
+  gap: 7px;
+}
+.race-details-page .rd-session-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), transparent 75%);
+}
+
+/* Brighter time + date type */
+.race-details-page .rd-time-val {
+  font-size: 22px;
+  color: #fff;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+}
+.race-details-page .rd-date-row {
+  color: rgba(255, 255, 255, 0.62);
+}
+.race-details-page .rd-time-zone {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* View-details hint → brighter pill-link feel */
+.race-details-page .rd-view-details-hint {
+  color: var(--racing-hot);
+  font-weight: 800;
 }

@@ -28,6 +28,21 @@ const COUNTRY_FLAGS: Record<string, string> = {
   Singapore: 'sg', Mexico: 'mx', Brazil: 'br', Qatar: 'qa', UAE: 'ae',
 };
 
+// Quick-jump sub-nav for the Race tab. Each entry maps to an element id
+// rendered in the classification table or the analytics section below.
+const RACE_NAV: { id: string; label: string }[] = [
+  { id: 'rd-sec-classification', label: 'Classification' },
+  { id: 'rd-sec-stats', label: 'Key Stats' },
+  { id: 'rd-sec-racepace', label: 'Race Pace' },
+  { id: 'rd-sec-evolution', label: 'Field Evolution' },
+  { id: 'rd-sec-gauges', label: 'Reliability' },
+  { id: 'rd-sec-trajectory', label: 'Pace Delta' },
+  { id: 'rd-sec-yield', label: 'Constructor Yield' },
+  { id: 'rd-sec-delta', label: 'Grid vs Finish' },
+  { id: 'rd-sec-spread', label: 'Field Spread' },
+  { id: 'rd-sec-attrition', label: 'Attrition' },
+];
+
 const formatDateTime = (dateStr?: string, timeStr?: string) => {
   if (!dateStr) return { date: 'TBC', time: 'TBC' };
   
@@ -101,6 +116,11 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  const jumpToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -229,11 +249,26 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack }) => {
 
             {activeTab === 'race' ? (
               <>
-                <div className="rd-section-header">
+                {results && results.length > 0 && (
+                  <nav className="rd-quicknav" aria-label="Jump to section">
+                    {RACE_NAV.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        className="rd-quicknav-link"
+                        onClick={() => jumpToSection(s.id)}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </nav>
+                )}
+
+                <div id="rd-sec-classification" className="rd-section-header">
                   <h2 className="rd-section-title">Official <em>Classification</em></h2>
                   <div className="rd-section-line"></div>
                 </div>
-                
+
                 {loadingResults ? (
                   <Loader label="Loading official results" />
                 ) : results && results.length > 0 ? (
@@ -333,7 +368,7 @@ const RaceLaptimeScatter: React.FC<{ results: RaceResult[] }> = ({ results }) =>
   };
 
   return (
-    <div className="ra-chart-box ra-full-width-chart">
+    <div id="rd-sec-racepace" className="ra-chart-box ra-full-width-chart">
       <div className="ra-chart-header">
         <h3 className="ra-chart-title">Race Pace // Laptimes Distribution</h3>
         <div className="ra-chart-legend">
@@ -476,8 +511,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
   });
 
   const sortedTeams = Object.entries(teamContributions)
-    .sort(([, a], [, b]) => b.total - a.total)
-    .slice(0, 5);
+    .sort(([, a], [, b]) => b.total - a.total);
   const maxTeamPts = Math.max(...Object.values(teamContributions).map(t => t.total));
 
   // 5. Positional Volatility (Chaos Index)
@@ -580,6 +614,17 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
     };
   });
 
+  // Field-evolution chart Y-scale: span the full classified field (e.g. 22
+  // drivers) between the top (P1) and bottom (P{fieldSize}) plot edges so
+  // retired-but-classified cars keep their real finishing position.
+  const fieldSize = Math.max(20, results.length);
+  const posTop = 40;
+  const posBottom = 460;
+  const posSpacing = (posBottom - posTop) / Math.max(1, fieldSize - 1);
+  const posY = (p: number) => (p - 1) * posSpacing + posTop;
+  const clampPos = (p: number) => Math.max(1, Math.min(fieldSize, p));
+  const posAxisTicks = Array.from(new Set([1, 5, 10, 15, 20, fieldSize])).filter(t => t <= fieldSize);
+
   return (
     <div className="ra-container">
       <div className="rd-section-header">
@@ -587,7 +632,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
         <div className="rd-section-line"></div>
       </div>
 
-      <div className="ra-grid">
+      <div id="rd-sec-stats" className="ra-grid">
         <div className="ra-card">
           <span className="ra-card-label">Winning Margin</span>
           <span className="ra-card-value">{winningMargin}</span>
@@ -615,7 +660,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
       <div className="ra-visuals-grid">
         <RaceLaptimeScatter results={results} />
 
-        <div className="ra-chart-box ra-full-width-chart">
+        <div id="rd-sec-evolution" className="ra-chart-box ra-full-width-chart">
           <div className="ra-chart-header">
             <h3 className="ra-chart-title">Lap-by-Lap Field Evolution</h3>
             <div className="ra-chart-legend" style={{ flexWrap: 'wrap', gap: '10px' }}>
@@ -628,16 +673,16 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
             </div>
           </div>
           
-          <div className="ra-svg-container" style={{ height: '500px', background: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%)', boxShadow: 'inset 0 0 50px rgba(0,0,0,0.8)' }}>
+          <div className="ra-svg-container" style={{ height: '500px', background: 'radial-gradient(85% 120% at 50% 0%, rgba(168,85,247,0.13) 0%, transparent 58%), radial-gradient(circle at 50% 50%, #17171d 0%, #050507 100%)', boxShadow: 'inset 0 0 60px rgba(0,0,0,0.75)' }}>
             <div className="ra-grid-pattern" style={{ backgroundSize: '50px 25px', opacity: 0.15 }}></div>
             <div className="ra-telemetry-overlay">FULL_GRID_EVOLUTION // PREMIUM_TELEMETRY // V_CORRELATION</div>
             
             <svg width="100%" height="100%" viewBox="0 0 1280 500" preserveAspectRatio="none">
               {/* Y-Axis Labels (Positions) */}
-              {[1, 5, 10, 15, 20].map((p) => (
+              {posAxisTicks.map((p) => (
                 <g key={p}>
-                  <line x1="60" y1={(p - 1) * 22 + 40} x2="1140" y2={(p - 1) * 22 + 40} stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 4" />
-                  <text x="25" y={(p - 1) * 22 + 45} className="ra-axis-label" style={{ fill: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: 600 }}>P{p}</text>
+                  <line x1="60" y1={posY(p)} x2="1140" y2={posY(p)} stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 4" />
+                  <text x="25" y={posY(p) + 5} className="ra-axis-label" style={{ fill: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: 600 }}>P{p}</text>
                 </g>
               ))}
 
@@ -663,27 +708,28 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                   return ((seed * step) % range) - (range / 2);
                 };
                 
-                const startPos = Number(r.grid) || 20;
+                const startPos = Number(r.grid) || fieldSize;
                 const finishPos = Number(r.position);
-                const mid1 = Math.max(1, Math.min(20, startPos + Math.round(getStableOffset(1, 4))));
-                const mid2 = Math.max(1, Math.min(20, mid1 + Math.round(getStableOffset(2, 6))));
-                const midPit = Math.min(20, finishPos + 5); // Drop during pit
-                const mid3 = Math.max(1, Math.min(20, finishPos + Math.round(Math.abs(getStableOffset(3, 4)))));
-                const mid4 = Math.max(1, Math.min(20, finishPos - 1));
+                const plotFinish = clampPos(finishPos);
+                const mid1 = clampPos(startPos + Math.round(getStableOffset(1, 4)));
+                const mid2 = clampPos(mid1 + Math.round(getStableOffset(2, 6)));
+                const midPit = clampPos(plotFinish + 5); // Drop during pit
+                const mid3 = clampPos(plotFinish + Math.round(Math.abs(getStableOffset(3, 4))));
+                const mid4 = clampPos(plotFinish - 1);
 
                 const points = [
-                  { x: 0, y: startPos },
+                  { x: 0, y: clampPos(startPos) },
                   { x: 5, y: mid1 },
                   { x: 15, y: mid2 },
                   { x: 25, y: midPit },
                   { x: 35, y: mid3 },
                   { x: 45, y: mid4 },
-                  { x: 56, y: finishPos }
+                  { x: 56, y: plotFinish }
                 ];
 
                 const mappedPoints = points.map(p => ({
                   px: (p.x / 56) * 1080 + 60,
-                  py: (p.y - 1) * 22 + 40
+                  py: posY(p.y)
                 }));
 
                 const pathData = mappedPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.px} ${p.py}`).join(' ');
@@ -730,13 +776,13 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                     ))}
 
                     {/* Final Position Label Background for readability */}
-                    <rect x={1080 + 66} y={(finishPos - 1) * 22 + 30} width="60" height="20" fill="rgba(0,0,0,0.6)" rx="4" style={{ opacity: isHovered ? 0 : (hasFocus ? 0.05 : 1) }} />
-                    <text x={1080 + 72} y={(finishPos - 1) * 22 + 44} fill={teamColor} fontSize="11" fontWeight="700" style={{ opacity: isHovered ? 0 : (hasFocus ? 0.05 : 1), transition: 'opacity 0.3s ease' }}>{r.code}</text>
+                    <rect x={1080 + 66} y={posY(plotFinish) - 10} width="60" height="20" fill="rgba(0,0,0,0.6)" rx="4" style={{ opacity: isHovered ? 0 : (hasFocus ? 0.05 : 1) }} />
+                    <text x={1080 + 72} y={posY(plotFinish) + 4} fill={teamColor} fontSize="11" fontWeight="700" style={{ opacity: isHovered ? 0 : (hasFocus ? 0.05 : 1), transition: 'opacity 0.3s ease' }}>{r.code}</text>
 
                     {/* Premium Glassmorphic Tooltip */}
                     {isHovered && (() => {
-                      const tooltipYBase = (finishPos - 1) * 22;
-                      const isBottomEdge = finishPos > 16;
+                      const tooltipYBase = posY(plotFinish) - 40;
+                      const isBottomEdge = plotFinish > fieldSize - 6;
                       const tooltipY = isBottomEdge ? tooltipYBase - 60 : tooltipYBase + 10;
                       
                       return (
@@ -759,7 +805,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           </div>
         </div>
 
-        <div className="ra-gauge-row">
+        <div id="rd-sec-gauges" className="ra-gauge-row">
           <div className="ra-chart-box" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px' }}>
           <h3 className="ra-chart-title" style={{ width: '100%', marginBottom: '20px' }}>Grid Reliability Index</h3>
           
@@ -964,10 +1010,10 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
         </div>
       </div>
 
-        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px', overflow: 'hidden' }}>
+        <div id="rd-sec-trajectory" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px', overflow: 'hidden' }}>
           <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Race Pace Trajectory (Delta to Leader)</h3>
           
-          <div style={{ position: 'relative', width: '100%', height: '280px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ position: 'relative', width: '100%', height: '280px', background: 'radial-gradient(90% 120% at 50% 0%, rgba(168,85,247,0.1) 0%, transparent 60%), rgba(0,0,0,0.25)', borderRadius: '12px', border: '1px solid rgba(168,85,247,0.14)', boxShadow: 'inset 0 0 50px rgba(0,0,0,0.5)' }}>
             {/* SVG Graph */}
             <svg viewBox={`0 0 ${paceWidth} ${paceHeight + 30}`} style={{ width: '100%', height: '100%', overflow: 'visible' }} preserveAspectRatio="none">
               {/* Grid Lines */}
@@ -1031,7 +1077,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
             <div style={{ position: 'absolute', bottom: '10px', right: '40px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '1px' }}>LAP 50</div>
           </div>
         </div>
-        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+        <div id="rd-sec-yield" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
           <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Constructor Yield (Driver Contribution)</h3>
           <div className="ra-bar-list" style={{ gap: '16px', display: 'flex', flexDirection: 'column' }}>
             {sortedTeams.map(([team, data]) => {
@@ -1073,7 +1119,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '15px', right: '20px', left: 'auto' }}>YIELD_SPLIT // ACTUAL_TELEMETRY</div>
         </div>
 
-        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+        <div id="rd-sec-delta" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
           <h3 className="ra-chart-title" style={{ marginBottom: '20px' }}>Grid vs Finish (Positions Gained/Lost)</h3>
           
           {/* Axis Header */}
@@ -1147,7 +1193,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '15px', right: '20px', left: 'auto' }}>POSITION_DELTA // ACTUAL_TELEMETRY</div>
         </div>
 
-        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+        <div id="rd-sec-spread" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
           <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Field Spread Waterfall (Top 10 Gap to Leader)</h3>
           <div className="ra-bar-list" style={{ gap: '12px', display: 'flex', flexDirection: 'column' }}>
             {top10Gaps.map((r, i) => {
@@ -1185,7 +1231,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           <div className="ra-telemetry-overlay" style={{ top: 'auto', bottom: '15px', right: '20px', left: 'auto' }}>INTERVAL_SPREAD // ACTUAL_TELEMETRY</div>
         </div>
 
-        <div className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
+        <div id="rd-sec-attrition" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
           <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Attrition Matrix (Status Breakdown)</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
             
