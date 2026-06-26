@@ -236,8 +236,7 @@ const ChampionshipLeaders: React.FC = () => {
           {driver && (
             <>
               <div className="cl-name-wrap">
-                <div className="cl-firstname">{driver.firstName}</div>
-                <div className="cl-lastname">{driver.lastName}</div>
+                <div className="cl-lastname">{driver.firstName} {driver.lastName}</div>
               </div>
 
               <div className="cl-subline">
@@ -293,9 +292,6 @@ const ChampionshipLeaders: React.FC = () => {
               <div className="cl-subline">
                 <Flag code={NATIONALITY_ISO[constructor.nationality]} />
                 <span className="cl-nat">{NAT_CODE[constructor.nationality] || constructor.nationality}</span>
-                <span className="cl-dot-sep" />
-                <span className="cl-team-pill" style={{ background: constructor.teamColor }} />
-                <span className="cl-nat">Works Team</span>
               </div>
 
               <div className="cl-team-tag">Leading the Constructors' Cup</div>

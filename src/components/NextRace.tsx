@@ -4,6 +4,22 @@ import Tilt from './Tilt';
 import { COUNTRY_FLAGS, RACES as RACES_FALLBACK, fetchRaces, type Race } from '../data/races';
 import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 
+const getTeamColor = (name: string) => {
+  const lower = name.toLowerCase();
+  if (lower.includes('mercedes')) return 'var(--mercedes)';
+  if (lower.includes('ferrari')) return 'var(--ferrari)';
+  if (lower.includes('mclaren')) return 'var(--mclaren)';
+  if (lower.includes('red bull')) return 'var(--redbull)';
+  if (lower.includes('williams')) return 'var(--williams)';
+  if (lower.includes('haas')) return 'var(--haas)';
+  if (lower.includes('alpine')) return 'var(--alpine)';
+  if (lower.includes('audi')) return 'var(--audi)';
+  if (lower.includes('rb')) return 'var(--racingbulls)';
+  if (lower.includes('aston')) return 'var(--aston)';
+  if (lower.includes('cadillac')) return 'var(--cadillac)';
+  return 'var(--racing)';
+};
+
 // Dots that lap the circuit, each at its own pace and start offset so they keep
 // drifting apart and bunching up — a continuous, random-looking loop. Two theme
 // tones (core + bright accent) keep it cohesive and premium across themes.
@@ -273,42 +289,54 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
           </div>
 
           {results.length > 0 ? (
-            <div className="podium-row">
-              {/* P1 Winner */}
-              {results.slice(0, 1).map(winner => (
-                <div key={winner.id} className="winner-card p1-featured">
-                  <div className="winner-badge">P1</div>
-                  <div className="winner-info">
-                    <div className="winner-name">{winner.given_name} {winner.family_name}</div>
-                    <div className="winner-team">{winner.team_name}</div>
-                  </div>
-                  <div className="winner-stats-mini">
-                    <span className="ws-val">{winner.time}</span>
-                    <span className="ws-pts">+{winner.points}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="rostrum">
+              {results.slice(0, 3).map((r, idx) => {
+                const pos = idx + 1;
+                const isWinner = pos === 1;
+                return (
+                  <article
+                    key={r.id}
+                    className={`rostrum-card pos-${pos}`}
+                    style={{ '--team-color': getTeamColor(r.team_name) } as React.CSSProperties}
+                  >
+                    <span className="rc-aura" aria-hidden="true" />
+                    {isWinner && <span className="rc-winner-tag">◆ Race Winner</span>}
 
-              {/* P2 & P3 */}
-              {results.slice(1, 3).map((podium, idx) => (
-                <div key={podium.id} className={`podium-mini-card p${idx + 2}`}>
-                  <span className="pm-pos">P{idx + 2}</span>
-                  <div className="pm-info">
-                    <span className="pm-name">{podium.family_name}</span>
-                    <span className="pm-team">{podium.team_name}</span>
-                  </div>
-                  <div className="pm-foot">
-                    <span className="pm-time">{podium.time}</span>
-                    <span className="pm-gap">+{podium.points} PTS</span>
-                  </div>
-                </div>
-              ))}
+                    <div className={`rc-medal metal-${pos}`}>
+                      <span className="rc-medal-num">{pos}</span>
+                      <span className="rc-medal-ring" aria-hidden="true" />
+                    </div>
+
+                    <div className="rc-body">
+                      <h3 className="rc-name">
+                        <span className="rc-given">{r.given_name}</span>
+                        <span className="rc-family">{r.family_name}</span>
+                      </h3>
+                      <div className="rc-team">
+                        <span className="rc-team-dot" aria-hidden="true" />
+                        {r.team_name}
+                      </div>
+                    </div>
+
+                    <div className="rc-stats">
+                      <div className="rc-stat">
+                        <span className="rc-stat-k">{isWinner ? 'Race Time' : 'Gap'}</span>
+                        <span className="rc-stat-v">{r.time || '—'}</span>
+                      </div>
+                      <div className="rc-stat rc-stat-pts">
+                        <span className="rc-stat-k">Points</span>
+                        <span className="rc-stat-v">+{r.points}</span>
+                      </div>
+                    </div>
+
+                    <span className="rc-step" aria-hidden="true">{pos}</span>
+                  </article>
+                );
+              })}
             </div>
           ) : (
-            <div className="podium-row">
-              <div className="winner-card p1-featured">
-                <Loader label="Loading results" size={32} />
-              </div>
+            <div className="rostrum rostrum-loading">
+              <Loader label="Loading results" size={32} />
             </div>
           )}
         </div>

@@ -2102,7 +2102,7 @@ body {
   font-size: 12px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: #fff;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
@@ -2206,7 +2206,7 @@ body {
   font-size: 9px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: #fff;
   margin-top: 12px;
 }
 
@@ -8374,7 +8374,7 @@ body {
   font-size: 9.5px;
   letter-spacing: 0.2em;
   margin-bottom: 0;
-  color: rgba(244, 241, 234, 0.45);
+  color: #fff;
 }
 
 .race-block .race-stat-val {
@@ -8398,7 +8398,7 @@ body {
 
 .cd-label {
   font-size: 9px;
-  color: rgba(244, 241, 234, 0.5);
+  color: #fff;
 }
 
 /* --- Season progress: cohesive carbon card + premium pill ticks --- */
@@ -8697,52 +8697,100 @@ body {
 .podium-row {
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr;
-  gap: 14px;
+  gap: 16px;
   align-items: stretch;
 }
 
-.podium-row .winner-card.p1-featured {
-  margin: 0;
+/* Shared deep-carbon surface + soft top sheen for all three cards. */
+.podium-row .winner-card.p1-featured,
+.podium-row .podium-mini-card {
+  --team-color-fallback: var(--team-color, var(--racing));
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   text-align: center;
   gap: 0;
-  padding: 15px 16px 14px;
-  padding-left: 18px;
+  margin: 0;
+  padding: 30px 22px 22px 24px;
   border-radius: var(--r-md);
   overflow: hidden;
-  /* Same dark carbon surface as the P2/P3 medal cards — gold now lives only in
-     the accent rail / medallion, so all three read as one consistent set. */
+  /* Premium carbon-mesh texture + multi-layer smooth glow */
   background:
-    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
-    rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    /* Ambient team glow at the top center */
+    radial-gradient(ellipse 90% 55% at 50% -12%, 
+      color-mix(in srgb, var(--team-color-fallback) 24%, transparent) 0%, 
+      transparent 100%),
+    /* Secondary accent wash from top-right */
+    radial-gradient(circle 140px at 100% 0%, 
+      color-mix(in srgb, var(--team-color-fallback) 14%, transparent) 0%, 
+      transparent 100%),
+    /* Micro-fine carbon texture overlay */
+    repeating-linear-gradient(45deg, 
+      rgba(255, 255, 255, 0.003) 0px, 
+      rgba(255, 255, 255, 0.003) 1px, 
+      transparent 1px, 
+      transparent 4px),
+    /* Deep carbon base */
+    linear-gradient(165deg, #131315 0%, #0b0b0d 60%, #070708 100%);
+  border: 1px solid color-mix(in srgb, var(--team-color-fallback) 15%, rgba(255, 255, 255, 0.06));
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 0 45px color-mix(in srgb, var(--team-color-fallback) 8%, transparent) inset;
+  transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out), border-color 0.4s var(--ease);
+}
+
+.podium-row .winner-card.p1-featured:hover,
+.podium-row .podium-mini-card:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--team-color-fallback) 35%, rgba(255, 255, 255, 0.12));
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.62),
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 0 55px color-mix(in srgb, var(--team-color-fallback) 15%, transparent) inset;
+}
+
+/* Removed per-position edge tints as we use team colors now. */
+.podium-row .winner-card.p1-featured {
   animation: fadeUpSlow 0.7s ease-out both 0.5s;
 }
 
-/* Drop the gold light-sweep that made P1 stand apart from the others. */
-.podium-row .winner-card.p1-featured::after {
-  display: none;
+/* Disable the buggy, hard-edged filter:blur pseudo-element glow */
+.podium-row .winner-card.p1-featured::after,
+.podium-row .podium-mini-card::after {
+  display: none !important;
 }
 
-/* Gold medal accent rail, matching P2 silver / P3 bronze. */
-.podium-row .winner-card.p1-featured::before {
+/* Glossy team color accent rails */
+.podium-row .winner-card.p1-featured::before,
+.podium-row .podium-mini-card::before {
   content: "";
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, #ffe9a8, var(--gold));
-  box-shadow: 0 0 12px rgba(212, 160, 23, 0.45);
+  width: 4px;
+  background: linear-gradient(180deg, 
+    var(--team-color-fallback) 0%, 
+    color-mix(in srgb, var(--team-color-fallback) 50%, #fff) 35%,
+    var(--team-color-fallback) 70%,
+    transparent 100%
+  );
+  box-shadow: 0 0 16px color-mix(in srgb, var(--team-color-fallback) 65%, transparent);
+  z-index: 10;
+  transition: box-shadow 0.4s var(--ease);
+}
+
+.podium-row .winner-card.p1-featured:hover::before,
+.podium-row .podium-mini-card:hover::before {
+  box-shadow: 0 0 24px color-mix(in srgb, var(--team-color-fallback) 85%, transparent);
 }
 
 /* Medallion sits in-flow at the top-centre, like the P2 / P3 position labels. */
 .podium-row .winner-card.p1-featured .winner-badge {
-  position: static;
+  position: relative;
   margin: 0 auto;
   animation: none;
 }
@@ -8784,44 +8832,61 @@ body {
   grid-column: 1 / -1;
 }
 
-.podium-row .podium-mini-card {
-  display: flex;
-  flex-direction: column;
-  grid-template-columns: none;
-  gap: 0;
-  padding: 15px 16px 14px;
-  padding-left: 18px;
-  border-radius: var(--r-md);
-}
-
 /* Position labels become circular medallions, matching the P1 badge. */
 .podium-row .pm-pos {
-  width: 40px;
-  height: 40px;
+  position: relative;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 800;
   line-height: 1;
 }
 
+/* Glassy specular highlight arcing over every medallion. */
+.podium-row .winner-card.p1-featured .winner-badge::after,
+.podium-row .pm-pos::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: radial-gradient(60% 45% at 50% 18%, rgba(255, 255, 255, 0.7), transparent 70%);
+  pointer-events: none;
+}
+
+.podium-row .winner-card.p1-featured .winner-badge {
+  width: 42px;
+  height: 42px;
+  font-size: 12.5px;
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 5px rgba(120, 80, 0, 0.4),
+    0 6px 18px rgba(212, 160, 23, 0.5),
+    0 0 0 5px rgba(212, 160, 23, 0.12);
+}
+
 .podium-row .podium-mini-card.p2 .pm-pos {
   color: #20232a;
-  background: radial-gradient(circle at 36% 30%, #ffffff 0%, #c6c8d0 52%, #74767e 100%);
+  background: radial-gradient(circle at 36% 28%, #ffffff 0%, #c6c8d0 52%, #74767e 100%);
   border: 2px solid rgba(245, 247, 250, 0.6);
   box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -3px 5px rgba(80, 82, 90, 0.45),
     0 6px 18px rgba(180, 184, 196, 0.4),
     0 0 0 5px rgba(200, 202, 210, 0.1);
 }
 
 .podium-row .podium-mini-card.p3 .pm-pos {
   color: #2a1808;
-  background: radial-gradient(circle at 36% 30%, #f3cda0 0%, #cd7f32 52%, #7c4a1f 100%);
+  background: radial-gradient(circle at 36% 28%, #f3cda0 0%, #cd7f32 52%, #7c4a1f 100%);
   border: 2px solid rgba(240, 205, 165, 0.55);
   box-shadow:
+    inset 0 1.5px 2px rgba(255, 240, 220, 0.6),
+    inset 0 -3px 5px rgba(90, 50, 18, 0.45),
     0 6px 18px rgba(205, 127, 50, 0.42),
     0 0 0 5px rgba(205, 127, 50, 0.1);
 }
@@ -8880,6 +8945,338 @@ body {
   .podium-row {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================================
+   Podium Rostrum — completed-race showcase, full redesign.
+   A true podium silhouette: P2 left · P1 raised centre · P3 right,
+   each on a stepped pedestal with a metallic medallion, team-tinted
+   carbon surface, race time / gap, points earned, and the iconic
+   F1-purple fastest-lap chip.
+   ============================================================ */
+.rostrum {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+  gap: 18px;
+  padding-top: 6px;
+}
+
+.rostrum-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+}
+
+/* Podium order: centre the winner, flank with silver / bronze.
+   All pinned to row 1 so they sit on one line (explicit columns + sparse
+   auto-flow would otherwise push P2/P3 onto new rows). */
+.rostrum-card { grid-row: 1; }
+.rostrum-card.pos-1 { grid-column: 2; }
+.rostrum-card.pos-2 { grid-column: 1; }
+.rostrum-card.pos-3 { grid-column: 3; }
+
+.rostrum-card {
+  --team-color-fallback: var(--team-color, var(--racing));
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 26px 20px 0;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 100% 48% at 50% -8%,
+      color-mix(in srgb, var(--team-color-fallback) 30%, transparent) 0%,
+      transparent 70%),
+    repeating-linear-gradient(45deg,
+      rgba(255, 255, 255, 0.004) 0 1px, transparent 1px 5px),
+    linear-gradient(168deg, #16161a 0%, #0c0c0e 58%, #060608 100%);
+  border: 1px solid color-mix(in srgb, var(--team-color-fallback) 16%, rgba(255, 255, 255, 0.07));
+  border-bottom: none;
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: transform 0.55s var(--ease-out), box-shadow 0.55s var(--ease-out), border-color 0.4s var(--ease);
+}
+
+/* Equal-height cards, aligned on a single baseline. */
+.rostrum-card.pos-1 { animation: fadeUpSlow 0.7s ease-out both 0.5s; }
+.rostrum-card.pos-2 { animation: fadeUpSlow 0.7s ease-out both 0.62s; }
+.rostrum-card.pos-3 { animation: fadeUpSlow 0.7s ease-out both 0.72s; }
+
+.rostrum-card.pos-1 {
+  border-color: rgba(212, 160, 23, 0.34);
+  box-shadow:
+    0 30px 72px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(255, 224, 150, 0.16),
+    0 0 0 1px rgba(212, 160, 23, 0.08);
+}
+
+.rostrum-card:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--team-color-fallback) 38%, rgba(255, 255, 255, 0.12));
+  box-shadow:
+    0 38px 88px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Glossy team accent rail down the left edge. */
+.rostrum-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg,
+    var(--team-color-fallback) 0%,
+    color-mix(in srgb, var(--team-color-fallback) 55%, #fff) 32%,
+    var(--team-color-fallback) 66%,
+    transparent 100%);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--team-color-fallback) 60%, transparent);
+  z-index: 4;
+}
+
+/* Soft pulsing team aura behind the medallion. */
+.rc-aura {
+  position: absolute;
+  top: -42px;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--team-color-fallback) 38%, transparent) 0%,
+    transparent 64%);
+  filter: blur(6px);
+  z-index: 0;
+  pointer-events: none;
+  animation: rcAura 5.5s ease-in-out infinite;
+}
+.rostrum-card.pos-1 .rc-aura {
+  background: radial-gradient(circle, rgba(212, 160, 23, 0.42) 0%, transparent 64%);
+}
+
+/* "Race Winner" laurel chip, top-right of the champion card. */
+.rc-winner-tag {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  z-index: 5;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #2a1c02;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffe08a, var(--gold) 70%);
+  box-shadow: 0 4px 14px rgba(212, 160, 23, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* --- Metallic medallion --- */
+.rc-medal {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1;
+}
+.rc-medal { width: 54px; height: 54px; font-size: 21px; }
+
+.rc-medal-num { position: relative; z-index: 2; }
+
+/* Glassy specular arc over each medallion. */
+.rc-medal-ring {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: radial-gradient(58% 42% at 50% 16%, rgba(255, 255, 255, 0.72), transparent 70%);
+  z-index: 1;
+}
+
+.metal-1 {
+  color: #2a1c02;
+  background: radial-gradient(circle at 35% 28%, #ffeaa8 0%, var(--gold) 52%, #9c7410 100%);
+  border: 2px solid rgba(255, 240, 205, 0.6);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.6),
+    inset 0 -4px 6px rgba(120, 80, 0, 0.4),
+    0 8px 22px rgba(212, 160, 23, 0.5),
+    0 0 0 6px rgba(212, 160, 23, 0.12);
+}
+.metal-2 {
+  color: #20232a;
+  background: radial-gradient(circle at 35% 28%, #ffffff 0%, #c6c8d0 52%, #74767e 100%);
+  border: 2px solid rgba(245, 247, 250, 0.62);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.72),
+    inset 0 -4px 6px rgba(80, 82, 90, 0.45),
+    0 8px 22px rgba(180, 184, 196, 0.42),
+    0 0 0 6px rgba(200, 202, 210, 0.1);
+}
+.metal-3 {
+  color: #2a1808;
+  background: radial-gradient(circle at 35% 28%, #f3cda0 0%, #cd7f32 52%, #7c4a1f 100%);
+  border: 2px solid rgba(240, 205, 165, 0.58);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 240, 220, 0.6),
+    inset 0 -4px 6px rgba(90, 50, 18, 0.45),
+    0 8px 22px rgba(205, 127, 50, 0.42),
+    0 0 0 6px rgba(205, 127, 50, 0.1);
+}
+
+/* --- Driver identity --- */
+.rc-body {
+  position: relative;
+  z-index: 2;
+  margin-top: 16px;
+}
+
+.rc-name {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  line-height: 1.05;
+}
+.rc-given {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: rgba(244, 241, 234, 0.6);
+}
+.rc-family {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.rc-family { font-size: 19px; }
+
+.rc-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.62);
+}
+.rc-team-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--team-color-fallback);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--team-color-fallback) 80%, transparent);
+}
+
+/* --- Stat pair: time / gap + points --- */
+.rc-stats {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
+}
+.rc-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 8px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.rc-stat-k {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.42);
+}
+.rc-stat-v {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: rgba(244, 241, 234, 0.92);
+}
+.rostrum-card.pos-1 .rc-stats .rc-stat:first-child .rc-stat-v { color: var(--gold-ticker); }
+.rc-stat-pts .rc-stat-v {
+  color: color-mix(in srgb, var(--team-color-fallback) 60%, #fff);
+}
+
+/* --- Pedestal with ghosted position numeral --- */
+.rc-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% + 40px);
+  margin: 18px -20px 0;
+  height: 50px;
+  line-height: 1;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  color: color-mix(in srgb, var(--team-color-fallback) 32%, transparent);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 60%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--team-color-fallback) 10%, #141417) 0%,
+      #0a0a0c 100%);
+  border-top: 1px solid color-mix(in srgb, var(--team-color-fallback) 22%, rgba(255, 255, 255, 0.08));
+}
+.rostrum-card.pos-1 .rc-step { color: rgba(212, 160, 23, 0.5);
+  background:
+    linear-gradient(180deg, rgba(255, 224, 150, 0.12), transparent 60%),
+    linear-gradient(180deg, rgba(212, 160, 23, 0.14), #0a0a0c 100%);
+  border-top-color: rgba(212, 160, 23, 0.34);
+}
+
+@media (max-width: 760px) {
+  .rostrum {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .rostrum-card.pos-1,
+  .rostrum-card.pos-2,
+  .rostrum-card.pos-3 {
+    grid-column: 1;
+    min-height: 0;
+    border-radius: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .rostrum-card.pos-1 { order: 0; }
+  .rostrum-card.pos-2 { order: 1; }
+  .rostrum-card.pos-3 { order: 2; }
+  .rc-step { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-aura { animation: none; }
+}
+
+@keyframes rcAura {
+  0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
 }
 
 @keyframes goldSweep {
@@ -9598,6 +9995,7 @@ body {
   text-align: center;
   gap: 10px;
   margin-bottom: 34px;
+  margin-top: 32px;
 }
 
 .cl-eyebrow {
@@ -9629,8 +10027,8 @@ body {
 
 .cl-title {
   font-family: var(--font-display);
-  font-size: clamp(26px, 4vw, 38px);
-  font-weight: 500;
+  font-size: 48px;
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink);
   line-height: 1.05;
@@ -9830,7 +10228,7 @@ body {
 
 .cl-lastname {
   font-family: var(--font-display);
-  font-size: clamp(30px, 4.4vw, 44px);
+  font-size: 40px;
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.02em;
@@ -9839,7 +10237,7 @@ body {
 }
 
 .cl-cons-name {
-  font-size: clamp(26px, 3.6vw, 38px);
+  font-size: 40px;
 }
 
 /* ── Subline (code / number / flag) ──────────────────────────────────── */
@@ -9894,7 +10292,7 @@ body {
   font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, #fff 50%, transparent);
+  color: #fff;
   padding: 6px 0 0;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   margin-bottom: 26px;
