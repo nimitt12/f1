@@ -271,9 +271,11 @@ const DriverBattle: React.FC = () => {
                     style={{ '--team-color': color } as React.CSSProperties}
                     onClick={() => id && toggleDraft(id)}
                   >
-                    <span className="dpick-slot-tag">P{i + 1}</span>
                     {d ? (
-                      <span className="dpick-slot-name">{d.given_name} {d.family_name}</span>
+                      <>
+                        <span className="dpick-slot-tag">{d.number}</span>
+                        <span className="dpick-slot-name">{d.given_name} {d.family_name}</span>
+                      </>
                     ) : (
                       <span className="dpick-slot-empty">Tap a driver below</span>
                     )}
@@ -284,7 +286,14 @@ const DriverBattle: React.FC = () => {
             </div>
 
             <div className="dpick-grid">
-              {allDrivers.map((d) => {
+              {[...allDrivers]
+                .sort((a, b) => {
+                  const ca = a.constructor_name || '';
+                  const cb = b.constructor_name || '';
+                  if (ca !== cb) return ca.localeCompare(cb);
+                  return (parseInt(a.number, 10) || 0) - (parseInt(b.number, 10) || 0);
+                })
+                .map((d) => {
                 const color = TEAM_COLORS[teamSlug(d.constructor_name)] || '#fff';
                 const order = draft.indexOf(d.driver_id);
                 const isSel = order !== -1;
@@ -295,7 +304,7 @@ const DriverBattle: React.FC = () => {
                     style={{ '--team-color': color } as React.CSSProperties}
                     onClick={() => toggleDraft(d.driver_id)}
                   >
-                    {isSel && <span className="dpick-driver-badge">P{order + 1}</span>}
+                    {isSel && <span className="dpick-driver-badge">✓</span>}
                     <span className="dpick-driver-num">{d.number}</span>
                     <span className="dpick-driver-info">
                       <span className="dpick-driver-name">{d.given_name} {d.family_name}</span>

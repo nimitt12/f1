@@ -4269,9 +4269,11 @@ body {
 
 .dpick-slot-tag {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--team-color);
+  min-width: 30px;
+  text-align: center;
 }
 
 .dpick-slot.filled .dpick-slot-tag {
