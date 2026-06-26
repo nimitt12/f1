@@ -238,6 +238,35 @@
   }
 }
 
+/* --- WEEKEND SCHEDULE (mobile only) ---
+   Five equal-flex session cards in one nowrap row are far too narrow on a
+   phone — the time wraps to two lines and the dates / "View Details" clip.
+   Turn the strip into a horizontal swipe-scroll with readable fixed-width
+   cards that snap into place. */
+@media (max-width: 768px) {
+  .rd-schedule-section {
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 16px 0 30px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .rd-schedule-section::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rd-session-card {
+    flex: 0 0 auto;
+    width: 168px;
+    padding: 24px 20px;
+    gap: 18px;
+    scroll-snap-align: start;
+  }
+}
+
 /* --- CALENDAR HEADER (mobile only) ---
    The 48px title + meta + nav don't fit on one row, so the "22 ROUNDS"
    meta gets squeezed and wraps. Stack the title, then put the meta and
