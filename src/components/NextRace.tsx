@@ -130,20 +130,29 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
   const percentage = Math.round((completedGPs / totalGPs) * 100);
 
   const [results, setResults] = useState<RaceResult[]>([]);
+  const [loadingResults, setLoadingResults] = useState(true);
   const [timeLeft, setTimeLeft] = useState({ d: '00', h: '00', m: '00', s: '00' });
   const countryCode = COUNTRY_FLAGS[nextRace.Circuit.Location.country] || '🏁';
 
   useEffect(() => {
+    let active = true;
     const fetchResults = async () => {
+      setLoadingResults(true);
       try {
         const res = await fetch(`https://pitwall-backend-dq9r.onrender.com/results/get-all-results/${prevRace.season}/${prevRace.round}`);
         const data = await res.json();
-        setResults(data);
+        if (active) setResults(Array.isArray(data) ? data : []);
       } catch (e) {
         console.error("Failed to fetch results", e);
+        if (active) setResults([]);
+      } finally {
+        if (active) setLoadingResults(false);
       }
     };
     fetchResults();
+    return () => {
+      active = false;
+    };
   }, [prevRace]);
 
   useEffect(() => {
@@ -289,7 +298,7 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
               </div>
             </div>
 
-            {onRaceSelect && (
+            {onRaceSelect && results.length > 0 && (
               <button
                 className="nr-view-results-btn"
                 onClick={() => onRaceSelect(prevRace)}
@@ -346,9 +355,26 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
                 );
               })}
             </div>
-          ) : (
+          ) : loadingResults ? (
             <div className="rostrum rostrum-loading">
               <Loader label="Loading results" size={32} />
+            </div>
+          ) : (
+            <div className="rostrum rostrum-pending">
+              <div className="rp-podium" aria-hidden="true">
+                <span className="rp-bar rp-bar-2" />
+                <span className="rp-bar rp-bar-1" />
+                <span className="rp-bar rp-bar-3" />
+                <span className="rp-flag" />
+              </div>
+              <div className="rp-copy">
+                <span className="rp-badge">◆ Race Completed</span>
+                <h3 className="rp-title">Awaiting Official Results</h3>
+                <p className="rp-sub">
+                  The {prevRace.raceName.replace(' Grand Prix', '')} Grand Prix has finished —
+                  the podium and classification will appear here once results are confirmed.
+                </p>
+              </div>
             </div>
           )}
         </div>

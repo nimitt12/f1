@@ -9014,6 +9014,106 @@ body {
   min-height: 220px;
 }
 
+/* "Race finished, results not in yet" empty state — a quiet animated podium
+   with a checkered flag, sitting where the rostrum would be. */
+.rostrum-pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 220px;
+  text-align: center;
+  padding: 28px 20px;
+}
+
+.rp-podium {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 7px;
+  height: 64px;
+}
+
+.rp-bar {
+  width: 26px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--racing) 38%, transparent),
+    color-mix(in srgb, var(--racing) 8%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--racing) 30%, transparent);
+  border-bottom: none;
+  transform-origin: bottom;
+  animation: rp-rise 1.6s ease-in-out infinite;
+}
+.rp-bar-1 { height: 58px; animation-delay: 0s; }
+.rp-bar-2 { height: 40px; animation-delay: 0.2s; }
+.rp-bar-3 { height: 30px; animation-delay: 0.4s; }
+
+@keyframes rp-rise {
+  0%, 100% { transform: scaleY(0.92); opacity: 0.7; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* Small checkered flag hovering above the winner's step. */
+.rp-flag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 16px;
+  height: 12px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background-image:
+    linear-gradient(45deg, var(--racing) 25%, transparent 25%, transparent 75%, var(--racing) 75%),
+    linear-gradient(45deg, var(--racing) 25%, transparent 25%, transparent 75%, var(--racing) 75%);
+  background-size: 6px 6px;
+  background-position: 0 0, 3px 3px;
+  background-color: color-mix(in srgb, var(--racing) 14%, transparent);
+  opacity: 0.85;
+  animation: rp-wave 2.4s ease-in-out infinite;
+}
+
+@keyframes rp-wave {
+  0%, 100% { transform: translateX(-50%) rotate(-4deg); }
+  50% { transform: translateX(-50%) rotate(4deg); }
+}
+
+.rp-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 440px;
+}
+
+.rp-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--racing);
+  opacity: 0.9;
+}
+
+.rp-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.rp-sub {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 /* Podium order: centre the winner, flank with silver / bronze.
    All pinned to row 1 so they sit on one line (explicit columns + sparse
    auto-flow would otherwise push P2/P3 onto new rows). */
