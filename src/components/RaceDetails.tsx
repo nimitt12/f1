@@ -1020,9 +1020,8 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           <div style={{ display: 'flex', padding: '0 12px 10px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}>
             <div style={{ flex: '0 0 80px' }}>DRIVER</div>
             <div style={{ flex: 1, textAlign: 'center', position: 'relative' }}>
-               <span style={{ position: 'absolute', left: '0' }}>LOST</span>
-               <span>GRID POSITION</span>
-               <span style={{ position: 'absolute', right: '0' }}>GAINED</span>
+               <span style={{ position: 'absolute', right: '50%', marginRight: '12px' }}>LOST</span>
+               <span style={{ position: 'absolute', left: '50%', marginLeft: '12px' }}>GAINED</span>
             </div>
             <div style={{ flex: '0 0 50px', textAlign: 'right' }}>DELTA</div>
           </div>
