@@ -18,10 +18,6 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
   return (
     <section className="hero">
-      <span className="speed-line"></span>
-      <span className="speed-line"></span>
-      <span className="speed-line"></span>
-
       <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} />
 
       <div className="title-wrap">

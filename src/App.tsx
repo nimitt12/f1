@@ -19,6 +19,7 @@ import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
 import RaceDetails from './components/RaceDetails';
+import ScrollProgress from './components/ScrollProgress';
 import AdminGate from './admin/AdminGate';
 import type { Race } from './data/races';
 
@@ -311,13 +312,19 @@ const App: React.FC = () => {
         <div className="bg-orb orb-2"></div>
         <div className="bg-orb orb-3"></div>
         
-        <div className="racing-ribbon-container">
-          <div className="speed-line main"></div>
-          <div className="speed-line sec"></div>
-          <div className="speed-line ter"></div>
+        {/* F1 speed streaks — neon light trails firing across the dark backdrop */}
+        <div className="speed-streaks">
+          <div className="streak"></div>
+          <div className="streak"></div>
+          <div className="streak"></div>
+          <div className="streak"></div>
+          <div className="streak"></div>
+          <div className="streak"></div>
         </div>
       </div>
       
+      <ScrollProgress />
+
       <div className="public-site-shell">
         {view === 'dashboard' ? (
           <>
