@@ -120,14 +120,15 @@ const NewsIntel: React.FC = () => {
   };
 
   return (
-    <div className="col">
-      <div className="col-head">
+    <>
+      <div className="intel-head">
         <div className="col-name">
           Paddock <em>Intel</em>
         </div>
         <div className="col-sub">Live Formula 1 Feed · Top 10 Stories</div>
       </div>
 
+      <div className="col">
       <div className="news-block">
         {loading && (
           <Loader label="Streaming paddock intel" size={36} />
@@ -217,7 +218,8 @@ const NewsIntel: React.FC = () => {
         </div>,
         document.body
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

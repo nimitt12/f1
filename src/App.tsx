@@ -12,7 +12,6 @@ import ChampionshipLeaders from './components/ChampionshipLeaders';
 import DriversStandings from './components/DriversStandings';
 import ConstructorsStandings from './components/ConstructorsStandings';
 import NewsIntel from './components/NewsIntel';
-import StatsRibbon from './components/StatsRibbon';
 import Footer from './components/Footer';
 import DriverBattle from './components/DriverBattle';
 import AccountPage from './components/AccountPage';
@@ -352,9 +351,6 @@ const App: React.FC = () => {
             </Parallax>
             <Parallax speed={0.035} delay={60}>
               <Calendar onRaceSelect={openRaceDetails} />
-            </Parallax>
-            <Parallax speed={0.04}>
-              <StatsRibbon />
             </Parallax>
             <Parallax speed={0.05}>
               <DriverBattle />
