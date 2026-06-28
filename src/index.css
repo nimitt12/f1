@@ -569,24 +569,29 @@ body {
 }
 
 .hero {
-  /* Dark frosted glass — the carbon backdrop + speed streaks blur through,
-     with a bright top edge and corner highlight for real "glass" depth. */
+  /* Full-bleed dark frosted glass — the carbon backdrop + speed streaks blur
+     through, with a bright top edge. Content stays aligned to the 1440 column
+     while the panel spans edge-to-edge and dissolves into the backdrop below. */
   background:
     radial-gradient(130% 150% at 0% 0%, rgba(255, 255, 255, 0.09), transparent 44%),
     linear-gradient(150deg, rgba(30, 29, 37, 0.55), rgba(12, 11, 16, 0.40));
-  padding: 56px 36px 24px;
-  max-width: 1440px;
-  margin: 0 auto;
+  padding-top: 56px;
+  padding-bottom: 10px;
+  padding-left: max(var(--gutter), calc((100% - 1440px) / 2 + var(--gutter)));
+  padding-right: max(var(--gutter), calc((100% - 1440px) / 2 + var(--gutter)));
+  max-width: none;
+  margin: 0;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: var(--r-lg);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    var(--elev-dark);
+  border: none;
+  border-radius: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(22px) saturate(1.35);
   -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  /* Soft bottom edge — the panel melts into the dark background below. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 88px), transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 88px), transparent 100%);
 }
 
 /* Static glass sheen — a soft diagonal light band across the panel. */
@@ -1639,7 +1644,18 @@ body {
   font-weight: 700;
   line-height: 0.92;
   letter-spacing: -0.025em;
-  color: #fff;
+  /* Location reads as the glossy wordmark gradient (the trailing "Grand Prix"
+     span opts back out to the solid theme color below). */
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--racing) 58%, #ffffff) 0%,
+    color-mix(in srgb, var(--racing-hot) 70%, #ffffff) 52%,
+    color-mix(in srgb, var(--racing) 64%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px color-mix(in srgb, var(--racing) 32%, transparent));
   margin-bottom: 16px;
 }
 
@@ -1649,16 +1665,27 @@ body {
   font-weight: 700;
   line-height: 0.92;
   letter-spacing: -0.025em;
-  color: #fff;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--racing) 58%, #ffffff) 0%,
+    color-mix(in srgb, var(--racing-hot) 70%, #ffffff) 52%,
+    color-mix(in srgb, var(--racing) 64%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px color-mix(in srgb, var(--racing) 32%, transparent));
   margin-bottom: 16px;
 }
 
 .race-name span {
+  -webkit-text-fill-color: var(--racing);
   color: var(--racing);
   font-weight: 600;
 }
 
 .race-name-previous span {
+  -webkit-text-fill-color: var(--racing);
   color: var(--racing);
   font-weight: 600;
 }
@@ -1708,28 +1735,25 @@ body {
   opacity: 0.3;
 }
 
-/* Multicolor dots that lap the circuit (live = next race). Each <path> is a
-   single round dot; color/speed/offset are set per-dot inline so they drift. */
-.race-track-bg .track-dot {
-  stroke: var(--dot-color, currentColor);
-  stroke-width: 4;
-  stroke-dasharray: 0.5 99.5;
-  opacity: 0.92;
-  filter: drop-shadow(0 0 3px var(--dot-color, currentColor))
-    drop-shadow(0 0 9px var(--dot-color, currentColor));
-  animation: trackLap 7s linear infinite;
+/* A glowing comet that races the circuit (live = next race). Each <path> is one
+   layer of the streak (head → fading tail); stroke-width, opacity, glow and the
+   trailing offset are set per-layer inline. They share a lap animation so the
+   comet keeps its shape while sweeping the full track. */
+.race-track-bg .track-comet {
+  stroke: var(--racing-hot-ticker, currentColor);
+  animation: trackLap 5.6s linear infinite;
 }
 
+/* Continuous lap: the lit arc travels the whole path and loops seamlessly */
 @keyframes trackLap {
   to {
     stroke-dashoffset: -100;
   }
 }
 
-/* Hover the upcoming block to make the dots pop a little brighter */
-.race-block.upcoming:hover .track-dot {
-  stroke-width: 5.5;
-  opacity: 1;
+/* Hover the upcoming block to make the comet burn a little hotter */
+.race-block.upcoming:hover .race-track-bg {
+  filter: brightness(1.2);
 }
 .race-block.upcoming:hover .track-base {
   opacity: 0.5;
@@ -1765,9 +1789,9 @@ body {
   }
 }
 
-/* Respect users who prefer less motion: drop the lapping dots, keep outline */
+/* Respect users who prefer less motion: drop the racing comet, keep outline */
 @media (prefers-reduced-motion: reduce) {
-  .race-track-bg .track-dot {
+  .race-track-bg .track-comet {
     display: none;
   }
 }
@@ -2144,7 +2168,7 @@ body {
   font-size: 28px;
   font-weight: 500;
   letter-spacing: -0.015em;
-  color: var(--ink);
+  color: #f5f1e8;
 }
 
 .cal-title em {
@@ -2158,7 +2182,7 @@ body {
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-1);
+  color: color-mix(in srgb, rgba(255, 255, 255, 0.6) 80%, var(--racing) 20%);
   font-weight: 500;
 }
 
@@ -2490,8 +2514,21 @@ body {
 
 .col-name em {
   font-style: italic;
-  color: var(--racing);
   font-weight: 600;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--racing) 60%, #ffffff) 0%,
+    color-mix(in srgb, var(--racing-hot) 72%, #ffffff) 55%,
+    color-mix(in srgb, var(--racing) 66%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* The italic overhang on the final glyph gets clipped by background-clip: text
+     (the gradient only fills the text box); a little right padding extends the
+     paint box so the last letter isn't cut off. */
+  padding-right: 0.16em;
+  filter: drop-shadow(0 2px 12px color-mix(in srgb, var(--racing) 38%, transparent));
 }
 
 .col-sub {
@@ -3969,14 +4006,27 @@ body {
   font-family: var(--font-display);
   font-size: 48px;
   font-weight: 800;
-  color: var(--ink);
+  color: #f5f1e8;
   letter-spacing: -0.02em;
 }
 
 .battle-title em {
   font-style: italic;
   font-weight: 800;
-  color: var(--racing);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--racing) 60%, #ffffff) 0%,
+    color-mix(in srgb, var(--racing-hot) 72%, #ffffff) 55%,
+    color-mix(in srgb, var(--racing) 66%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* The italic overhang on the final glyph gets clipped by background-clip: text
+     (the gradient only fills the text box); a little right padding extends the
+     paint box so the last letter isn't cut off. */
+  padding-right: 0.16em;
+  filter: drop-shadow(0 2px 12px color-mix(in srgb, var(--racing) 38%, transparent));
 }
 
 .battle-header {
@@ -8114,9 +8164,9 @@ body {
   border-radius: 999px;
 }
 
-/* Hero surface: a touch more lift so it reads as an elevated panel */
+/* Hero surface: full-bleed, no rounding — it melts into the backdrop below */
 .hero {
-  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  border-radius: 0;
 }
 
 /* --- Interactive lift for card-like surfaces --- */
@@ -9124,7 +9174,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.42);
+  color: #fff;
 }
 .rc-stat-v {
   font-family: var(--font-mono);
@@ -9334,6 +9384,24 @@ body {
   -webkit-text-fill-color: var(--racing);
   color: var(--racing);
   filter: drop-shadow(0 6px 18px color-mix(in srgb, var(--racing) 22%, transparent));
+}
+
+/* On the dark hero the solid team-green wordmark sinks into the green backdrop —
+   lift it to a brighter green gradient with a glow + hairline shadow so it
+   separates cleanly while staying on-brand. */
+.hero .hero-title .line2 span {
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--racing) 60%, #ffffff) 0%,
+    color-mix(in srgb, var(--racing-hot) 72%, #ffffff) 52%,
+    color-mix(in srgb, var(--racing) 66%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter:
+    drop-shadow(0 4px 16px color-mix(in srgb, var(--racing) 45%, transparent))
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
 }
 
 /* --- Underline: gradient rail with a traveling glint --- */
@@ -9616,11 +9684,20 @@ body {
 
 .cal-title em {
   font-weight: 800;
-  background: none;
-  -webkit-background-clip: border-box;
-  background-clip: border-box;
-  -webkit-text-fill-color: var(--racing);
-  color: var(--racing);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--racing) 60%, #ffffff) 0%,
+    color-mix(in srgb, var(--racing-hot) 72%, #ffffff) 55%,
+    color-mix(in srgb, var(--racing) 66%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* The italic overhang on the final glyph gets clipped by background-clip: text
+     (the gradient only fills the text box); a little right padding extends the
+     paint box so the last letter isn't cut off. */
+  padding-right: 0.16em;
+  filter: drop-shadow(0 2px 12px color-mix(in srgb, var(--racing) 38%, transparent));
 }
 
 /* --- Nav buttons: crafted carbon tiles --- */
@@ -9961,7 +10038,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--ink-1);
+  color: color-mix(in srgb, rgba(255, 255, 255, 0.72) 82%, var(--racing) 18%);
 }
 
 .cl-eyebrow-dot {
@@ -9984,14 +10061,27 @@ body {
   font-size: 48px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--ink);
+  color: #f5f1e8;
   line-height: 1.05;
 }
 
 .cl-title em {
   font-style: italic;
   font-weight: 700;
-  color: var(--racing);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--racing) 60%, #ffffff) 0%,
+    color-mix(in srgb, var(--racing-hot) 72%, #ffffff) 55%,
+    color-mix(in srgb, var(--racing) 66%, #ffffff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* The italic overhang on the final glyph gets clipped by background-clip: text
+     (the gradient only fills the text box); a little right padding extends the
+     paint box so the last letter isn't cut off. */
+  padding-right: 0.16em;
+  filter: drop-shadow(0 2px 12px color-mix(in srgb, var(--racing) 38%, transparent));
 }
 
 .cl-meta {
@@ -9999,7 +10089,7 @@ body {
   font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--ink-3);
+  color: color-mix(in srgb, rgba(255, 255, 255, 0.55) 80%, var(--racing) 20%);
   font-weight: 500;
 }
 
@@ -10439,6 +10529,47 @@ body {
   background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.28) 50%, transparent);
 }
 .race-details-page .hamburger-lines span {
+  background: var(--paper);
+}
+
+/* Home hero shares the same dark backdrop as the race details page, so the
+   profile/menu pill uses the identical dark-glass re-skin (the shared base is
+   the light white-glass variant and reads washed-out on the dark hero). */
+.hero .profile-menu-card {
+  background:
+    linear-gradient(120deg,
+      rgba(255, 255, 255, 0.085) 0%,
+      rgba(255, 255, 255, 0.04) 38%,
+      color-mix(in srgb, var(--racing) 22%, rgba(255, 255, 255, 0.05)) 70%,
+      rgba(255, 255, 255, 0.075) 100%);
+  background-size: 220% 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(16px) saturate(1.3);
+}
+.hero .profile-menu-card:hover {
+  border-color: color-mix(in srgb, var(--racing) 50%, rgba(255, 255, 255, 0.2));
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--racing) 22%, rgba(0, 0, 0, 0.55)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.hero .greeting-main,
+.hero .guest-signin {
+  background: linear-gradient(118deg, #f7f3ea 28%, color-mix(in srgb, #ffffff 45%, var(--racing)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero .greeting-text .dateline {
+  color: color-mix(in srgb, rgba(255, 255, 255, 0.6) 80%, var(--racing) 20%);
+}
+.hero .pmc-divider {
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.28) 50%, transparent);
+}
+.hero .hamburger-lines span {
   background: var(--paper);
 }
 

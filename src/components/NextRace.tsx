@@ -20,17 +20,24 @@ const getTeamColor = (name: string) => {
   return 'var(--racing)';
 };
 
-// Dots that lap the circuit, each at its own pace and start offset so they keep
-// drifting apart and bunching up — a continuous, random-looking loop. Two theme
-// tones (core + bright accent) keep it cohesive and premium across themes.
-const TRACK_DOTS = [
-  { color: 'var(--racing-hot-ticker)', dur: 6.2, delay: 0 },
-  { color: 'var(--racing)', dur: 7.8, delay: -1.1 },
-  { color: 'var(--racing-hot-ticker)', dur: 5.6, delay: -2.4 },
-  { color: 'var(--racing)', dur: 8.4, delay: -3.0 },
-  { color: 'var(--racing-hot-ticker)', dur: 6.9, delay: -4.3 },
-  { color: 'var(--racing)', dur: 7.2, delay: -5.1 },
+// A single glowing comet that races the circuit: a bright head trailed by a soft
+// fading tail. The tail is built from graduated layers — each a short lit arc that
+// lags a little further behind the head (via animation-delay) with lower opacity,
+// thinner stroke and softer glow — so together they read as one streak of light
+// chasing around the lap. All share one duration so the comet stays rigid in shape.
+const COMET_DUR = 5.6; // seconds per lap
+const COMET_ARC = 3.5; // arc length (of 100) each layer lights up
+// lag = how far (in path units) a layer sits behind the head; converted to a
+// positive animation-delay so it trails rather than leads.
+const COMET_TAIL = [
+  { w: 3.4, op: 1, blur: 13, lag: 0 }, // head
+  { w: 2.9, op: 0.6, blur: 10, lag: 1.0 },
+  { w: 2.4, op: 0.4, blur: 8, lag: 2.2 },
+  { w: 1.9, op: 0.26, blur: 6, lag: 3.6 },
+  { w: 1.5, op: 0.16, blur: 4, lag: 5.2 },
+  { w: 1.1, op: 0.08, blur: 0, lag: 7.0 },
 ];
+const COMET_BASE_DELAY = -2.4; // pre-advance so the comet is mid-lap on mount
 
 const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean }> = ({ circuitId, live }) => {
   const path = TRACK_PATHS[circuitId || ''];
@@ -46,17 +53,22 @@ const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean }> = ({ cir
       {/* Faint circuit outline */}
       <path className="track-base" d={path} pathLength={100} vectorEffect="non-scaling-stroke" />
       {live &&
-        TRACK_DOTS.map((dot, i) => (
+        COMET_TAIL.map((seg, i) => (
           <path
             key={i}
-            className="track-dot"
+            className="track-comet"
             d={path}
             pathLength={100}
             vectorEffect="non-scaling-stroke"
             style={{
-              ['--dot-color' as string]: dot.color,
-              animationDuration: `${dot.dur}s`,
-              animationDelay: `${dot.delay}s`,
+              strokeWidth: seg.w,
+              strokeDasharray: `${COMET_ARC} ${100 - COMET_ARC}`,
+              opacity: seg.op,
+              filter: seg.blur
+                ? `drop-shadow(0 0 ${seg.blur}px var(--racing-hot-ticker))`
+                : 'none',
+              animationDuration: `${COMET_DUR}s`,
+              animationDelay: `${COMET_BASE_DELAY + (seg.lag / 100) * COMET_DUR}s`,
             }}
           />
         ))}
