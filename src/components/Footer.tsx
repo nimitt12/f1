@@ -50,6 +50,10 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
+        <div className="footer-wordmark" aria-hidden="true">
+          MY <span>PITWALL</span>
+        </div>
+
         <div className="footer-bottom">
           <div className="f-note">
             <span className="f-dot"></span>Lights out and away we go<span className="f-dot"></span>
