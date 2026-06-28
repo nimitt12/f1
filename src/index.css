@@ -2524,6 +2524,7 @@ body {
 .col-head {
   padding: 26px 36px;
   background:
+    radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--racing) 16%, transparent), transparent 58%),
     repeating-linear-gradient(125deg,
       rgba(255, 255, 255, 0.05) 0 1px,
       transparent 1px 13px),
@@ -2619,16 +2620,31 @@ body {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 400px;
+  width: 380px;
   background: linear-gradient(90deg, var(--team-color) 0%, transparent 100%);
-  opacity: 0.45;
+  opacity: 0.4;
   z-index: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Glowing team-colour edge that brightens on hover — the home-page accent motif. */
+.driver-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--team-color);
+  opacity: 0;
+  box-shadow: 0 0 14px var(--team-color);
+  transition: opacity 0.3s ease;
+  z-index: 1;
 }
 
 .driver-row:hover {
   background:
-    rgba(255, 255, 255, 0.03),
-    linear-gradient(90deg, #000 0%, #000 26%, transparent 60%),
+    linear-gradient(90deg, #050505 0%, #000 26%, transparent 60%),
     repeating-linear-gradient(125deg,
       rgba(255, 255, 255, 0.05) 0 1px,
       transparent 1px 13px),
@@ -2636,8 +2652,17 @@ body {
   transform: translateX(4px);
 }
 
+.driver-row:hover::before {
+  opacity: 0.6;
+}
+
+.driver-row:hover::after {
+  opacity: 1;
+}
+
 .driver-row.leader {
   background:
+    radial-gradient(90% 140% at 0% 50%, color-mix(in srgb, var(--team-color) 30%, transparent), transparent 60%),
     linear-gradient(90deg, var(--team-color) -20%, transparent 62%),
     linear-gradient(90deg, #000 0%, #000 30%, transparent 64%),
     repeating-linear-gradient(125deg,
@@ -2649,6 +2674,12 @@ body {
 
 .driver-row.leader::before {
   display: none;
+}
+
+/* Persistent glowing edge marks the championship leader. */
+.driver-row.leader::after {
+  opacity: 1;
+  width: 4px;
 }
 
 .driver-pos {
@@ -2753,6 +2784,24 @@ body {
 
 .leader .driver-pts {
   font-size: 40px;
+  text-shadow: 0 0 28px color-mix(in srgb, var(--team-color) 55%, transparent);
+}
+
+/* Podium-coloured position markers (gold / silver / bronze) for the top three. */
+.standings-list .driver-row:nth-child(1) .driver-pos,
+.standings-list .con-row:nth-child(1) .con-pos {
+  color: #ffd64a;
+  text-shadow: 0 0 16px rgba(255, 214, 74, 0.45);
+}
+.standings-list .driver-row:nth-child(2) .driver-pos,
+.standings-list .con-row:nth-child(2) .con-pos {
+  color: #d6dde6;
+  text-shadow: 0 0 12px rgba(214, 221, 230, 0.3);
+}
+.standings-list .driver-row:nth-child(3) .driver-pos,
+.standings-list .con-row:nth-child(3) .con-pos {
+  color: #e09a63;
+  text-shadow: 0 0 12px rgba(224, 154, 99, 0.35);
 }
 
 .driver-pts-sub {
@@ -2784,16 +2833,31 @@ body {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 400px;
+  width: 380px;
   background: linear-gradient(90deg, var(--team-color) 0%, transparent 100%);
-  opacity: 0.45;
+  opacity: 0.4;
   z-index: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Glowing team-colour edge, matching the drivers' column. */
+.con-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--team-color);
+  opacity: 0;
+  box-shadow: 0 0 14px var(--team-color);
+  transition: opacity 0.3s ease;
+  z-index: 2;
 }
 
 .con-row:hover {
   background:
-    rgba(255, 255, 255, 0.03),
-    linear-gradient(90deg, #000 0%, #000 26%, transparent 60%),
+    linear-gradient(90deg, #050505 0%, #000 26%, transparent 60%),
     repeating-linear-gradient(125deg,
       rgba(255, 255, 255, 0.05) 0 1px,
       transparent 1px 13px),
@@ -2801,8 +2865,17 @@ body {
   transform: translateX(4px);
 }
 
+.con-row:hover::before {
+  opacity: 0.6;
+}
+
+.con-row:hover::after {
+  opacity: 1;
+}
+
 .con-row.leader {
   background:
+    radial-gradient(90% 140% at 0% 50%, color-mix(in srgb, var(--team-color) 30%, transparent), transparent 60%),
     linear-gradient(90deg, var(--team-color) -20%, transparent 62%),
     linear-gradient(90deg, #000 0%, #000 30%, transparent 64%),
     repeating-linear-gradient(125deg,
@@ -2810,6 +2883,15 @@ body {
       transparent 1px 13px),
     #000;
   padding: 48px 36px;
+}
+
+.con-row.leader::before {
+  display: none;
+}
+
+.con-row.leader::after {
+  opacity: 1;
+  width: 4px;
 }
 
 .con-top {
@@ -2859,22 +2941,40 @@ body {
 
 .leader .con-pts {
   font-size: 32px;
+  text-shadow: 0 0 28px color-mix(in srgb, var(--team-color) 55%, transparent);
 }
 
 .con-bar {
   margin-top: 12px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 2px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 .con-bar-fill {
   height: 100%;
-  background: var(--team-color);
-  border-radius: 2px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--team-color) 55%, transparent),
+    var(--team-color));
+  border-radius: 3px;
   transform-origin: left;
+  position: relative;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--team-color) 60%, transparent);
+}
+
+/* Bright leading cap on the bar, like a light trail catching its tip. */
+.con-bar-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 10px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--team-color) 90%, #fff));
+  border-radius: 3px;
 }
 
 .podium-block {
