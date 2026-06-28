@@ -3743,6 +3743,13 @@ body {
   margin-top: 30px;
 }
 
+/* The parallax wrappers scroll sections at different speeds, so the standings
+   section above visually drifts down over the Paddock Intel section. Add
+   collapse-proof top padding so a clear gap survives the parallax drift. */
+#paddock.intel-section {
+  padding-top: calc(var(--section-gap) + 80px);
+}
+
 /* Paddock Intel heading lives outside the news box (like Season Calendar /
    Driver's Clash) — transparent, no sticky bar, scaled to match the other
    section headings. */
