@@ -2246,11 +2246,21 @@ body {
 }
 
 .cal-strip {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(190px, 1fr);
+  display: flex;
+  align-items: stretch;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+/* Equal-width cards by default; the highlighted "next" round gets a wider
+   track so it reads as the hero of the strip. Flex (vs grid) is what makes
+   per-card sizing possible. */
+.cal-round {
+  flex: 0 0 200px;
+}
+
+.cal-round.next {
+  flex: 0 0 256px;
 }
 
 .cal-strip::-webkit-scrollbar {
@@ -2302,7 +2312,7 @@ body {
 }
 
 .cal-round.next .cal-country {
-  color: rgba(255, 255, 255, 0.55);
+  color: #fff;
 }
 
 .cal-round.next .cal-flag-name {
@@ -2351,7 +2361,7 @@ body {
 .cal-country {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--ink-2);
+  color: #fff;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 4px;
@@ -2370,11 +2380,11 @@ body {
 
 .cal-date {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 15px;
   color: var(--ink-2);
   letter-spacing: 0.04em;
   margin-top: 14px;
-  font-weight: 500;
+  font-weight: 800;
 }
 
 .cal-winner {
@@ -3408,7 +3418,7 @@ body {
   font-size: 9px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: #fff;
 }
 
 .stat-big {
@@ -3431,29 +3441,28 @@ body {
 .stat-sub {
   font-family: var(--font-body);
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.58);
+  color: #fff;
   font-weight: 400;
   text-align: center;
 }
 
 .footer-wrap {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: var(--section-gap) var(--gutter) 56px;
+  margin-top: var(--section-gap);
 }
 
-/* Rich dark carbon panel, echoing the content cards above it */
+/* Full-bleed dark carbon band, echoing the edge-to-edge hero. The panel spans
+   the viewport; inner content (.footer-main / .footer-bottom) is constrained
+   to the page max-width so it stays aligned with the sections above. */
 .footer {
   position: relative;
-  padding: 56px 56px 30px;
-  border-radius: 28px;
+  padding: 64px var(--gutter) 34px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    radial-gradient(120% 120% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 40%),
-    radial-gradient(130% 130% at 100% 0%, color-mix(in srgb, var(--racing) 15%, transparent), transparent 48%),
+    radial-gradient(80% 120% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 40%),
+    radial-gradient(90% 130% at 100% 0%, color-mix(in srgb, var(--racing) 15%, transparent), transparent 48%),
     linear-gradient(180deg, #101013 0%, #08080a 100%);
-  box-shadow: var(--elev-3), 0 40px 90px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.35);
 }
 
 /* Glowing accent top rail */
@@ -3485,10 +3494,11 @@ body {
 .footer-main {
   position: relative;
   z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto 48px;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1.5fr;
   gap: 56px;
-  margin-bottom: 48px;
 }
 
 .f-col .f-logo {
@@ -3609,6 +3619,8 @@ body {
 .footer-bottom {
   position: relative;
   z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4987,7 +4999,7 @@ body {
   font-family: var(--font-mono);
   font-size: 10.5px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.42);
+  color: #fff;
   letter-spacing: 0.16em;
   text-align: center;
 }
@@ -9847,12 +9859,20 @@ body {
   opacity: 0.07;
 }
 
+.cal-round.next {
+  padding: 22px 22px 20px;
+}
+
 .cal-round.next .cal-flag-emoji {
   width: max-content;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+  transform: scale(1.08);
+  transform-origin: left center;
+  margin-bottom: 11px;
 }
 
 .cal-round.next .cal-flag-name {
+  font-size: 21px;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.45);
 }
 
@@ -10008,6 +10028,95 @@ body {
 .cal-details-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px color-mix(in srgb, var(--racing) 30%, transparent);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Dark-theme calendar — recolor the strip to match the dark redesign.
+   The light "paper" cards read as a leftover white theme on the dark page;
+   these overrides flip the frame, regular/done cards, text, watermark and
+   track silhouette to dark glass while leaving the highlighted "next" card
+   (already carbon) as the standout.
+   ════════════════════════════════════════════════════════════════════════ */
+.cal-strip-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 50%),
+    linear-gradient(165deg, rgba(46, 46, 53, 0.6), rgba(26, 26, 31, 0.66));
+  backdrop-filter: blur(14px) saturate(1.1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.cal-progress-track {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* Regular (upcoming, not-next) cards */
+.cal-round {
+  background: linear-gradient(165deg, rgba(48, 48, 56, 0.55), rgba(30, 30, 36, 0.6));
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cal-round:hover {
+  background: linear-gradient(165deg, rgba(60, 60, 70, 0.62), rgba(38, 38, 46, 0.66));
+  box-shadow: inset 0 3px 0 var(--racing);
+}
+
+/* Completed rounds: quietly recede */
+.cal-round.done {
+  background: linear-gradient(165deg, rgba(34, 34, 40, 0.5), rgba(22, 22, 27, 0.55));
+  opacity: 0.78;
+}
+
+.cal-round.done .cal-flag-name {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+/* Light watermark + track silhouette on the dark cards */
+.cal-round::after {
+  color: #fff;
+  opacity: 0.05;
+}
+
+.cal-round > .cal-track {
+  color: #fff;
+  opacity: 0.1;
+}
+
+.cal-round:hover > .cal-track {
+  opacity: 0.2;
+}
+
+/* Text recolor for the dark cards (the .next overrides keep higher specificity) */
+.cal-rnum {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.cal-country {
+  color: rgba(255, 255, 255, 255);
+}
+
+.cal-flag-name {
+  color: #f1ece0;
+}
+
+.cal-date {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.cal-status-dot {
+  background: color-mix(in srgb, var(--gold) 88%, #fff);
+}
+
+/* Outline CTA tuned for dark cards */
+.cal-details-btn {
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.cal-details-btn:hover {
+  background: var(--racing);
+  color: #fff;
+  border-color: var(--racing);
 }
 
 /* ════════════════════════════════════════════════════════════════════════

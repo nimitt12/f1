@@ -126,7 +126,14 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
 
       <div className="cal-strip-wrap">
         <div className="cal-progress-track">
-          <div className="cal-progress-fill" style={{ width: '13.6%' }}></div>
+          <div
+            className="cal-progress-fill"
+            style={{
+              width: races.length
+                ? `${(races.filter((r) => new Date(r.date) < new Date()).length / races.length) * 100}%`
+                : '0%',
+            }}
+          ></div>
         </div>
         <div className="cal-strip" id="calStrip" ref={stripRef}>
           {(() => {
