@@ -155,15 +155,34 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
         <div className="glass-menu-overlay" onClick={() => setIsMenuOpen(false)}>
           <div className="glass-menu-panel" onClick={e => e.stopPropagation()}>
             <div className="menu-header">
-              <span className="brand-eyebrow" style={{ color: '#fff', marginBottom: 0 }}>PITWALL MENU</span>
-              <button className="close-menu-btn" onClick={() => setIsMenuOpen(false)}>×</button>
+              <span className="menu-kicker">
+                <span className="menu-kicker-dot" aria-hidden="true"></span>
+                Pitwall Menu
+              </span>
+              <button className="close-menu-btn" onClick={() => setIsMenuOpen(false)} aria-label="Close menu">×</button>
             </div>
 
             <nav className="menu-nav-links">
-              <a href="#drivers" onClick={(e) => handleSectionLink(e, 'drivers')}>Drivers</a>
-              <a href="#constructors" onClick={(e) => handleSectionLink(e, 'constructors')}>Constructors</a>
-              <a href="#paddock" onClick={(e) => handleSectionLink(e, 'paddock')}>Paddock Intel</a>
-              <a href="#calendar" onClick={(e) => handleSectionLink(e, 'calendar')}>Calendar</a>
+              {[
+                { hash: 'calendar', label: 'Calendar', desc: 'Full season race schedule' },
+                { hash: 'drivers', label: 'Drivers', desc: "Drivers' championship standings" },
+                { hash: 'constructors', label: 'Constructors', desc: "Constructors' standings" },
+                { hash: 'paddock', label: 'Paddock Intel', desc: 'Latest F1 news & analysis' },
+              ].map((item, i) => (
+                <a
+                  key={item.hash}
+                  href={`#${item.hash}`}
+                  onClick={(e) => handleSectionLink(e, item.hash)}
+                  style={{ '--menu-i': i } as React.CSSProperties}
+                >
+                  <span className="menu-link-index">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="menu-link-body">
+                    <span className="menu-link-label">{item.label}</span>
+                    <span className="menu-link-desc">{item.desc}</span>
+                  </span>
+                  <span className="menu-link-arrow" aria-hidden="true">→</span>
+                </a>
+              ))}
             </nav>
 
             <div className="menu-divider"></div>

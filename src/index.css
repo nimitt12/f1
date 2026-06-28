@@ -6218,17 +6218,34 @@ body {
 }
 
 .glass-menu-panel {
+  position: relative;
   width: 100%;
   max-width: 400px;
   height: 100%;
-  background: rgba(10, 10, 10, 0.85);
+  background:
+    radial-gradient(120% 60% at 100% 0%, color-mix(in srgb, var(--racing) 16%, transparent), transparent 60%),
+    linear-gradient(180deg, rgba(16, 16, 18, 0.92), rgba(8, 8, 9, 0.94));
   backdrop-filter: blur(30px) saturate(150%);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+  border-left: 1px solid color-mix(in srgb, var(--racing) 22%, rgba(255, 255, 255, 0.06));
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.55);
   padding: 40px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hairline accent stripe down the leading edge, echoing the home-page glows. */
+.glass-menu-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, var(--racing), transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--racing) 60%, transparent);
+  opacity: 0.7;
 }
 
 @keyframes slideInRight {
@@ -6244,14 +6261,46 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 60px;
+  margin-bottom: 52px;
+}
+
+.menu-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.menu-kicker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--racing);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--racing) 80%, transparent);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
 }
 
 .close-menu-btn {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 28px;
   cursor: pointer;
   line-height: 1;
   transition: all 0.3s ease;
@@ -6261,36 +6310,120 @@ body {
 
 .close-menu-btn:hover {
   color: var(--racing);
+  border-color: color-mix(in srgb, var(--racing) 45%, transparent);
+  background: color-mix(in srgb, var(--racing) 12%, transparent);
   transform: rotate(90deg);
 }
 
 .menu-nav-links {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 4px;
   margin-bottom: auto;
 }
 
 .menu-nav-links a {
-  font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 700;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 14px 16px 4px;
   color: #fff;
   text-decoration: none;
-  letter-spacing: -0.02em;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateX(16px);
+  animation: menuLinkIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(0.12s + var(--menu-i) * 0.07s);
+}
+
+@keyframes menuLinkIn {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Hover wash that bleeds in from the left in the team colour. */
+.menu-nav-links a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--racing) 14%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
 }
 
 .menu-nav-links a:hover {
+  transform: translateX(8px);
+  padding-left: 14px;
+  border-bottom-color: color-mix(in srgb, var(--racing) 30%, transparent);
+}
+
+.menu-nav-links a:hover::before {
+  opacity: 1;
+}
+
+.menu-link-index {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.35s ease;
+  min-width: 22px;
+}
+
+.menu-nav-links a:hover .menu-link-index {
   color: var(--racing);
-  transform: translateX(10px);
+}
+
+.menu-link-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.menu-link-label {
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  transition: color 0.35s ease;
+}
+
+.menu-nav-links a:hover .menu-link-label {
+  color: var(--racing);
+}
+
+.menu-link-desc {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.menu-link-arrow {
+  font-family: var(--font-alt);
+  font-size: 20px;
+  color: var(--racing);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu-nav-links a:hover .menu-link-arrow {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .menu-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 40px 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--racing) 35%, transparent), rgba(255, 255, 255, 0.06) 60%, transparent);
+  margin: 32px 0;
 }
 
 .menu-user-section {
