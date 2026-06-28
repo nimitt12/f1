@@ -27,6 +27,7 @@ const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
           </span>
           <span className="line2">
             <span>PitWall.</span>
+            <sup className="beta-tag">Beta</sup>
           </span>
         </h1>
         <div className="title-underline"></div>

@@ -922,8 +922,38 @@ body {
   color: var(--racing);
   line-height: 1.1;
   overflow: hidden;
-  margin-top: -0.05em;
+  /* Extra top room lets the BETA tag sit above the wordmark without being
+     clipped by overflow:hidden; the negative margin keeps the word in place. */
+  margin-top: -0.55em;
+  padding-top: 0.5em;
   padding-bottom: 0.05em;
+}
+
+.hero-title .line2 .beta-tag {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 0.22em;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.15em;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--racing-hot, var(--racing));
+  background: color-mix(in srgb, var(--racing) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--racing) 50%, transparent);
+  border-radius: 999px;
+  padding: 0.5em 0.85em;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--racing) 28%, transparent);
+  filter: none;
+  transform: translateY(0.1em);
+  animation: betaPop 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) both 0.95s;
+}
+
+@keyframes betaPop {
+  from { opacity: 0; transform: translateY(0.1em) scale(0.8); }
+  to { opacity: 1; transform: translateY(0.1em) scale(1); }
 }
 
 .hero-title .line2 span {
@@ -9463,6 +9493,57 @@ body {
   box-shadow:
     0 10px 22px color-mix(in srgb, var(--racing) 38%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+/* Quiet glass companion to the season pill: signals that earlier seasons'
+   data is on the way without competing with the bright "Season 2026" badge. */
+.season-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px 6px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--racing) 30%, var(--ink-muted, #8a8a8a));
+  background: color-mix(in srgb, var(--racing) 7%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--racing) 34%, transparent);
+  cursor: default;
+  transition: color 0.35s var(--ease), border-color 0.35s var(--ease),
+    background 0.35s var(--ease), transform 0.35s var(--ease);
+  animation: checkerFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.26s;
+}
+
+.season-soon:hover {
+  transform: translateY(-1px);
+  color: color-mix(in srgb, var(--racing) 70%, var(--ink, #111));
+  border-color: color-mix(in srgb, var(--racing) 55%, transparent);
+  background: color-mix(in srgb, var(--racing) 12%, transparent);
+}
+
+.season-soon-icon {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--racing);
+  opacity: 0.85;
+}
+
+.season-soon-text em {
+  font-style: normal;
+  color: var(--racing);
+  opacity: 0.95;
+}
+
+/* Keep the header uncluttered on small screens — drop the companion pill. */
+@media (max-width: 600px) {
+  .season-soon {
+    display: none;
+  }
 }
 
 /* "Season 2026" reads as a refined glass companion to the solid live pill */

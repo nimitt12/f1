@@ -86,6 +86,27 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
         {leftSlot ?? (
           <div className="brand-eyebrow">
             <span className="live-badge">Season 2026</span>
+            <span
+              className="season-soon"
+              title="Data for previous seasons is on its way"
+            >
+              <svg
+                className="season-soon-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              <span className="season-soon-text">
+                Past seasons <em>coming soon</em>
+              </span>
+            </span>
           </div>
         )}
 
