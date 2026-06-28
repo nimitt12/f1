@@ -10995,8 +10995,8 @@ body {
 }
 
 .cl-watermark-text {
-  font-size: 140px;
-  bottom: -18px;
+  font-size: 200px;
+  bottom: -38px;
 }
 
 /* ── Loading state ───────────────────────────────────────────────────── */
@@ -11032,7 +11032,7 @@ body {
   .cl-grid { grid-template-columns: 1fr; gap: 18px; }
   .cl-card { padding: 26px 24px 28px; }
   .cl-watermark { font-size: 150px; bottom: -28px; }
-  .cl-watermark-text { font-size: 110px; }
+  .cl-watermark-text { font-size: 150px; bottom: -28px; }
 }
 
 @media (max-width: 420px) {
