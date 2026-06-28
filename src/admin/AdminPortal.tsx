@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './admin.css';
 import CrudManager from './CrudManager';
+import TriviaManager from './TriviaManager';
 import Loader from '../components/Loader';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
-const navItems = ['Overview', 'Race Ops', 'Drivers DB', 'Constructors DB', 'Database', 'Systems'];
+const navItems = ['Overview', 'Race Ops', 'Drivers DB', 'Constructors DB', 'Trivia', 'Database', 'Systems'];
 
 interface ApiDriverRanking {
   id: string;
@@ -757,13 +758,18 @@ const AdminPortal: React.FC = () => {
           </section>
         )}
 
-        {/* TAB 4: DATABASE CRUD */}
+        {/* TAB 4: TRIVIA EDITOR */}
         {activeTab === 4 && (
+          <TriviaManager onLog={addLog} />
+        )}
+
+        {/* TAB 5: DATABASE CRUD */}
+        {activeTab === 5 && (
           <CrudManager onLog={addLog} />
         )}
 
-        {/* TAB 5: SYSTEMS & DIAGNOSTICS */}
-        {activeTab === 5 && (
+        {/* TAB 6: SYSTEMS & DIAGNOSTICS */}
+        {activeTab === 6 && (
           <section className="admin-diagnostics-systems">
             <div className="admin-grid">
               <article className="admin-panel diagnostics-control-panel">

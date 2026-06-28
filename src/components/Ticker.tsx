@@ -1,49 +1,55 @@
 import React, { useEffect, useState } from 'react';
-import { RACES, fetchRaces } from '../data/races';
+import { generateTriviaFacts } from '../lib/trivia';
 
-interface RaceResult {
-  id: string;
-  position: string;
-  points: string;
-  given_name: string;
-  family_name: string;
-  team_name: string;
-}
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+
+const ord = (n: number) => {
+  const s = ['TH', 'ST', 'ND', 'RD'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
 
 const Ticker: React.FC = () => {
-  const [results, setResults] = useState<RaceResult[]>([]);
+  const [facts, setFacts] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchResults = async () => {
+    const load = async () => {
+      // Prefer admin-curated trivia from the DB; fall back to the auto-generated
+      // facts when none have been set (or the endpoint is unavailable).
       try {
-        const races = await fetchRaces();
-        const today = new Date();
-        const prevRace = races.filter(r => new Date(r.date) < today).pop() || races[0] || RACES[0];
-
-        const res = await fetch(`https://pitwall-backend-dq9r.onrender.com/results/get-all-results/${prevRace.season}/${prevRace.round}`);
-        const data = await res.json();
-        setResults(data);
-      } catch (e) {
-        console.error("Failed to fetch ticker results", e);
+        const res = await fetch(`${BACKEND_URL}/trivia`);
+        if (res.ok) {
+          const data = await res.json();
+          const lines: string[] = Array.isArray(data)
+            ? data.map((t: { body: string }) => t.body).filter(Boolean)
+            : [];
+          if (lines.length > 0) {
+            setFacts(lines);
+            return;
+          }
+        }
+      } catch {
+        // ignore — fall through to auto-generated facts
       }
+      setFacts(await generateTriviaFacts());
     };
-    fetchResults();
+    load();
   }, []);
 
   const renderItems = () => (
     <>
-      {results.map((r) => (
-        <React.Fragment key={r.id}>
+      {facts.map((fact, i) => (
+        <React.Fragment key={i}>
           <span className="tick">
-            <span className="sym">P{r.position}</span>
-            <span className="val">{`${r.given_name} ${r.family_name}`.toUpperCase()}</span>
-            <span className="pts"><span className="pts-num">{r.points}</span><span className="pts-unit">PTS</span></span>
+            <span className="sym">{ord(i + 1)}</span>
+            <span className="val">{fact}</span>
           </span>
           <span className="tick tick-dot">◆</span>
         </React.Fragment>
       ))}
-      {results.length === 0 && (
-        <span className="tick">LOADING LATEST RACE RESULTS...</span>
+      {facts.length === 0 && (
+        <span className="tick">LOADING F1 TRIVIA...</span>
       )}
     </>
   );
