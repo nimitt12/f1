@@ -4,12 +4,6 @@ import { generateTriviaFacts } from '../lib/trivia';
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
-const ord = (n: number) => {
-  const s = ['TH', 'ST', 'ND', 'RD'];
-  const v = n % 100;
-  return n + (s[(v - 20) % 10] || s[v] || s[0]);
-};
-
 const Ticker: React.FC = () => {
   const [facts, setFacts] = useState<string[]>([]);
 
@@ -42,10 +36,13 @@ const Ticker: React.FC = () => {
       {facts.map((fact, i) => (
         <React.Fragment key={i}>
           <span className="tick">
-            <span className="sym">{ord(i + 1)}</span>
             <span className="val">{fact}</span>
           </span>
-          <span className="tick tick-dot">◆</span>
+          <span className="tick tick-dot" aria-hidden="true">
+            <span className="tick-sep-line" />
+            <span className="tick-sep-diamond">◆</span>
+            <span className="tick-sep-line" />
+          </span>
         </React.Fragment>
       ))}
       {facts.length === 0 && (
