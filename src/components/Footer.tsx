@@ -7,7 +7,8 @@ const Footer: React.FC = () => {
         <div className="footer-main">
           <div className="f-col about">
             <div className="f-logo">
-              MY <span>PITWALL</span>
+              <img src="/logo.svg" alt="" className="f-logo-mark" aria-hidden="true" />
+              <span className="f-logo-text">MY <span>PITWALL</span></span>
             </div>
             <p className="f-desc">
               The ultimate high-performance telemetry dashboard for Formula 1 enthusiasts. 

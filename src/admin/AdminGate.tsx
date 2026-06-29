@@ -62,7 +62,7 @@ const AdminGate: React.FC = () => {
     return (
       <main className="admin-gate">
         <div className="admin-gate-card">
-          <span className="admin-gate-mark">PW</span>
+          <img src="/logo.svg" alt="Pitwall" className="admin-gate-mark" />
           <Loader label={null} variant="inline" accent="var(--admin-accent-hot)" />
           <h1>Authorizing access</h1>
           <p>Verifying your admin credentials with the paddock servers…</p>
@@ -91,7 +91,7 @@ const AdminGate: React.FC = () => {
   return (
     <main className="admin-gate">
       <div className="admin-gate-card denied">
-        <span className="admin-gate-mark">PW</span>
+        <img src="/logo.svg" alt="Pitwall" className="admin-gate-mark" />
         <div className="admin-gate-lock" aria-hidden="true">🔒</div>
         <h1>{title}</h1>
         <p>{message}</p>

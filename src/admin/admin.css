@@ -1592,18 +1592,10 @@
 }
 
 .admin-gate-mark {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  background: linear-gradient(145deg, var(--admin-accent-hot), var(--admin-accent));
-  color: var(--admin-dark);
-  font-family: "Orbitron", sans-serif;
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  box-shadow: 0 0 28px rgba(185, 154, 86, 0.36);
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px rgba(185, 154, 86, 0.36));
 }
 
 .admin-gate-card h1 {

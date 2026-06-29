@@ -891,6 +891,16 @@ body {
   color: var(--ink-1);
 }
 
+/* Logo mark in the top bar, leading the SEASON badge — the site's identity. */
+.brand-eyebrow-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--racing) 42%, transparent));
+  animation: checkerFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.06s;
+}
+
 .title-wrap {
   position: relative;
   margin-bottom: 10px;
@@ -3636,6 +3646,9 @@ body {
 }
 
 .f-col .f-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--font-display);
   font-size: 28px;
   font-weight: 800;
@@ -3644,7 +3657,14 @@ body {
   margin-bottom: 22px;
 }
 
-.f-col .f-logo span {
+.f-col .f-logo .f-logo-mark {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--racing) 40%, transparent));
+}
+
+.f-col .f-logo .f-logo-text span {
   background: linear-gradient(120deg, var(--racing-hot), var(--racing));
   -webkit-background-clip: text;
   background-clip: text;
@@ -6077,6 +6097,21 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
+.boot-logo {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  margin: 0 auto 26px;
+  display: block;
+  filter: drop-shadow(0 0 32px rgba(168, 85, 247, 0.55));
+  animation: bootLogoPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes bootLogoPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 28px rgba(168, 85, 247, 0.45)); }
+  50% { transform: scale(1.04); filter: drop-shadow(0 0 40px rgba(168, 85, 247, 0.7)); }
+}
+
 .boot-title {
   position: relative;
   display: flex;
@@ -6386,6 +6421,13 @@ body {
   background: var(--racing);
   box-shadow: 0 0 10px color-mix(in srgb, var(--racing) 80%, transparent);
   animation: pulseDot 2s ease-in-out infinite;
+}
+
+.menu-kicker-mark {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--racing) 55%, transparent));
 }
 
 @keyframes pulseDot {

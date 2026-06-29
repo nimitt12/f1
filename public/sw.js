@@ -1,8 +1,9 @@
-const CACHE_NAME = 'pitwall-v3';
+const CACHE_NAME = 'pitwall-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/logo.svg',
   '/favicon.ico',
   '/favicon-16x16.png',
   '/favicon-32x32.png',

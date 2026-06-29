@@ -37,6 +37,7 @@ const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
       <div className="boot-flash" />
 
       <div className="boot-content">
+        <img src="/logo.svg" alt="My PitWall" className="boot-logo" />
         <h1 className="boot-title">
           <span className="boot-my">My</span><span className="boot-word"><span className="boot-pit">Pit</span>Wall<span className="dot">.</span></span>
         </h1>
