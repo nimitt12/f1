@@ -892,6 +892,11 @@ body {
 }
 
 /* Logo mark in the top bar, leading the SEASON badge — the site's identity. */
+/* Logo inside the greeting pill — only surfaces on mobile (see mobile.css). */
+.pmc-logo {
+  display: none;
+}
+
 .brand-eyebrow-logo {
   width: 38px;
   height: 38px;
@@ -9773,6 +9778,7 @@ body {
   .rostrum-card.pos-2,
   .rostrum-card.pos-3 {
     grid-column: 1;
+    grid-row: auto;
     min-height: 0;
     border-radius: 14px;
   }

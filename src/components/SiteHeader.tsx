@@ -119,6 +119,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
             aria-label="Open menu"
             aria-expanded={isMenuOpen}
           >
+            <LogoMark className="pmc-logo" aria-hidden="true" />
             {user ? (
               <>
                 <span className="greeting-text">
