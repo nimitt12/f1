@@ -197,20 +197,10 @@
     box-sizing: border-box;
   }
 
-  /* The mark now leads the greeting pill, so drop the duplicate down in
-     the eyebrow row. */
-  .brand-eyebrow-logo {
-    display: none;
-  }
-
-  /* Brand mark leads the greeting pill on mobile. */
+  /* Slightly smaller mark in the full-width pill on phones. */
   .profile-menu-card .pmc-logo {
-    display: block;
     width: 30px;
     height: 30px;
-    flex-shrink: 0;
-    color: var(--racing);
-    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--racing) 45%, transparent));
   }
 
   .profile-menu-card .greeting-text {

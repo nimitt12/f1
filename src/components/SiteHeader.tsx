@@ -86,7 +86,6 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
       <div className="hero-top">
         {leftSlot ?? (
           <div className="brand-eyebrow">
-            <LogoMark className="brand-eyebrow-logo" role="img" aria-label="My PitWall" />
             <span className="live-badge">Season 2026</span>
             <span
               className="season-soon"
@@ -120,6 +119,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
             aria-expanded={isMenuOpen}
           >
             <LogoMark className="pmc-logo" aria-hidden="true" />
+            <span className="pmc-divider pmc-divider-logo" aria-hidden="true"></span>
             {user ? (
               <>
                 <span className="greeting-text">
