@@ -38,7 +38,11 @@ const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
       <div className="boot-flash" />
 
       <div className="boot-content">
-        <LogoMark className="boot-logo" role="img" aria-label="My PitWall" />
+        <div className="boot-logo-wrap">
+          <span className="boot-logo-ring" aria-hidden="true" />
+          <span className="boot-logo-ring boot-logo-ring-2" aria-hidden="true" />
+          <LogoMark className="boot-logo" role="img" aria-label="My PitWall" />
+        </div>
         <h1 className="boot-title">
           <span className="boot-my">My</span><span className="boot-word"><span className="boot-pit">Pit</span>Wall<span className="dot">.</span></span>
         </h1>

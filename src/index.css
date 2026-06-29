@@ -5966,6 +5966,7 @@ body {
   inset: 0;
   z-index: 999999;
   background:
+    radial-gradient(90% 70% at 50% 30%, color-mix(in srgb, var(--racing) 16%, transparent) 0%, transparent 60%),
     radial-gradient(120% 90% at 50% 38%, #16131f 0%, #0a0810 45%, #050406 100%);
   display: flex;
   align-items: center;
@@ -6033,7 +6034,7 @@ body {
   height: 50vmax;
   bottom: -18vmax;
   left: 50%;
-  background: radial-gradient(circle, #ff1801 0%, transparent 68%);
+  background: radial-gradient(circle, var(--racing-hot) 0%, transparent 68%);
   opacity: 0.4;
   transform: translateX(-40%);
   animation: bootAuraB 11s ease-in-out infinite alternate;
@@ -6076,7 +6077,7 @@ body {
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  background: radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.9) 0%, rgba(168, 85, 247, 0.35) 30%, transparent 60%);
+  background: radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.9) 0%, color-mix(in srgb, var(--racing) 38%, transparent) 30%, transparent 60%);
 }
 
 .boot-loader.go .boot-flash {
@@ -6101,13 +6102,73 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
-.boot-logo {
-  width: 92px;
-  height: 92px;
+/* Logo medallion: glowing halo + twin counter-rotating theme rings */
+.boot-logo-wrap {
+  position: relative;
+  width: 150px;
+  height: 150px;
   margin: 0 auto 26px;
+  display: grid;
+  place-items: center;
+}
+
+.boot-logo-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--racing) 30%, transparent) 0%, transparent 70%);
+  filter: blur(6px);
+  animation: bootHaloPulse 2.4s ease-in-out infinite;
+}
+
+.boot-logo-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    color-mix(in srgb, var(--racing) 85%, transparent) 18%,
+    color-mix(in srgb, var(--racing-hot) 75%, transparent) 32%,
+    transparent 52%,
+    transparent 100%
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  animation: bootRingSpin 5s linear infinite;
+}
+
+.boot-logo-ring-2 {
+  inset: 13px;
+  background: conic-gradient(
+    from 180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--racing-hot) 70%, transparent) 14%,
+    transparent 40%,
+    transparent 100%
+  );
+  animation: bootRingSpin 7s linear infinite reverse;
+  opacity: 0.7;
+}
+
+@keyframes bootRingSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bootHaloPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.boot-logo {
+  position: relative;
+  z-index: 1;
+  width: 88px;
+  height: 88px;
   display: block;
   color: var(--racing);
-  filter: drop-shadow(0 0 32px color-mix(in srgb, var(--racing) 55%, transparent));
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--racing) 55%, transparent));
   animation: bootLogoPulse 2.4s ease-in-out infinite;
 }
 
@@ -6249,6 +6310,7 @@ body {
 
 /* Thin telemetry progress bar */
 .boot-progress {
+  position: relative;
   width: 320px;
   max-width: 70vw;
   height: 3px;
@@ -6259,11 +6321,29 @@ body {
 }
 
 .boot-progress-bar {
+  position: relative;
   height: 100%;
   border-radius: 3px;
   background: linear-gradient(90deg, var(--racing-deep), var(--racing), var(--racing-hot));
   box-shadow: 0 0 12px color-mix(in srgb, var(--racing) 70%, transparent);
   transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+/* Telemetry shimmer sweeping along the fill */
+.boot-progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  animation: bootProgressShine 1.4s ease-in-out infinite;
+}
+
+@keyframes bootProgressShine {
+  0% { background-position: -60% 0; }
+  100% { background-position: 160% 0; }
 }
 
 .boot-status {
@@ -6302,7 +6382,11 @@ body {
   .boot-aura,
   .boot-title::after,
   .boot-caret,
-  .light.on {
+  .light.on,
+  .boot-logo,
+  .boot-logo-ring,
+  .boot-logo-wrap::before,
+  .boot-progress-bar::after {
     animation: none;
   }
 }
