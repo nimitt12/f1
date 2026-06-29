@@ -349,8 +349,6 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
                         <span className="rc-stat-v">+{r.points}</span>
                       </div>
                     </div>
-
-                    <span className="rc-step" aria-hidden="true">{pos}</span>
                   </article>
                 );
               })}

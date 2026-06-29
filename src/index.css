@@ -9527,8 +9527,8 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 26px 20px 0;
-  border-radius: 16px 16px 0 0;
+  padding: 26px 20px 26px;
+  border-radius: 16px;
   overflow: hidden;
   background:
     radial-gradient(ellipse 100% 48% at 50% -8%,
@@ -9538,7 +9538,6 @@ body {
       rgba(255, 255, 255, 0.004) 0 1px, transparent 1px 5px),
     linear-gradient(168deg, #16161a 0%, #0c0c0e 58%, #060608 100%);
   border: 1px solid color-mix(in srgb, var(--team-color-fallback) 16%, rgba(255, 255, 255, 0.07));
-  border-bottom: none;
   box-shadow:
     0 26px 64px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
@@ -9566,16 +9565,17 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* Glossy team accent rail down the left edge. */
+/* Glossy team accent rail along the bottom edge. */
 .rostrum-card::before {
   content: "";
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-  background: linear-gradient(180deg,
-    var(--team-color-fallback) 0%,
-    color-mix(in srgb, var(--team-color-fallback) 55%, #fff) 32%,
-    var(--team-color-fallback) 66%,
+  left: 0; right: 0; bottom: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--team-color-fallback) 22%,
+    color-mix(in srgb, var(--team-color-fallback) 55%, #fff) 50%,
+    var(--team-color-fallback) 78%,
     transparent 100%);
   box-shadow: 0 0 16px color-mix(in srgb, var(--team-color-fallback) 60%, transparent);
   z-index: 4;
@@ -9763,35 +9763,6 @@ body {
   color: color-mix(in srgb, var(--team-color-fallback) 60%, #fff);
 }
 
-/* --- Pedestal with ghosted position numeral --- */
-.rc-step {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(100% + 40px);
-  margin: 18px -20px 0;
-  height: 50px;
-  line-height: 1;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 30px;
-  color: color-mix(in srgb, var(--team-color-fallback) 32%, transparent);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 60%),
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--team-color-fallback) 10%, #141417) 0%,
-      #0a0a0c 100%);
-  border-top: 1px solid color-mix(in srgb, var(--team-color-fallback) 22%, rgba(255, 255, 255, 0.08));
-}
-.rostrum-card.pos-1 .rc-step { color: rgba(212, 160, 23, 0.5);
-  background:
-    linear-gradient(180deg, rgba(255, 224, 150, 0.12), transparent 60%),
-    linear-gradient(180deg, rgba(212, 160, 23, 0.14), #0a0a0c 100%);
-  border-top-color: rgba(212, 160, 23, 0.34);
-}
-
 @media (max-width: 760px) {
   .rostrum {
     grid-template-columns: 1fr;
@@ -9804,12 +9775,10 @@ body {
     grid-column: 1;
     min-height: 0;
     border-radius: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
   .rostrum-card.pos-1 { order: 0; }
   .rostrum-card.pos-2 { order: 1; }
   .rostrum-card.pos-3 { order: 2; }
-  .rc-step { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
