@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import LogoMark from './LogoMark';
 
 interface BootLoaderProps {
   onComplete: () => void;
@@ -37,7 +38,7 @@ const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
       <div className="boot-flash" />
 
       <div className="boot-content">
-        <img src="/logo.svg" alt="My PitWall" className="boot-logo" />
+        <LogoMark className="boot-logo" role="img" aria-label="My PitWall" />
         <h1 className="boot-title">
           <span className="boot-my">My</span><span className="boot-word"><span className="boot-pit">Pit</span>Wall<span className="dot">.</span></span>
         </h1>

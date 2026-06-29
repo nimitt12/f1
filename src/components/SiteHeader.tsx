@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import type { AuthUser } from './Hero';
+import LogoMark from './LogoMark';
 
 interface SiteHeaderProps {
   user: AuthUser | null;
@@ -85,7 +86,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
       <div className="hero-top">
         {leftSlot ?? (
           <div className="brand-eyebrow">
-            <img src="/logo.svg" alt="My PitWall" className="brand-eyebrow-logo" />
+            <LogoMark className="brand-eyebrow-logo" role="img" aria-label="My PitWall" />
             <span className="live-badge">Season 2026</span>
             <span
               className="season-soon"
@@ -157,7 +158,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
           <div className="glass-menu-panel" onClick={e => e.stopPropagation()}>
             <div className="menu-header">
               <span className="menu-kicker">
-                <img src="/logo.svg" alt="" className="menu-kicker-mark" aria-hidden="true" />
+                <LogoMark className="menu-kicker-mark" aria-hidden="true" />
                 Pitwall Menu
               </span>
               <button className="close-menu-btn" onClick={() => setIsMenuOpen(false)} aria-label="Close menu">×</button>

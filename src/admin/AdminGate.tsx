@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './admin.css';
 import AdminPortal from './AdminPortal';
 import Loader from '../components/Loader';
+import LogoMark from '../components/LogoMark';
 import { getToken } from './adminAuth';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
@@ -62,7 +63,7 @@ const AdminGate: React.FC = () => {
     return (
       <main className="admin-gate">
         <div className="admin-gate-card">
-          <img src="/logo.svg" alt="Pitwall" className="admin-gate-mark" />
+          <LogoMark className="admin-gate-mark" role="img" aria-label="Pitwall" />
           <Loader label={null} variant="inline" accent="var(--admin-accent-hot)" />
           <h1>Authorizing access</h1>
           <p>Verifying your admin credentials with the paddock servers…</p>
@@ -91,7 +92,7 @@ const AdminGate: React.FC = () => {
   return (
     <main className="admin-gate">
       <div className="admin-gate-card denied">
-        <img src="/logo.svg" alt="Pitwall" className="admin-gate-mark" />
+        <LogoMark className="admin-gate-mark" role="img" aria-label="Pitwall" />
         <div className="admin-gate-lock" aria-hidden="true">🔒</div>
         <h1>{title}</h1>
         <p>{message}</p>

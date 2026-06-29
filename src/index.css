@@ -895,10 +895,13 @@ body {
 .brand-eyebrow-logo {
   width: 38px;
   height: 38px;
-  object-fit: contain;
   flex-shrink: 0;
+  /* The "P" paths use currentColor, so this tints the mark to the active theme
+     (the car/wordmark stay white). Matches the hero title coloring. */
+  color: var(--racing);
   filter: drop-shadow(0 0 12px color-mix(in srgb, var(--racing) 42%, transparent));
   animation: checkerFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.06s;
+  transition: color 0.3s ease;
 }
 
 .title-wrap {
@@ -3660,8 +3663,9 @@ body {
 .f-col .f-logo .f-logo-mark {
   width: 40px;
   height: 40px;
-  object-fit: contain;
+  color: var(--racing);
   filter: drop-shadow(0 0 16px color-mix(in srgb, var(--racing) 40%, transparent));
+  transition: color 0.3s ease;
 }
 
 .f-col .f-logo .f-logo-text span {
@@ -6100,16 +6104,16 @@ body {
 .boot-logo {
   width: 92px;
   height: 92px;
-  object-fit: contain;
   margin: 0 auto 26px;
   display: block;
-  filter: drop-shadow(0 0 32px rgba(168, 85, 247, 0.55));
+  color: var(--racing);
+  filter: drop-shadow(0 0 32px color-mix(in srgb, var(--racing) 55%, transparent));
   animation: bootLogoPulse 2.4s ease-in-out infinite;
 }
 
 @keyframes bootLogoPulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 28px rgba(168, 85, 247, 0.45)); }
-  50% { transform: scale(1.04); filter: drop-shadow(0 0 40px rgba(168, 85, 247, 0.7)); }
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 28px color-mix(in srgb, var(--racing) 45%, transparent)); }
+  50% { transform: scale(1.04); filter: drop-shadow(0 0 40px color-mix(in srgb, var(--racing) 70%, transparent)); }
 }
 
 .boot-title {
@@ -6426,8 +6430,9 @@ body {
 .menu-kicker-mark {
   width: 22px;
   height: 22px;
-  object-fit: contain;
+  color: var(--racing);
   filter: drop-shadow(0 0 8px color-mix(in srgb, var(--racing) 55%, transparent));
+  transition: color 0.3s ease;
 }
 
 @keyframes pulseDot {

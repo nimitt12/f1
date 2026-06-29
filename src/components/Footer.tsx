@@ -1,4 +1,5 @@
 import React from 'react';
+import LogoMark from './LogoMark';
 
 const Footer: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ const Footer: React.FC = () => {
         <div className="footer-main">
           <div className="f-col about">
             <div className="f-logo">
-              <img src="/logo.svg" alt="" className="f-logo-mark" aria-hidden="true" />
+              <LogoMark className="f-logo-mark" aria-hidden="true" />
               <span className="f-logo-text">MY <span>PITWALL</span></span>
             </div>
             <p className="f-desc">
