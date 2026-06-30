@@ -582,12 +582,6 @@
     transform: translateY(10px);
   }
 
-  .battle-pos {
-    font-size: 64px;
-    background: transparent;
-    opacity: 0.9;
-  }
-
   .battle-name {
     font-size: 26px !important;
     margin-top: -10px;
@@ -599,9 +593,14 @@
     opacity: 0.15;
   }
 
-  .battle-driver-img {
-    height: 180%;
-    object-position: center 20%;
+  .battle-emblem {
+    width: 132px;
+    height: 132px;
+    top: 38%;
+  }
+
+  .battle-emblem-num {
+    font-size: 46px;
   }
 
   /* Premium VS Badge for Mobile */

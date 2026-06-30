@@ -64,6 +64,14 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
   const [results, setResults] = useState<RaceResult[] | null>(null);
   const [loadingResults, setLoadingResults] = useState(false);
   const [activeTab, setActiveTab] = useState<'race' | 'qualifying'>('race');
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 220);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     if (!race) return;
@@ -137,10 +145,16 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
           onOpenSettings={onOpenSettings}
           onHomeNavigate={onHomeNavigate}
           leftSlot={
-            <button className="rd-back-btn" onClick={onBack}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-              Back
-            </button>
+            <div className="rd-header-left">
+              <button className="rd-back-btn" onClick={onBack}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                Back
+              </button>
+              <div className={`rd-header-race ${scrolled ? 'visible' : ''}`} aria-hidden={!scrolled}>
+                <span className="rd-header-race-round">R{race.round}</span>
+                <span className="rd-header-race-name">{race.raceName}</span>
+              </div>
+            </div>
           }
         />
       </div>
@@ -246,17 +260,17 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
         {(loadingResults || (results && results.length > 0)) && (
           <div className="rd-results-section">
             <div className="rd-tabs">
-              <button 
-                className={`rd-tab ${activeTab === 'race' ? 'active' : ''}`}
-                onClick={() => setActiveTab('race')}
-              >
-                Race
-              </button>
               <button
                 className={`rd-tab ${activeTab === 'qualifying' ? 'active' : ''}`}
                 onClick={() => setActiveTab('qualifying')}
               >
                 Qualifying
+              </button>
+              <button
+                className={`rd-tab ${activeTab === 'race' ? 'active' : ''}`}
+                onClick={() => setActiveTab('race')}
+              >
+                Race
               </button>
             </div>
 
@@ -623,6 +637,23 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                       strokeLinejoin="round"
                     />
 
+                    {/* Driver tag pinned to the line's finishing position on the right */}
+                    <text
+                      x={1148}
+                      y={posY(plotFinish) + 4}
+                      fill={teamColor}
+                      fontSize="11"
+                      fontWeight="700"
+                      fontFamily="JetBrains Mono"
+                      letterSpacing="0.5px"
+                      style={{
+                        opacity: isHovered ? 1 : hasFocus ? 0.12 : 0.85,
+                        transition: 'opacity 0.3s ease',
+                      }}
+                    >
+                      {r.code}
+                    </text>
+
                     {/* Telemetry Nodes (Only visible on hover) */}
                     {isHovered && mappedPoints.map((p, i) => (
                       <circle 
@@ -721,21 +752,6 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                     </span>
                   </div>
                 </div>
-
-                {/* Bottom Breakdown Badges */}
-                <div style={{ display: 'flex', gap: '16px', marginTop: '24px', width: '100%', justifyContent: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }}></div>
-                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{finishers}</span>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>FIN</span>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px #ef4444' }}></div>
-                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{results.length - finishers}</span>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>DNF</span>
-                  </div>
-                </div>
               </>
             );
           })()}
@@ -746,7 +762,6 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
           
           {(() => {
             const leadLapFinishers = results.filter(r => r.status === 'Finished').length;
-            const lappedCars = finishers - leadLapFinishers;
             const leadLapPercent = finishers > 0 ? Math.round((leadLapFinishers / finishers) * 100) : 0;
             
             const radius = 70;
@@ -805,21 +820,6 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                     <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', fontWeight: 600, marginTop: '6px', textAlign: 'center' }}>
                       ON LEAD LAP
                     </span>
-                  </div>
-                </div>
-
-                {/* Bottom Breakdown Badges */}
-                <div style={{ display: 'flex', gap: '16px', marginTop: '24px', width: '100%', justifyContent: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', boxShadow: '0 0 8px #3b82f6' }}></div>
-                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{leadLapFinishers}</span>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>LEAD</span>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f97316', boxShadow: '0 0 8px #f97316' }}></div>
-                    <span style={{ fontSize: '14px', fontFamily: 'JetBrains Mono', fontWeight: 800 }}>{lappedCars}</span>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>LAPPED</span>
                   </div>
                 </div>
               </>

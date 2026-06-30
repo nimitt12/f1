@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Loader from './Loader';
-import antonelliImg from '../assets/ant.png';
-import russellImg from '../assets/rus.png';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
@@ -20,6 +18,7 @@ interface ApiDriverRanking {
   number: string;
   nationality: string;
   constructor_name: string;
+  podiums: string;
 }
 
 interface BattleDriver {
@@ -32,13 +31,7 @@ interface BattleDriver {
   wins: number;
   podiums: number;
   color: string;
-  image: string | null;
 }
-
-const DRIVER_IMAGES: Record<string, string> = {
-  ANT: antonelliImg,
-  RUS: russellImg,
-};
 
 const TEAM_COLORS: Record<string, string> = {
   mercedes: '#00D2BE',
@@ -79,12 +72,9 @@ const toBattleDriver = (d: ApiDriverRanking): BattleDriver => ({
   team: d.constructor_name.toUpperCase(),
   pts: parseInt(d.points) || 0,
   wins: parseInt(d.wins) || 0,
-  podiums: parseInt(d.wins) || 0, // Using wins as podiums until API provides it
+  podiums: parseInt(d.podiums) || 0,
   color: TEAM_COLORS[teamSlug(d.constructor_name)] || '#ffffff',
-  image: DRIVER_IMAGES[d.code] || null,
 });
-
-const initials = (name: string) => name.split(' ').map((n) => n[0]).join('');
 
 const DriverBattle: React.FC = () => {
   const [allDrivers, setAllDrivers] = useState<ApiDriverRanking[]>([]);
@@ -188,16 +178,11 @@ const DriverBattle: React.FC = () => {
           onClick={openPicker}
           style={{ '--team-color': drivers[0].color } as React.CSSProperties}
         >
-          <div className="battle-image-wrap">
-            <div className="battle-bg-name">{drivers[0].slot}</div>
-            {drivers[0].image ? (
-              <img src={drivers[0].image} alt={drivers[0].name} className="battle-driver-img" />
-            ) : (
-              <div className="driver-placeholder">{initials(drivers[0].name)}</div>
-            )}
+          <div className="battle-bg-name">{drivers[0].slot}</div>
+          <div className="battle-emblem">
+            <span className="battle-emblem-num">{drivers[0].number}</span>
           </div>
           <div className="battle-info">
-            <div className="battle-pos">{drivers[0].number}</div>
             <h3 className="battle-name">{drivers[0].name}</h3>
             <span className="battle-team">{drivers[0].team}</span>
           </div>
@@ -214,16 +199,11 @@ const DriverBattle: React.FC = () => {
           onClick={openPicker}
           style={{ '--team-color': drivers[1].color } as React.CSSProperties}
         >
-          <div className="battle-image-wrap">
-            <div className="battle-bg-name">{drivers[1].slot}</div>
-            {drivers[1].image ? (
-              <img src={drivers[1].image} alt={drivers[1].name} className="battle-driver-img" />
-            ) : (
-              <div className="driver-placeholder">{initials(drivers[1].name)}</div>
-            )}
+          <div className="battle-bg-name">{drivers[1].slot}</div>
+          <div className="battle-emblem">
+            <span className="battle-emblem-num">{drivers[1].number}</span>
           </div>
           <div className="battle-info">
-            <div className="battle-pos">{drivers[1].number}</div>
             <h3 className="battle-name">{drivers[1].name}</h3>
             <span className="battle-team">{drivers[1].team}</span>
           </div>

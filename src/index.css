@@ -4963,43 +4963,74 @@ body {
 }
 
 .battle-card:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
 }
 
-.battle-card:hover .battle-driver-img {
-  transform: translateX(var(--img-shift, -50%)) scale(1.04);
+.battle-card:hover .battle-emblem {
+  transform: translate(-50%, -50%) scale(1.04);
 }
 
-.battle-card:hover .driver-placeholder {
-  transform: translate(-50%, -50%) scale(1.05);
+.battle-card:hover .battle-emblem-ring {
+  opacity: 1;
 }
 
-.driver-placeholder {
+/* Initials medallion that stands in for the (unavailable) driver portrait */
+.battle-emblem {
   position: absolute;
-  top: 46%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 200px;
-  height: 200px;
-  background:
-    radial-gradient(circle at 50% 32%,
-      color-mix(in srgb, var(--team-color) 20%, rgba(255, 255, 255, 0.03)),
-      rgba(255, 255, 255, 0.012) 70%);
-  border: 1px solid color-mix(in srgb, var(--team-color) 34%, rgba(255, 255, 255, 0.05));
+  width: 196px;
+  height: 196px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
-  font-size: 62px;
-  font-weight: 800;
-  color: color-mix(in srgb, var(--team-color) 55%, rgba(255, 255, 255, 0.14));
-  letter-spacing: -0.04em;
   z-index: 1;
+  background:
+    radial-gradient(circle at 50% 30%,
+      color-mix(in srgb, var(--team-color) 26%, rgba(255, 255, 255, 0.02)),
+      rgba(255, 255, 255, 0.008) 72%);
+  border: 1px solid color-mix(in srgb, var(--team-color) 30%, rgba(255, 255, 255, 0.06));
   box-shadow:
-    inset 0 0 70px color-mix(in srgb, var(--team-color) 14%, transparent),
-    0 0 60px color-mix(in srgb, var(--team-color) 10%, transparent);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 80px color-mix(in srgb, var(--team-color) 16%, transparent),
+    0 0 80px color-mix(in srgb, var(--team-color) 14%, transparent);
   transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Rotating conic accent ring around the medallion */
+.battle-emblem::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  padding: 1px;
+  background: conic-gradient(from 220deg,
+    transparent,
+    color-mix(in srgb, var(--team-color) 70%, transparent) 25%,
+    transparent 55%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.battle-emblem-num {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: transparent;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--team-color) 92%, #fff),
+    color-mix(in srgb, var(--team-color) 50%, #000));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 18px color-mix(in srgb, var(--team-color) 40%, transparent));
 }
 
 .battle-card::before {
@@ -5012,14 +5043,12 @@ body {
 
 /* Team-tinted ambient glow baked into each side */
 .battle-card.p1 {
-  --img-shift: -50%;
   background:
     radial-gradient(95% 75% at 32% 26%, color-mix(in srgb, var(--team-color) 20%, transparent), transparent 62%),
     linear-gradient(135deg, #141414 0%, #000 72%);
 }
 
 .battle-card.p2 {
-  --img-shift: 50%;
   background:
     radial-gradient(95% 75% at 68% 26%, color-mix(in srgb, var(--team-color) 20%, transparent), transparent 62%),
     linear-gradient(225deg, #141414 0%, #000 72%);
@@ -5040,15 +5069,6 @@ body {
 
 .battle-card.p2::after {
   background: linear-gradient(270deg, var(--team-color), transparent);
-}
-
-.battle-image-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
 }
 
 .battle-bg-name {
@@ -5073,45 +5093,9 @@ body {
   color: transparent;
 }
 
-.battle-driver-img {
-  position: absolute;
-  top: 0;
-  height: 180%;
-  width: 100%;
-  object-fit: contain;
-  z-index: 1;
-  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.p1 .battle-driver-img {
-  left: 50%;
-  transform: translateX(-50%);
-  object-position: center 15%;
-}
-.p2 .battle-driver-img {
-  right: 50%;
-  transform: translateX(50%);
-  object-position: center 15%;
-}
-
 .battle-info {
   position: relative;
   z-index: 10;
-}
-
-.battle-pos {
-  font-family: var(--font-display);
-  font-size: 76px;
-  font-weight: 800;
-  line-height: 1;
-  color: transparent;
-  background: linear-gradient(180deg, var(--team-color), color-mix(in srgb, var(--team-color) 45%, #000));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-  margin-bottom: 6px;
-  filter: drop-shadow(0 4px 16px color-mix(in srgb, var(--team-color) 35%, transparent));
 }
 
 .battle-name {
@@ -5239,10 +5223,6 @@ body {
 .stat-val.v1 { color: var(--p1-color, #fff); }
 .stat-val.v2 { color: var(--p2-color, #fff); }
 
-.stat-val:not(.leading) {
-  opacity: 0.4;
-  font-weight: 600;
-}
 
 .stat-val.v1.leading {
   text-shadow: 0 0 20px color-mix(in srgb, var(--p1-color, #fff) 55%, transparent);
@@ -11282,6 +11262,69 @@ body {
   box-shadow: 0 10px 30px color-mix(in srgb, var(--racing) 38%, transparent);
 }
 
+/* Scroll-reveal race name beside the back button */
+.rd-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.rd-header-race {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 0;
+  opacity: 0;
+  transform: translateX(-8px);
+  overflow: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease), max-width 0.5s var(--ease);
+}
+
+.rd-header-race::before {
+  content: '';
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  flex: none;
+}
+
+.rd-header-race.visible {
+  opacity: 1;
+  transform: translateX(0);
+  max-width: 46vw;
+  pointer-events: auto;
+}
+
+.rd-header-race-round {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--racing);
+  flex: none;
+}
+
+.rd-header-race-name {
+  font-family: var(--font-display, var(--font-mono));
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--paper);
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Hide the inline race name on small screens — the back button alone is enough */
+@media (max-width: 768px) {
+  .rd-header-race { display: none; }
+}
+
 /* Hero → dark cinematic */
 .race-details-page .rd-hero-section {
   background:
@@ -11536,6 +11579,23 @@ body {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* On wider screens the row has plenty of horizontal space; drop the redundant
+   side padding (rd-content-body already insets the content) and keep the chips
+   on a single line instead of wrapping to two. */
+@media (min-width: 1100px) {
+  .rd-quicknav {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .race-details-page .rd-quicknav-link {
+    white-space: nowrap;
+    padding: 7px 13px;
+  }
 }
 
 /* Offset jump targets so they land below the sticky header + quicknav */
