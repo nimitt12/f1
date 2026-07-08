@@ -5,6 +5,7 @@ import Ticker from './components/Ticker';
 import Hero from './components/Hero';
 import RaceLive from './components/RaceLive';
 import NextRace from './components/NextRace';
+import LiveTimingBanner from './components/LiveTimingBanner';
 import Parallax from './components/Parallax';
 import { useLiveRace } from './hooks/useLiveRace';
 import Calendar from './components/Calendar';
@@ -18,6 +19,7 @@ import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
 import RaceDetails from './components/RaceDetails';
+import LiveTiming from './components/LiveTiming';
 import ScrollProgress from './components/ScrollProgress';
 import AdminGate from './admin/AdminGate';
 import type { Race } from './data/races';
@@ -123,6 +125,7 @@ const parseRacePath = (path: string): { season: string; round: string } | null =
 const App: React.FC = () => {
   const isAdminPortal = window.location.pathname === '/admin-portal';
   const initialRacePath = parseRacePath(window.location.pathname);
+  const initialLivePath = window.location.pathname === '/live';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     const savedUser = localStorage.getItem('f1_user');
     if (!savedUser) return null;
@@ -145,12 +148,13 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account' | 'race_details'>(() => {
-    // The URL is the source of truth for race details; only fall back to the
-    // persisted view (account/dashboard) when the path isn't a race route.
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'live'>(() => {
+    // The URL is the source of truth for race details and live timing; only
+    // fall back to the persisted view (account/dashboard) otherwise.
     if (initialRacePath) return 'race_details';
+    if (initialLivePath) return 'live';
     const saved = localStorage.getItem('f1_view') as any;
-    return saved === 'race_details' ? 'dashboard' : saved || 'dashboard';
+    return saved === 'race_details' || saved === 'live' ? 'dashboard' : saved || 'dashboard';
   });
   const [selectedRace, setSelectedRace] = useState<Race | null>(() => {
     const saved = localStorage.getItem('f1_selected_race');
@@ -196,6 +200,19 @@ const App: React.FC = () => {
     window.history.pushState({}, '', '/');
   };
 
+  // Open the live timing console at `/live` so it's shareable and
+  // survives a refresh, mirroring the race details pattern.
+  const openLiveTiming = () => {
+    setView('live');
+    window.history.pushState({}, '', '/live');
+    window.scrollTo(0, 0);
+  };
+
+  const closeLiveTiming = () => {
+    setView('dashboard');
+    window.history.pushState({}, '', '/');
+  };
+
   // When deep-linked to `/race/:season/:round` (refresh / shared link) the
   // selected race isn't in memory yet — resolve it from the calendar once it
   // loads. If the round doesn't exist, fall back to the dashboard.
@@ -224,6 +241,8 @@ const App: React.FC = () => {
           (r) => String(r.season) === target.season && String(r.round) === target.round
         );
         setSelectedRace(found ?? null);
+      } else if (window.location.pathname === '/live') {
+        setView('live');
       } else {
         setView('dashboard');
         setSelectedRace(null);
@@ -328,6 +347,10 @@ const App: React.FC = () => {
         {view === 'dashboard' ? (
           <>
             <ThemeSwitcher />
+            <button className="lt-entry-pill" onClick={openLiveTiming} aria-label="Open live timing">
+              <i aria-hidden="true" />
+              Live Timing
+            </button>
             <Ticker />
             <Hero
               user={user}
@@ -341,10 +364,14 @@ const App: React.FC = () => {
                   race={liveRace}
                   races={races}
                   onRaceSelect={openRaceDetails}
+                  onOpenLiveTiming={openLiveTiming}
                 />
               ) : (
                 <NextRace onRaceSelect={openRaceDetails} />
               )}
+            </Parallax>
+            <Parallax speed={0.045} delay={20}>
+              <LiveTimingBanner onOpenLiveTiming={openLiveTiming} />
             </Parallax>
             <Parallax speed={0.04} delay={40}>
               <ChampionshipLeaders />
@@ -374,9 +401,16 @@ const App: React.FC = () => {
             <Footer />
           </>
         ) : view === 'account' ? (
-          <AccountPage 
-            user={user} 
-            onClose={() => setView('dashboard')} 
+          <AccountPage
+            user={user}
+            onClose={() => setView('dashboard')}
+          />
+        ) : view === 'live' ? (
+          <LiveTiming
+            onBack={closeLiveTiming}
+            user={user as any}
+            setUser={setUser as any}
+            onOpenSettings={() => setView('account')}
           />
         ) : (
           <RaceDetails

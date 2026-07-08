@@ -32,6 +32,8 @@ interface RaceLiveProps {
   /** Full calendar, for season-progress context. */
   races: Race[];
   onRaceSelect?: (race: Race) => void;
+  /** Opens the live timing console (pit-wall view). */
+  onOpenLiveTiming?: () => void;
 }
 
 const fmtTime = (ms: number) =>
@@ -40,7 +42,7 @@ const fmtTime = (ms: number) =>
 const fmtDay = (ms: number) =>
   new Date(ms).toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
 
-const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect }) => {
+const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLiveTiming }) => {
   const [now, setNow] = useState<number>(() => Date.now());
 
   useEffect(() => {
@@ -165,15 +167,23 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect }) => {
               </div>
             </div>
 
-            {onRaceSelect && (
-              <button className="rl-cta" onClick={() => onRaceSelect(race)}>
-                <span>Open Race Center</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
-              </button>
-            )}
+            <div className="rl-cta-row">
+              {onOpenLiveTiming && (
+                <button className="rl-cta rl-cta-timing" onClick={onOpenLiveTiming}>
+                  <span className="rl-cta-dot" aria-hidden="true" />
+                  <span>Live Timing</span>
+                </button>
+              )}
+              {onRaceSelect && (
+                <button className="rl-cta" onClick={() => onRaceSelect(race)}>
+                  <span>Open Race Center</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="rl-right">
