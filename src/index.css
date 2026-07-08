@@ -12339,21 +12339,6 @@ body {
 .lt-bar-throttle { background: #4ade80; }
 .lt-bar-brake { background: #f87171; }
 
-.lt-drs {
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
-  padding: 3px 6px;
-  border-radius: var(--r-xs);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.lt-drs.on {
-  border-color: #4ade80;
-  color: #4ade80;
-  background: rgba(74, 222, 128, 0.1);
-}
-
 .lt-tele-none { color: rgba(255, 255, 255, 0.25); }
 
 .lt-cutoff td {

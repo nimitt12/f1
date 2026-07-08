@@ -56,8 +56,6 @@ const segmentClass = (status: number): string => {
 const timeClass = (t: any): string =>
   t?.OverallFastest ? 'lt-t-ob' : t?.PersonalFastest ? 'lt-t-pb' : '';
 
-const drsOpen = (v: number) => v === 10 || v === 12 || v === 14;
-
 // Qualifying gap: the feed keeps one Stats entry per session part (Q1/Q2/Q3);
 // show the diff from the latest part the driver actually set a time in.
 const qualiGap = (line: any): string => {
@@ -251,7 +249,6 @@ const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace }) =>
   const gear = channels['3'];
   const throttle = channels['4'] ?? 0;
   const brake = channels['5'] ?? 0;
-  const drs = drsOpen(channels['45'] ?? 0);
 
   const out = line.Retired || line.Stopped;
   const status = out
@@ -274,13 +271,13 @@ const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace }) =>
         <span className="lt-tla" style={{ color }}>{driver?.Tla || line.RacingNumber}</span>
         {status && <span className={`lt-flag-chip lt-chip-${status.replace(' ', '').toLowerCase()}`}>{status}</span>}
       </td>
-      <td className="lt-gap">
-        {line.Position === '1' ? 'LEADER' : isRace ? line.GapToLeader || '—' : qualiGap(line)}
-      </td>
       <td className="lt-int">
         <span className={line.IntervalToPositionAhead?.Catching ? 'lt-catching' : ''}>
           {line.Position === '1' ? '—' : line.IntervalToPositionAhead?.Value || '—'}
         </span>
+      </td>
+      <td className="lt-gap">
+        {line.Position === '1' ? 'LEADER' : isRace ? line.GapToLeader || '—' : qualiGap(line)}
       </td>
       <td className="lt-tyre">
         <span className="lt-tyre-badge" style={{ borderColor: tyre.color, color: tyre.color }}>
@@ -305,7 +302,6 @@ const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace }) =>
               <i className="lt-bar lt-bar-throttle" style={{ height: `${Math.min(100, throttle)}%` }} />
               <i className="lt-bar lt-bar-brake" style={{ height: `${Math.min(100, brake)}%` }} />
             </span>
-            <span className={`lt-drs ${drs ? 'on' : ''}`}>DRS</span>
           </div>
         ) : (
           <span className="lt-tele-none">—</span>
@@ -587,8 +583,8 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
                   <tr>
                     <th className="lt-pos">P</th>
                     <th className="lt-driver-h">Driver</th>
-                    <th>Gap</th>
                     <th>Int</th>
+                    <th>Gap</th>
                     <th>Tyre</th>
                     <th>Sector 1</th>
                     <th>Sector 2</th>
