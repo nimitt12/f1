@@ -147,7 +147,7 @@ const DriverBattle: React.FC = () => {
         <div className="battle-header">
           <h2 className="battle-title">Driver's <em>Clash</em></h2>
         </div>
-        <div className="battle-container" style={{ opacity: 0.5, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="battle-container" style={{ opacity: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Loader label="Synchronizing data" />
         </div>
       </section>

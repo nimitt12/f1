@@ -4927,10 +4927,10 @@ body {
   grid-template-columns: 1fr 1fr;
   background: #050505;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px;
+  border-radius: 24px;
   overflow: hidden;
   position: relative;
-  height: 520px;
+  height: 340px;
   box-shadow:
     0 40px 100px rgba(0, 0, 0, 0.5),
     0 2px 0 rgba(255, 255, 255, 0.04) inset;
@@ -4960,7 +4960,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 40px;
+  padding: 26px 30px;
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
     filter 0.5s var(--ease);
 }
@@ -4983,8 +4983,8 @@ body {
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 196px;
-  height: 196px;
+  width: 122px;
+  height: 122px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -5022,7 +5022,7 @@ body {
 
 .battle-emblem-num {
   font-family: var(--font-display);
-  font-size: 64px;
+  font-size: 42px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -5076,11 +5076,11 @@ body {
 
 .battle-bg-name {
   position: absolute;
-  top: 24px;
+  top: 16px;
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-display);
-  font-size: 170px;
+  font-size: 108px;
   font-weight: 800;
   line-height: 1;
   z-index: 0;
@@ -5103,7 +5103,7 @@ body {
 
 .battle-name {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 23px;
   font-weight: 700;
   color: #fff;
   font-style: italic;
@@ -5116,7 +5116,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-top: 8px;
+  margin-top: 6px;
   font-family: var(--font-mono);
   font-size: 10.5px;
   text-transform: uppercase;
@@ -5153,13 +5153,13 @@ body {
 }
 
 .vs-circle {
-  width: 58px;
-  height: 58px;
+  width: 46px;
+  height: 46px;
   background: radial-gradient(circle at 50% 35%, #1a1a1d, #0a0a0c);
   color: #fff;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 17px;
+  font-size: 14px;
   letter-spacing: 0.04em;
   border-radius: 50%;
   display: flex;
@@ -5174,17 +5174,17 @@ body {
 
 .battle-stats-overlay {
   position: absolute;
-  bottom: 36px;
+  bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 80px);
-  max-width: 440px;
+  max-width: 420px;
   z-index: 30;
   background: rgba(12, 12, 14, 0.72);
   backdrop-filter: blur(28px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  padding: 22px 26px;
+  border-radius: 14px;
+  padding: 12px 22px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -5195,9 +5195,9 @@ body {
 
 .battle-stat-row {
   display: grid;
-  grid-template-columns: 56px 1fr 56px;
+  grid-template-columns: 52px 1fr 52px;
   align-items: center;
-  padding: 9px 0;
+  padding: 6px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -5216,7 +5216,7 @@ body {
 
 .stat-val {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 700;
   text-align: center;
   font-variant-numeric: tabular-nums;
