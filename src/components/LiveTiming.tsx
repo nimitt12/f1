@@ -201,7 +201,7 @@ const ArchivePanel: React.FC<{
                 {asArray(m.Sessions).filter((s: any) => s?.Path).map((s: any) => (
                   <button
                     key={s.Key}
-                    className="lt-archive-session"
+                    className={`lt-archive-session ${/race/i.test(s.Name) && !/sprint/i.test(s.Name) ? 'lt-archive-session-race' : ''}`}
                     disabled={busy}
                     onClick={() => onPick(s.Path, `${m.Name} — ${s.Name}`)}
                   >
@@ -326,15 +326,69 @@ interface LiveTimingProps {
 
 const REPLAY_SPEEDS = [1, 2, 5, 10, 20, 30];
 
+// Per-column placeholder widths, mirroring the real timing table's columns.
+const SKELETON_COLS = [16, 96, 34, 46, 42, 74, 74, 74, 58, 58, 20, 56];
+
+/** Shimmer placeholder shown while a session/replay is still warming up. */
+const LiveSkeleton: React.FC = () => (
+  <div className="lt-main" aria-hidden="true">
+    <div className="lt-board-wrap">
+      <table className="lt-board lt-board-skel">
+        <thead>
+          <tr>
+            <th className="lt-pos">P</th>
+            <th className="lt-driver-h">Driver</th>
+            <th>Int</th>
+            <th>Gap</th>
+            <th>Tyre</th>
+            <th>Sector 1</th>
+            <th>Sector 2</th>
+            <th>Sector 3</th>
+            <th>Last Lap</th>
+            <th>Best</th>
+            <th>Pit</th>
+            <th>Telemetry</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 14 }).map((_, r) => (
+            <tr className="lt-row" key={r}>
+              {SKELETON_COLS.map((w, c) => (
+                <td key={c}>
+                  <span className="lt-skel" style={{ width: w }} />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <aside className="lt-side">
+      <div className="lt-panel">
+        <div className="lt-panel-head">Race Control</div>
+        <div className="lt-rc-feed">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <span key={i} className="lt-skel lt-skel-block" />
+          ))}
+        </div>
+      </div>
+    </aside>
+  </div>
+);
+
 const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSettings }) => {
   const [delay, setDelay] = useState(0);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [replayStarting, setReplayStarting] = useState(false);
   const [scrub, setScrub] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const { topics, status, streamOpen, simulated, replay, setSimulation, startReplay } =
+  const { topics, status, streamOpen, simulated, replay, startReplay } =
     useLiveTiming(delay * 1000);
   const inReplay = !!replay;
+  // The recording includes a long pre-session lead-in that we auto-skip; anchor
+  // the transport bar at that trim point so it reflects the session's own time.
+  const trimMs = replay?.startOffsetMs ?? 0;
 
   useEffect(() => {
     // Reveal once the masthead title has passed under the sticky header —
@@ -364,19 +418,10 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
     }
   };
 
-  const session = topics.SessionInfo;
   const timing = topics.TimingData;
   const drivers: Record<string, any> = topics.DriverList || {};
   const appData = topics.TimingAppData;
-  const weather = topics.WeatherData;
-  const trackStatus = TRACK_STATUS[topics.TrackStatus?.Status] || null;
-  const lapCount = topics.LapCount;
-  const clock = useSessionClock(topics.ExtrapolatedClock);
   const carEntries = asArray(topics.CarData?.Entries).at(-1)?.Cars || {};
-
-  const isRace = session?.Type === 'Race';
-  const isQuali = session?.Type === 'Qualifying';
-  const sessionPart = timing?.SessionPart;
 
   const rows = useMemo(() => {
     const lines = timing?.Lines || {};
@@ -400,7 +445,45 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
   );
 
   const hasSession = rows.length > 0;
-  const live = streamOpen && status === 'connected';
+
+  // Outside a live session the F1 feed keeps serving the *last completed*
+  // session's final standings — its `ArchiveStatus` flips to 'Complete' once a
+  // session ends. Treat only a running (non-archived) session — or the demo /
+  // an archive replay — as active, so we don't present a finished race as live.
+  const rawSession = topics.SessionInfo;
+  const sessionArchived = rawSession?.ArchiveStatus?.Status === 'Complete';
+  const realActive = hasSession && !sessionArchived;
+  const sessionActive = simulated || inReplay || realActive;
+  const showBoard = hasSession && sessionActive;
+
+  // A freshly-started session (or replay) streams for a moment before any real
+  // timing lands — cars sit in the pit with empty laps/sectors. Treat that as a
+  // loading state and show a shimmer skeleton instead of a wall of dashes.
+  const boardHasData = useMemo(
+    () =>
+      rows.some(
+        ({ line }) =>
+          line.LastLapTime?.Value ||
+          line.BestLapTime?.Value ||
+          asArray(line.Sectors).some((s: any) => s?.Value),
+      ),
+    [rows],
+  );
+  const warmingUp = sessionActive && (!hasSession || !boardHasData || (inReplay && replay.loading));
+
+  // Null out session-derived data when nothing is active so the masthead falls
+  // back to its neutral "waiting for session" state instead of the stale race.
+  const session = sessionActive ? rawSession : null;
+  const weather = sessionActive ? topics.WeatherData : null;
+  const trackStatus = sessionActive ? (TRACK_STATUS[topics.TrackStatus?.Status] || null) : null;
+  const lapCount = sessionActive ? topics.LapCount : null;
+  const clock = useSessionClock(sessionActive ? topics.ExtrapolatedClock : null);
+
+  const isRace = session?.Type === 'Race';
+  const isQuali = session?.Type === 'Qualifying';
+  const sessionPart = timing?.SessionPart;
+
+  const live = streamOpen && status === 'connected' && realActive;
 
   // Quali knockout cutoff: a divider under P15 in Q1 and P10 in Q2.
   const cutoffAfter = isQuali ? (sessionPart === 1 ? 15 : sessionPart === 2 ? 10 : null) : null;
@@ -517,11 +600,11 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
                 <option key={s} value={s}>{s}×</option>
               ))}
             </select>
-            <span className="lt-transport-time">{fmtDuration(scrub ?? replay.offsetMs)}</span>
+            <span className="lt-transport-time">{fmtDuration((scrub ?? replay.offsetMs) - trimMs)}</span>
             <input
               className="lt-transport-scrub"
               type="range"
-              min={0}
+              min={trimMs}
               max={replay.durationMs || 1}
               value={scrub ?? replay.offsetMs}
               onChange={(e) => setScrub(Number(e.target.value))}
@@ -529,7 +612,7 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
               onKeyUp={commitScrub}
               aria-label="Replay position"
             />
-            <span className="lt-transport-time">{fmtDuration(replay.durationMs)}</span>
+            <span className="lt-transport-time">{fmtDuration(replay.durationMs - trimMs)}</span>
             <span className="lt-transport-name">{replay.name}</span>
             <button className="lt-transport-exit" onClick={() => replayControl('stop')}>
               Exit Replay
@@ -556,21 +639,20 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
           </div>
         )}
 
-        {!hasSession && inReplay ? null : !hasSession ? (
+        {warmingUp ? (
+          <LiveSkeleton />
+        ) : !showBoard ? (
           <div className="lt-empty">
             <div className="lt-empty-flag">🏁</div>
             <h2>No live session right now</h2>
             <p>
               Timing goes live when cars are on track during a Grand Prix weekend —
-              practice, qualifying, sprint and race. Try the demo to see the full
-              pit-wall experience with a simulated session.
+              practice, qualifying, sprint and race. Meanwhile, dive into the archive
+              and replay any session since 2018.
             </p>
             <div className="lt-empty-actions">
               <button className="lt-demo-btn lt-demo-cta" onClick={() => setArchiveOpen(true)}>
                 Watch a Past Race
-              </button>
-              <button className="lt-demo-btn lt-demo-cta" onClick={() => setSimulation(true)}>
-                Launch Demo Session
               </button>
             </div>
           </div>

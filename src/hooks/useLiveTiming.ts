@@ -16,6 +16,9 @@ export interface ReplayState {
   loading: boolean;
   offsetMs: number;
   durationMs: number;
+  /** Recording offset the session actually starts at — the transport bar is
+   *  anchored here so it represents the session, not the raw recording. */
+  startOffsetMs?: number;
 }
 
 export interface LiveTimingState {

@@ -12879,78 +12879,160 @@ body {
   position: fixed;
   inset: 0;
   z-index: 3000;
-  background: rgba(6, 6, 8, 0.72);
-  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  background:
+    radial-gradient(120% 90% at 50% -10%, color-mix(in srgb, var(--racing) 13%, transparent), transparent 58%),
+    rgba(5, 5, 7, 0.76);
+  backdrop-filter: blur(10px) saturate(1.15);
+  animation: ltArchiveFade 0.24s var(--ease);
+}
+
+@keyframes ltArchiveFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .lt-archive {
-  width: min(680px, 100%);
-  max-height: min(78vh, 720px);
+  position: relative;
+  width: min(1060px, 100%);
+  max-height: min(82vh, 800px);
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #131318, #0b0b0e);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--r-lg);
-  box-shadow: var(--elev-dark);
+  background:
+    radial-gradient(125% 150% at 0% -12%, color-mix(in srgb, var(--racing) 15%, transparent), transparent 50%),
+    radial-gradient(95% 120% at 100% -18%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 52%),
+    linear-gradient(180deg, #141419 0%, #0a0a0d 64%);
+  box-shadow:
+    0 44px 110px -24px rgba(0, 0, 0, 0.82),
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
   overflow: hidden;
+  animation: ltArchiveRise 0.3s var(--ease);
+}
+
+@keyframes ltArchiveRise {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Top-edge sheen — light catching a machined metal lip, matching the masthead. */
+.lt-archive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.16) 20%,
+    color-mix(in srgb, var(--racing-hot) 65%, rgba(255, 255, 255, 0.35)) 50%,
+    rgba(255, 255, 255, 0.16) 80%,
+    transparent 100%
+  );
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 .lt-archive-head {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 16px;
+  padding: 22px 26px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent);
 }
 
 .lt-archive-head h2 {
   font-family: var(--font-display);
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
+  background: linear-gradient(180deg, #ffffff 35%, rgba(255, 255, 255, 0.62) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .lt-archive-head p {
-  margin-top: 4px;
+  margin-top: 5px;
   font-family: var(--font-mono);
-  font-size: 0.64rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.42);
 }
 
 .lt-archive-head > div { flex: 1; min-width: 0; }
 
 .lt-archive-head select {
-  background: rgba(255, 255, 255, 0.06);
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--r-sm);
   font-family: var(--font-display);
-  font-size: 0.8rem;
-  padding: 8px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 10px 14px;
   cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.lt-archive-head select:hover {
+  border-color: color-mix(in srgb, var(--racing-hot) 55%, transparent);
 }
 
 .lt-archive-close {
-  width: 32px;
-  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.2s var(--ease);
+}
+
+.lt-archive-close:hover {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--racing-hot) 60%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--racing-hot) 22%, transparent), rgba(255, 255, 255, 0.02));
+  transform: rotate(90deg);
+  box-shadow: 0 0 18px -4px var(--racing-hot), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .lt-archive-body {
   overflow-y: auto;
-  padding: 8px 22px 20px;
+  padding: 8px 12px 20px;
   scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+.lt-archive-body::-webkit-scrollbar { width: 8px; }
+.lt-archive-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.lt-archive-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+  background-clip: padding-box;
 }
 
 .lt-archive-note {
@@ -12958,66 +13040,125 @@ body {
   font-size: 0.74rem;
   color: rgba(255, 255, 255, 0.4);
   text-align: center;
-  padding: 34px 0;
+  padding: 40px 0;
 }
 
 .lt-archive-meeting {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 18px;
+  padding: 16px 16px;
+  border-radius: 12px;
+  transition: background 0.2s var(--ease);
 }
+
+/* Hairline divider between rows (dropped on the last one). */
+.lt-archive-meeting::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.lt-archive-meeting:last-child::after { display: none; }
+
+/* Accent rail that lights up on hover. */
+.lt-archive-meeting::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--racing-hot), var(--racing));
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+}
+
+.lt-archive-meeting:hover {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--racing) 10%, transparent), transparent 72%);
+}
+.lt-archive-meeting:hover::before { opacity: 1; }
 
 .lt-archive-meeting-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
 .lt-archive-meeting-name {
   font-family: var(--font-display);
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   color: #fff;
+  white-space: nowrap;
 }
 
 .lt-archive-meeting-loc {
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.38);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .lt-archive-sessions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+  gap: 7px;
   justify-content: flex-end;
 }
 
 .lt-archive-session {
   font-family: var(--font-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.72);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
-  padding: 6px 11px;
+  padding: 7px 13px;
   cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   transition: all 0.18s var(--ease);
 }
 
 .lt-archive-session:hover:not(:disabled) {
-  border-color: var(--racing-hot);
-  color: var(--racing-hot);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--racing-hot) 60%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--racing-hot) 22%, transparent), rgba(255, 255, 255, 0.02));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -6px var(--racing-hot), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-.lt-archive-session:disabled { opacity: 0.45; cursor: wait; }
+.lt-archive-session:active:not(:disabled) { transform: translateY(0); }
+
+.lt-archive-session:disabled { opacity: 0.4; cursor: wait; }
+
+/* The marquee Race session — gold, to stand out from support sessions. */
+.lt-archive-session-race {
+  color: #1a1204;
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--gold-ticker), var(--gold));
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 8px -2px color-mix(in srgb, var(--gold) 50%, transparent);
+}
+
+.lt-archive-session-race:hover:not(:disabled) {
+  color: #1a1204;
+  border-color: transparent;
+  background: linear-gradient(180deg, #ffe89a, var(--gold-ticker));
+  box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--gold) 60%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
 
 .lt-empty-actions {
   display: flex;
@@ -13026,10 +13167,54 @@ body {
   flex-wrap: wrap;
 }
 
+/* ---------- loading skeleton (session/replay warming up) ---------- */
+
+.lt-skel {
+  display: inline-block;
+  height: 11px;
+  max-width: 100%;
+  border-radius: 5px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.045) 25%,
+    rgba(255, 255, 255, 0.11) 40%,
+    rgba(255, 255, 255, 0.045) 60%
+  );
+  background-size: 220% 100%;
+  animation: ltShimmer 1.5s linear infinite;
+}
+
+.lt-skel-block {
+  display: block;
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.lt-board-skel td {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/* Stagger rows so the sweep reads as a wave down the tower. */
+.lt-board-skel tbody tr:nth-child(2n) .lt-skel { animation-delay: 0.15s; }
+.lt-board-skel tbody tr:nth-child(3n) .lt-skel { animation-delay: 0.3s; }
+
+@keyframes ltShimmer {
+  0% { background-position: 120% 0; }
+  100% { background-position: -20% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lt-skel { animation: none; }
+}
+
 @media (max-width: 768px) {
   .lt-transport { flex-wrap: wrap; padding: 10px 16px; }
   .lt-transport-scrub { order: 10; flex-basis: 100%; }
   .lt-transport-name { display: none; }
   .lt-archive-meeting { flex-direction: column; align-items: flex-start; }
-  .lt-archive-sessions { justify-content: flex-start; }
+  .lt-archive-sessions { flex-wrap: wrap; justify-content: flex-start; }
+  .lt-archive-meeting-name { white-space: normal; }
 }
