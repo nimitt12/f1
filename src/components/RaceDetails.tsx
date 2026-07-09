@@ -29,6 +29,20 @@ interface RaceResult {
   laps?: string;
 }
 
+interface LapPoint {
+  lap: number;
+  position: number;
+}
+
+interface LapPositionsData {
+  season: string;
+  round: string;
+  totalLaps: number;
+  drivers: Record<string, LapPoint[]>;
+}
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+
 const COUNTRY_FLAGS: Record<string, string> = {
   Australia: 'au', China: 'cn', Japan: 'jp', USA: 'us', Canada: 'ca',
   Monaco: 'mc', Spain: 'es', Austria: 'at', UK: 'gb', Belgium: 'be',
@@ -62,6 +76,7 @@ const formatDateTime = (dateStr?: string, timeStr?: string) => {
 
 const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, onOpenSettings, onHomeNavigate }) => {
   const [results, setResults] = useState<RaceResult[] | null>(null);
+  const [lapPositions, setLapPositions] = useState<LapPositionsData | null>(null);
   const [loadingResults, setLoadingResults] = useState(false);
   const [activeTab, setActiveTab] = useState<'race' | 'qualifying'>('race');
   const [scrolled, setScrolled] = useState(false);
@@ -83,8 +98,9 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
     if (isCompleted) {
       const fetchResults = async () => {
         setLoadingResults(true);
+        setLapPositions(null);
         try {
-          const res = await fetch(`https://pitwall-backend-dq9r.onrender.com/results/get-all-results/${race.season}/${race.round}`);
+          const res = await fetch(`${BACKEND_URL}/results/get-all-results/${race.season}/${race.round}`);
           if (res.ok) {
             const data = await res.json();
             setResults(data);
@@ -96,8 +112,24 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
         }
       };
       fetchResults();
+
+      // Real lap-by-lap positions power the Field Evolution chart. This is a
+      // separate, slower request (paginated upstream) so it loads independently
+      // and the chart falls back to a synthetic trace until it arrives.
+      const fetchLaps = async () => {
+        try {
+          const res = await fetch(`${BACKEND_URL}/results/get-lap-positions/${race.season}/${race.round}`);
+          if (res.ok) {
+            const data: LapPositionsData = await res.json();
+            if (data && data.totalLaps > 0) setLapPositions(data);
+          }
+        } catch (e) {
+          console.error("Failed to fetch lap positions", e);
+        }
+      };
+      fetchLaps();
     } else {
-      setTimeout(() => setResults(null), 0);
+      setTimeout(() => { setResults(null); setLapPositions(null); }, 0);
     }
   }, [race]);
 
@@ -345,7 +377,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
                 ) : null}
 
                 {results && results.length > 0 && (
-                  <RaceAnalytics results={results} />
+                  <RaceAnalytics results={results} lapPositions={lapPositions} />
                 )}
               </>
             ) : (
@@ -367,7 +399,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
 };
 
 /* --- Analytics Sub-component --- */
-const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
+const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPositionsData | null }> = ({ results, lapPositions }) => {
   const [hoveredDriver, setHoveredDriver] = useState<string | null>(null);
   const [hoveredPace, setHoveredPace] = useState<string | null>(null);
 
@@ -507,6 +539,54 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
   const clampPos = (p: number) => Math.max(1, Math.min(fieldSize, p));
   const posAxisTicks = Array.from(new Set([1, 5, 10, 15, 20, fieldSize])).filter(t => t <= fieldSize);
 
+  // Field-evolution X-axis. When real lap-by-lap positions are available we plot
+  // them directly; otherwise the chart falls back to a synthetic trace between
+  // grid and finish. `evoLaps` is the horizontal span either way.
+  const hasLapData = !!lapPositions && lapPositions.totalLaps > 0;
+  const evoLaps = hasLapData
+    ? lapPositions!.totalLaps
+    : (Math.max(0, ...results.map(r => Number(r.laps) || 0)) || 56);
+  const lapPrefix = lapPositions ? `${lapPositions.season}_${lapPositions.round}_` : '';
+  const driverIdOf = (r: RaceResult) =>
+    lapPrefix && r.id.startsWith(lapPrefix) ? r.id.slice(lapPrefix.length) : r.id;
+  const lapX = (lap: number) => (lap / evoLaps) * 1080 + 60;
+  const lapAxisTicks = (() => {
+    const ticks = new Set<number>([1, evoLaps]);
+    const step = Math.max(1, Math.round(evoLaps / 6));
+    for (let l = step; l < evoLaps; l += step) ticks.add(l);
+    return Array.from(ticks).sort((a, b) => a - b);
+  })();
+
+  // Where each driver's trace ends on the right edge (last recorded running
+  // position, or classified finish for the synthetic fallback).
+  const lineEndPosOf = (r: RaceResult): number => {
+    const driverLaps = hasLapData ? lapPositions!.drivers[driverIdOf(r)] : undefined;
+    if (driverLaps && driverLaps.length > 0) {
+      const last = driverLaps.reduce((a, b) => (b.lap > a.lap ? b : a));
+      return clampPos(last.position);
+    }
+    return clampPos(Number(r.position));
+  };
+
+  // Declutter the right-edge driver tags: two cars can share a final running
+  // position (e.g. a penalty detaches classification from track order), which
+  // would otherwise stack their codes on top of each other and hide one. Sort by
+  // line-end Y and nudge each label down to keep a minimum gap, so every driver
+  // — VER included — stays legible in the legend.
+  const LABEL_GAP = 15;
+  const labelY: Record<string, number> = {};
+  {
+    const ordered = results
+      .map(r => ({ id: r.id, y: posY(lineEndPosOf(r)) }))
+      .sort((a, b) => a.y - b.y);
+    let prev = -Infinity;
+    for (const item of ordered) {
+      const y = item.y - prev < LABEL_GAP ? prev + LABEL_GAP : item.y;
+      labelY[item.id] = y;
+      prev = y;
+    }
+  }
+
   return (
     <div className="ra-container">
       <div className="rd-section-header">
@@ -559,10 +639,10 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
               ))}
 
               {/* X-Axis Labels (Laps) */}
-              {[1, 10, 20, 30, 40, 50, 56].map((l) => (
+              {lapAxisTicks.map((l) => (
                 <g key={l}>
-                  <line x1={(l / 56) * 1080 + 60} y1="40" x2={(l / 56) * 1080 + 60} y2="460" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                  <text x={(l / 56) * 1080 + 50} y="485" className="ra-axis-label" style={{ fill: 'rgba(255,255,255,0.3)', fontSize: '11px', letterSpacing: '1px' }}>LAP {l}</text>
+                  <line x1={lapX(l)} y1="40" x2={lapX(l)} y2="460" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                  <text x={lapX(l) - 10} y="485" className="ra-axis-label" style={{ fill: 'rgba(255,255,255,0.3)', fontSize: '11px', letterSpacing: '1px' }}>LAP {l}</text>
                 </g>
               ))}
 
@@ -573,38 +653,55 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                 const hasFocus = !!hoveredDriver;
                 // Alternate line dash for teammates (if index is odd)
                 const isDashed = rIndex % 2 !== 0;
-                
-                // Deterministic simulation based on driver code to satisfy purity requirements
-                const seed = (r.code || r.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                const getStableOffset = (step: number, range: number) => {
-                  return ((seed * step) % range) - (range / 2);
-                };
-                
+
                 const startPos = Number(r.grid) || fieldSize;
                 const finishPos = Number(r.position);
                 const plotFinish = clampPos(finishPos);
-                const mid1 = clampPos(startPos + Math.round(getStableOffset(1, 4)));
-                const mid2 = clampPos(mid1 + Math.round(getStableOffset(2, 6)));
-                const midPit = clampPos(plotFinish + 5); // Drop during pit
-                const mid3 = clampPos(plotFinish + Math.round(Math.abs(getStableOffset(3, 4))));
-                const mid4 = clampPos(plotFinish - 1);
 
-                const points = [
-                  { x: 0, y: clampPos(startPos) },
-                  { x: 5, y: mid1 },
-                  { x: 15, y: mid2 },
-                  { x: 25, y: midPit },
-                  { x: 35, y: mid3 },
-                  { x: 45, y: mid4 },
-                  { x: 56, y: plotFinish }
-                ];
+                const driverLaps = hasLapData ? lapPositions!.drivers[driverIdOf(r)] : undefined;
 
-                const mappedPoints = points.map(p => ({
-                  px: (p.x / 56) * 1080 + 60,
-                  py: posY(p.y)
-                }));
+                let mappedPoints: { px: number; py: number }[];
+                if (driverLaps && driverLaps.length > 0) {
+                  // Real lap-by-lap positions, anchored at the grid slot for lap 0.
+                  const realPoints = [
+                    { x: 0, y: clampPos(startPos) },
+                    ...driverLaps
+                      .slice()
+                      .sort((a, b) => a.lap - b.lap)
+                      .map(p => ({ x: p.lap, y: clampPos(p.position) })),
+                  ];
+                  mappedPoints = realPoints.map(p => ({ px: lapX(p.x), py: posY(p.y) }));
+                } else {
+                  // Synthetic fallback: deterministic trace from grid to finish while
+                  // real lap data is still loading (or unavailable for this race).
+                  const seed = (r.code || r.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                  const getStableOffset = (step: number, range: number) => {
+                    return ((seed * step) % range) - (range / 2);
+                  };
+                  const mid1 = clampPos(startPos + Math.round(getStableOffset(1, 4)));
+                  const mid2 = clampPos(mid1 + Math.round(getStableOffset(2, 6)));
+                  const midPit = clampPos(plotFinish + 5); // Drop during pit
+                  const mid3 = clampPos(plotFinish + Math.round(Math.abs(getStableOffset(3, 4))));
+                  const mid4 = clampPos(plotFinish - 1);
+
+                  const points = [
+                    { x: 0, y: clampPos(startPos) },
+                    { x: evoLaps * 0.09, y: mid1 },
+                    { x: evoLaps * 0.27, y: mid2 },
+                    { x: evoLaps * 0.45, y: midPit },
+                    { x: evoLaps * 0.63, y: mid3 },
+                    { x: evoLaps * 0.80, y: mid4 },
+                    { x: evoLaps, y: plotFinish },
+                  ];
+                  mappedPoints = points.map(p => ({ px: lapX(p.x), py: posY(p.y) }));
+                }
 
                 const pathData = mappedPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.px} ${p.py}`).join(' ');
+
+                // Anchor the driver tag / tooltip to where the line actually ends, not
+                // the classified finish — they can differ (penalties, DNF-but-classified),
+                // which otherwise detaches the label from its own trace.
+                const lineEndY = mappedPoints[mappedPoints.length - 1].py;
 
                 return (
                   <g 
@@ -637,10 +734,11 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
                       strokeLinejoin="round"
                     />
 
-                    {/* Driver tag pinned to the line's finishing position on the right */}
+                    {/* Driver tag pinned near the line's end on the right, decluttered
+                        so overlapping traces don't hide each other's code. */}
                     <text
                       x={1148}
-                      y={posY(plotFinish) + 4}
+                      y={(labelY[r.id] ?? lineEndY) + 4}
                       fill={teamColor}
                       fontSize="11"
                       fontWeight="700"
@@ -666,8 +764,8 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
 
                     {/* Premium Glassmorphic Tooltip */}
                     {isHovered && (() => {
-                      const tooltipYBase = posY(plotFinish) - 40;
-                      const isBottomEdge = plotFinish > fieldSize - 6;
+                      const tooltipYBase = lineEndY - 40;
+                      const isBottomEdge = lineEndY > posBottom - 90;
                       const tooltipY = isBottomEdge ? tooltipYBase - 60 : tooltipYBase + 10;
                       
                       return (
@@ -686,7 +784,9 @@ const RaceAnalytics: React.FC<{ results: RaceResult[] }> = ({ results }) => {
             </svg>
           </div>
           <div className="ra-card-sub" style={{ marginTop: '12px' }}>
-            Full grid lap-by-lap position evolution. Lines represent strategic transitions and overtakes through the session.
+            {hasLapData
+              ? `Full grid lap-by-lap running order across all ${evoLaps} laps. Each line traces a driver's actual track position through the race.`
+              : 'Full grid position evolution. Awaiting lap-by-lap data — lines show an indicative grid-to-finish trace.'}
           </div>
         </div>
 
