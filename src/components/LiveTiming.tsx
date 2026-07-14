@@ -56,6 +56,16 @@ const segmentClass = (status: number): string => {
 const timeClass = (t: any): string =>
   t?.OverallFastest ? 'lt-t-ob' : t?.PersonalFastest ? 'lt-t-pb' : '';
 
+/** Parse a lap-time string ("1:33.916" or "33.916") to milliseconds, or null.
+ *  Used to find the session's fastest lap when the feed omits the
+ *  OverallFastest flags (common during archive replays). */
+const lapToMs = (v?: string): number | null => {
+  const m = /^(?:(\d+):)?(\d+)\.(\d+)$/.exec((v || '').trim());
+  if (!m) return null;
+  const min = m[1] ? Number(m[1]) : 0;
+  return (min * 60 + Number(m[2])) * 1000 + Number(m[3].padEnd(3, '0').slice(0, 3));
+};
+
 // Qualifying gap: the feed keeps one Stats entry per session part (Q1/Q2/Q3);
 // show the diff from the latest part the driver actually set a time in.
 const qualiGap = (line: any): string => {
@@ -238,9 +248,11 @@ interface RowProps {
   stints: any[];
   car: any;
   isRace: boolean;
+  /** Fastest lap in the session (ms), for highlighting the overall best. */
+  sessionBestMs: number | null;
 }
 
-const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace }) => {
+const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace, sessionBestMs }) => {
   const color = driver?.TeamColour ? `#${driver.TeamColour}` : 'var(--racing)';
   const stint = stints.at(-1);
   const tyre = TYRE_STYLE[stint?.Compound || 'UNKNOWN'] || TYRE_STYLE.UNKNOWN;
@@ -249,6 +261,10 @@ const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace }) =>
   const gear = channels['3'];
   const throttle = channels['4'] ?? 0;
   const brake = channels['5'] ?? 0;
+
+  // Highlight the session's overall-fastest lap in violet in the BEST column.
+  const bestIsOverallBest =
+    sessionBestMs != null && lapToMs(line.BestLapTime?.Value) === sessionBestMs;
 
   const out = line.Retired || line.Stopped;
   const status = out
@@ -269,7 +285,9 @@ const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace }) =>
       <td className="lt-driver">
         <span className="lt-team-bar" style={{ background: color }} />
         <span className="lt-tla" style={{ color }}>{driver?.Tla || line.RacingNumber}</span>
-        {status && <span className={`lt-flag-chip lt-chip-${status.replace(' ', '').toLowerCase()}`}>{status}</span>}
+        <span className="lt-flag-slot">
+          {status && <span className={`lt-flag-chip lt-chip-${status.replace(' ', '').toLowerCase()}`}>{status}</span>}
+        </span>
       </td>
       <td className="lt-int">
         <span className={line.IntervalToPositionAhead?.Catching ? 'lt-catching' : ''}>
@@ -289,7 +307,7 @@ const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace }) =>
       <td className="lt-s"><SectorCell sector={asArray(line.Sectors)[1]} /></td>
       <td className="lt-s"><SectorCell sector={asArray(line.Sectors)[2]} /></td>
       <td className={`lt-last ${timeClass(line.LastLapTime)}`}>{line.LastLapTime?.Value || '—'}</td>
-      <td className="lt-best">{line.BestLapTime?.Value || '—'}</td>
+      <td className={`lt-best ${bestIsOverallBest ? 'lt-t-ob' : ''}`}>{line.BestLapTime?.Value || '—'}</td>
       <td className="lt-pits">{line.NumberOfPitStops ?? 0}</td>
       <td className="lt-telemetry">
         {speed !== undefined ? (
@@ -433,6 +451,16 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
         return pa - pb;
       });
   }, [timing]);
+
+  // Fastest best-lap across the field — used to paint the overall best violet.
+  const sessionBestMs = useMemo(() => {
+    let best: number | null = null;
+    for (const { line } of rows) {
+      const ms = lapToMs(line.BestLapTime?.Value);
+      if (ms != null && (best == null || ms < best)) best = ms;
+    }
+    return best;
+  }, [rows]);
 
   const raceControl = useMemo(
     () => asArray(topics.RaceControlMessages?.Messages).slice(-30).reverse(),
@@ -686,6 +714,7 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
                         stints={asArray(appData?.Lines?.[num]?.Stints)}
                         car={carEntries[num]}
                         isRace={isRace}
+                        sessionBestMs={sessionBestMs}
                       />
                       {cutoffAfter === idx + 1 && (
                         <tr className="lt-cutoff" aria-hidden="true">

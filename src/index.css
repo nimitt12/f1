@@ -492,6 +492,34 @@ body {
 .ticker-fade-l { left: 0; background: linear-gradient(90deg, var(--carbon) 8%, transparent); }
 .ticker-fade-r { right: 0; background: linear-gradient(270deg, var(--carbon) 8%, transparent); }
 
+/* Loading placeholder — a calm, centered pulse instead of a stalled marquee */
+.ticker-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  animation: tickerLoadingPulse 1.8s ease-in-out infinite;
+}
+
+.ticker-loading .tick {
+  padding: 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ticker-loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--racing);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--racing) 85%, transparent);
+}
+
+@keyframes tickerLoadingPulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
 .ticker-track {
   display: flex;
   align-items: center;
@@ -12082,6 +12110,8 @@ body {
 }
 
 .lt-delay select {
+  /* dark native popup on Windows/Chromium instead of the OS white default */
+  color-scheme: dark;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -12099,6 +12129,15 @@ body {
 }
 .lt-delay select:hover {
   border-color: color-mix(in srgb, var(--racing) 55%, transparent);
+}
+
+/* Explicit dark option styling — fallback for browsers that don't honor
+   color-scheme on the native popup (older Windows Chromium/Edge). */
+.lt-delay select option,
+.lt-archive-head select option,
+.lt-transport-speed option {
+  background: #14161c;
+  color: #fff;
 }
 
 .lt-demo-btn {
@@ -12227,7 +12266,17 @@ body {
   display: flex;
   align-items: center;
   gap: 9px;
-  min-width: 96px;
+  width: 176px;
+}
+
+/* Always reserve space for the pit/status chip so the timing tower columns
+   stay fixed — the row must not slide when a chip appears or disappears. */
+.lt-flag-slot {
+  flex: none;
+  width: 76px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
 }
 
 .lt-team-bar {
@@ -12244,6 +12293,8 @@ body {
 }
 
 .lt-flag-chip {
+  flex: none;
+  white-space: nowrap;
   font-size: 0.56rem;
   letter-spacing: 0.12em;
   padding: 3px 6px;
@@ -12263,8 +12314,15 @@ body {
 .lt-gap, .lt-int { color: rgba(255, 255, 255, 0.75); }
 .lt-catching { color: #4ade80; }
 
-.lt-t-pb { color: #4ade80; }
-.lt-t-ob { color: #c084fc; text-shadow: 0 0 14px rgba(192, 132, 252, 0.5); }
+/* Also target the td form — .lt-row td would otherwise out-rank the bare
+   class and keep Last Lap / Best white. */
+.lt-t-pb, .lt-row td.lt-t-pb { color: #4ade80; }
+.lt-t-ob, .lt-row td.lt-t-ob { color: #c084fc; text-shadow: 0 0 14px rgba(192, 132, 252, 0.5); }
+
+/* Two-class selectors so these beat `.lt-row td`'s base colour when the
+   fastest-lap classes land directly on the LAST LAP / BEST cells. */
+.lt-last.lt-t-pb, .lt-best.lt-t-pb { color: #4ade80; }
+.lt-last.lt-t-ob, .lt-best.lt-t-ob { color: #c084fc; text-shadow: 0 0 14px rgba(192, 132, 252, 0.5); }
 
 .lt-sector { display: flex; flex-direction: column; gap: 3px; }
 .lt-sector-time { font-size: 0.76rem; color: rgba(255, 255, 255, 0.8); }
@@ -12815,6 +12873,7 @@ body {
 }
 
 .lt-transport-speed {
+  color-scheme: dark;
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -12973,6 +13032,7 @@ body {
 .lt-archive-head > div { flex: 1; min-width: 0; }
 
 .lt-archive-head select {
+  color-scheme: dark;
   color: #fff;
   font-family: var(--font-display);
   font-size: 0.78rem;

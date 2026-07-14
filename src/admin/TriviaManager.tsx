@@ -206,10 +206,10 @@ const TriviaManager: React.FC<{ onLog?: (msg: string) => void }> = ({ onLog }) =
       </div>
 
       {loading ? (
-        <Loader label="Loading trivia lines" accent="#e0c47d" />
+        <Loader label="Loading Pit Feeds" accent="#e0c47d" />
       ) : rows.length === 0 ? (
         <p className="empty-table-cell" style={{ padding: '20px 0' }}>
-          No trivia set. The ticker is showing auto-generated facts. Add a line above or pull
+          No Pit Feeds set. The ticker is showing auto-generated facts. Add a line above or pull
           suggestions below.
         </p>
       ) : (

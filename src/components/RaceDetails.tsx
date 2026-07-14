@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import type { Race } from '../data/races';
 import type { AuthUser } from './Hero';
 import SiteHeader from './SiteHeader';
@@ -42,6 +42,27 @@ interface LapPositionsData {
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+
+// Fixed team accent colors (mirrors the --<team> CSS custom properties in
+// index.css). Used to pick a readable label color against a filled bar.
+const TEAM_HEX: Record<string, string> = {
+  mercedes: '#00d2be', ferrari: '#dc0000', mclaren: '#ff8700', redbull: '#0600ef',
+  williams: '#005aff', haas: '#a2a9ac', alpine: '#F080B8', audi: '#f72a2a',
+  racingbulls: '#6692ff', aston: '#006f62', sauber: '#52e252', kicksauber: '#52e252',
+  alphatauri: '#2b4562', cadillac: '#939393', racing: '#a855f7',
+};
+
+// Choose black or white text for maximum legibility on top of a team's color,
+// using the perceptual (YIQ) brightness of that color — so dark liveries like
+// Red Bull or Ferrari get white text instead of unreadable black.
+const labelColorForTeam = (teamKey: string): string => {
+  const hex = TEAM_HEX[teamKey] || TEAM_HEX.racing;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? '#0a0a0a' : '#ffffff';
+};
 
 const COUNTRY_FLAGS: Record<string, string> = {
   Australia: 'au', China: 'cn', Japan: 'jp', USA: 'us', Canada: 'ca',
@@ -403,6 +424,22 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
   const [hoveredDriver, setHoveredDriver] = useState<string | null>(null);
   const [hoveredPace, setHoveredPace] = useState<string | null>(null);
 
+  // Measured pixel width of the Constructor Yield bars so we can decide, per
+  // driver segment, whether its label physically fits inside — a percentage
+  // threshold is unreliable because the same % is a different pixel count on
+  // mobile vs desktop.
+  const yieldBarRef = useRef<HTMLDivElement>(null);
+  const [yieldBarWidth, setYieldBarWidth] = useState(0);
+  useLayoutEffect(() => {
+    const el = yieldBarRef.current;
+    if (!el) return;
+    const update = () => setYieldBarWidth(el.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const getTeamKey = (name: string) => {
     const n = name.toLowerCase();
     if (n.includes('mercedes')) return 'mercedes';
@@ -557,16 +594,12 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
     return Array.from(ticks).sort((a, b) => a - b);
   })();
 
-  // Where each driver's trace ends on the right edge (last recorded running
-  // position, or classified finish for the synthetic fallback).
-  const lineEndPosOf = (r: RaceResult): number => {
-    const driverLaps = hasLapData ? lapPositions!.drivers[driverIdOf(r)] : undefined;
-    if (driverLaps && driverLaps.length > 0) {
-      const last = driverLaps.reduce((a, b) => (b.lap > a.lap ? b : a));
-      return clampPos(last.position);
-    }
-    return clampPos(Number(r.position));
-  };
+  // Where each driver's trace ends on the right edge. Every line spans the full
+  // race width and ends at the driver's *classified finishing* position: cars
+  // that retired early get a projected drop from their last running position
+  // down to where they were ultimately classified (see the retirement segment
+  // in the render below), so the right-edge order matches the results table.
+  const lineEndPosOf = (r: RaceResult): number => clampPos(Number(r.position));
 
   // Declutter the right-edge driver tags: two cars can share a final running
   // position (e.g. a penalty detaches classification from track order), which
@@ -661,16 +694,30 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
                 const driverLaps = hasLapData ? lapPositions!.drivers[driverIdOf(r)] : undefined;
 
                 let mappedPoints: { px: number; py: number }[];
+                // Projected "retirement drop": when a car's real lap data stops
+                // before the end of the race (a DNF), its solid trace would just
+                // dangle mid-field even though it was classified further down. We
+                // append a distinct dashed segment from the last running position
+                // to the classified finish at the right edge so every line spans
+                // the full width and ends where the results table says it did.
+                let retirementDrop: { px: number; py: number }[] | null = null;
                 if (driverLaps && driverLaps.length > 0) {
                   // Real lap-by-lap positions, anchored at the grid slot for lap 0.
+                  const sorted = driverLaps.slice().sort((a, b) => a.lap - b.lap);
                   const realPoints = [
                     { x: 0, y: clampPos(startPos) },
-                    ...driverLaps
-                      .slice()
-                      .sort((a, b) => a.lap - b.lap)
-                      .map(p => ({ x: p.lap, y: clampPos(p.position) })),
+                    ...sorted.map(p => ({ x: p.lap, y: clampPos(p.position) })),
                   ];
                   mappedPoints = realPoints.map(p => ({ px: lapX(p.x), py: posY(p.y) }));
+
+                  const lastLap = sorted[sorted.length - 1].lap;
+                  if (lastLap < evoLaps) {
+                    const lastPoint = mappedPoints[mappedPoints.length - 1];
+                    retirementDrop = [
+                      lastPoint,
+                      { px: lapX(evoLaps), py: posY(plotFinish) },
+                    ];
+                  }
                 } else {
                   // Synthetic fallback: deterministic trace from grid to finish while
                   // real lap data is still loading (or unavailable for this race).
@@ -698,10 +745,15 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
 
                 const pathData = mappedPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.px} ${p.py}`).join(' ');
 
-                // Anchor the driver tag / tooltip to where the line actually ends, not
-                // the classified finish — they can differ (penalties, DNF-but-classified),
-                // which otherwise detaches the label from its own trace.
-                const lineEndY = mappedPoints[mappedPoints.length - 1].py;
+                // Anchor the driver tag / tooltip to where the line actually ends —
+                // for retired cars that's the bottom of the projected drop, so the
+                // label follows the trace down to the classified finishing position.
+                const lineEndY = (retirementDrop ?? mappedPoints)[
+                  (retirementDrop ?? mappedPoints).length - 1
+                ].py;
+                const retirementPath = retirementDrop
+                  ? retirementDrop.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.px} ${p.py}`).join(' ')
+                  : null;
 
                 return (
                   <g 
@@ -734,6 +786,26 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
                       strokeLinejoin="round"
                     />
 
+                    {/* Retirement drop: projected, non-telemetry segment linking a
+                        DNF's last running position to its classified finish. Kept
+                        visually distinct (finely dashed, dimmer, no glow) so it
+                        never reads as real lap-by-lap running order. */}
+                    {retirementPath && (
+                      <path
+                        d={retirementPath}
+                        fill="none"
+                        stroke={teamColor}
+                        strokeWidth={isHovered ? 2.5 : 1.5}
+                        strokeDasharray="2 5"
+                        style={{
+                          opacity: isHovered ? 0.7 : hasFocus ? 0.05 : 0.3,
+                          transition: 'opacity 0.3s ease, stroke-width 0.2s ease',
+                        }}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    )}
+
                     {/* Driver tag pinned near the line's end on the right, decluttered
                         so overlapping traces don't hide each other's code. */}
                     <text
@@ -754,13 +826,21 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
 
                     {/* Telemetry Nodes (Only visible on hover) */}
                     {isHovered && mappedPoints.map((p, i) => (
-                      <circle 
-                        key={i} 
-                        cx={p.px} cy={p.py} r="4" 
+                      <circle
+                        key={i}
+                        cx={p.px} cy={p.py} r="4"
                         fill="#fff" stroke={teamColor} strokeWidth="2"
                         style={{ filter: `drop-shadow(0 0 8px ${teamColor})` }}
                       />
                     ))}
+                    {/* Hollow node marks the projected classified finish of a DNF */}
+                    {isHovered && retirementDrop && (
+                      <circle
+                        cx={retirementDrop[1].px} cy={retirementDrop[1].py} r="4"
+                        fill="#0a0a0a" stroke={teamColor} strokeWidth="2"
+                        style={{ filter: `drop-shadow(0 0 8px ${teamColor})` }}
+                      />
+                    )}
 
                     {/* Premium Glassmorphic Tooltip */}
                     {isHovered && (() => {
@@ -1055,9 +1135,11 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
         </div>
         <div id="rd-sec-yield" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>
           <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Constructor Yield (Driver Contribution)</h3>
-          <div className="ra-bar-list" style={{ gap: '22px', display: 'flex', flexDirection: 'column' }}>
+          <div ref={yieldBarRef} className="ra-bar-list" style={{ gap: '22px', display: 'flex', flexDirection: 'column' }}>
             {sortedTeams.map(([team, data]) => {
-              const teamColor = `var(--${getTeamKey(team)}, var(--racing))`;
+              const teamKey = getTeamKey(team);
+              const teamColor = `var(--${teamKey}, var(--racing))`;
+              const onBarText = labelColorForTeam(teamKey);
               // We calculate width relative to the max team points, so the #1 team always touches 100% width
               const sortedDrivers = [...data.drivers].sort((a, b) => b.points - a.points);
               return (
@@ -1080,27 +1162,36 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
                         }} />
                       ))}
                     </div>
-                    {/* Driver labels overlay — not clipped, so narrow segments spill onto the track */}
+                    {/* Driver labels overlay — labels that fit sit centered inside
+                        their segment (readable on-color text); labels that don't
+                        fit spill onto the dark track to the RIGHT of the segment in
+                        team color, never overlapping a colored bar. */}
                     {(() => {
                       let offset = 0;
                       return sortedDrivers.map((d) => {
                         const widthPercent = (d.points / maxTeamPts) * 100;
                         const start = offset;
                         offset += widthPercent;
-                        const fits = widthPercent > 12;
+                        // Estimate the label's pixel width and compare it to the
+                        // segment's actual pixel width so the fit test holds on any
+                        // viewport. Assume the bar is full width until measured.
+                        const labelChars = d.code.length + String(d.points).length + 1;
+                        const labelPx = labelChars * 7 + 10;
+                        const segPx = (widthPercent / 100) * (yieldBarWidth || 1e9);
+                        const fits = segPx >= labelPx;
                         return (
                           <span key={d.code} style={{
                             position: 'absolute',
                             top: '50%',
-                            left: fits ? `${start + widthPercent / 2}%` : `${start}%`,
+                            left: fits ? `${start + widthPercent / 2}%` : `${start + widthPercent}%`,
                             transform: fits ? 'translate(-50%, -50%)' : 'translateY(-50%)',
                             marginLeft: fits ? 0 : '6px',
-                            color: fits ? '#000' : teamColor,
+                            color: fits ? onBarText : teamColor,
                             fontSize: '11px',
                             fontWeight: 800,
                             letterSpacing: '0.5px',
                             whiteSpace: 'nowrap',
-                            textShadow: fits ? 'none' : '0 1px 4px rgba(0,0,0,0.9)',
+                            textShadow: fits ? (onBarText === '#ffffff' ? '0 1px 3px rgba(0,0,0,0.55)' : 'none') : '0 1px 4px rgba(0,0,0,0.9)',
                             pointerEvents: 'none'
                           }}>{d.code} <span style={{ opacity: 0.8, fontFamily: 'JetBrains Mono' }}>{d.points}</span></span>
                         );

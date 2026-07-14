@@ -45,20 +45,26 @@ const Ticker: React.FC = () => {
           </span>
         </React.Fragment>
       ))}
-      {facts.length === 0 && (
-        <span className="tick">LOADING F1 TRIVIA...</span>
-      )}
     </>
   );
 
   return (
     <div className="ticker-wrap">
-      <div className="ticker-fade-l" />
-      <div className="ticker-track">
-        {renderItems()}
-        {renderItems()}
-      </div>
-      <div className="ticker-fade-r" />
+      {facts.length === 0 ? (
+        <div className="ticker-loading">
+          <span className="ticker-loading-dot" aria-hidden="true" />
+          <span className="tick">LOADING PIT FEEDS...</span>
+        </div>
+      ) : (
+        <>
+          <div className="ticker-fade-l" />
+          <div className="ticker-track">
+            {renderItems()}
+            {renderItems()}
+          </div>
+          <div className="ticker-fade-r" />
+        </>
+      )}
     </div>
   );
 };
