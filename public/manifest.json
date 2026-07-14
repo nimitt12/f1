@@ -1,7 +1,7 @@
 {
   "name": "My PitWall - F1 Racing Dashboard",
   "short_name": "PitWall",
-  "description": "Professional Formula 1 Racing Dashboard and Analysis Tool",
+  "description": "Live Formula 1 timing, car telemetry, driver & constructor standings, 2026 race calendar and driver battle stats — all in one dashboard.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
