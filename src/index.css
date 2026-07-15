@@ -3714,6 +3714,39 @@ body {
   max-width: 340px;
 }
 
+.f-socials {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.f-socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease),
+    background 0.25s var(--ease), transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.f-socials a svg {
+  width: 17px;
+  height: 17px;
+}
+
+.f-socials a:hover {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--racing) 60%, transparent);
+  background: color-mix(in srgb, var(--racing) 14%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--racing) 30%, transparent);
+  transform: translateY(-3px);
+}
+
 .f-h {
   display: inline-flex;
   align-items: center;
