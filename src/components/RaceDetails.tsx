@@ -3,6 +3,7 @@ import type { Race } from '../data/races';
 import type { AuthUser } from './Hero';
 import SiteHeader from './SiteHeader';
 import QualifyingResults from './QualifyingResults';
+import SprintResults from './SprintResults';
 import Loader from './Loader';
 import Footer from './Footer';
 
@@ -95,11 +96,13 @@ const formatDateTime = (dateStr?: string, timeStr?: string) => {
   return { date: dateFormatted, time: timeFormatted };
 };
 
+type ResultsTab = 'race' | 'qualifying' | 'sprint' | 'sprint_qualifying';
+
 const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, onOpenSettings, onHomeNavigate }) => {
   const [results, setResults] = useState<RaceResult[] | null>(null);
   const [lapPositions, setLapPositions] = useState<LapPositionsData | null>(null);
   const [loadingResults, setLoadingResults] = useState(false);
-  const [activeTab, setActiveTab] = useState<'race' | 'qualifying'>('race');
+  const [activeTab, setActiveTab] = useState<ResultsTab>('race');
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -115,6 +118,19 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
     // Check if the race is in the past (adding a buffer of 2 hours for race duration)
     const raceDate = new Date(`${race.date}T${race.time || '00:00:00Z'}`);
     const isCompleted = new Date() > new Date(raceDate.getTime() + 2 * 60 * 60 * 1000);
+
+    // Land on the most recent session that has results: on a sprint weekend
+    // the sprint (or sprint qualifying) may have run before Sunday's race.
+    const sessionDone = (s?: { date: string; time?: string }) =>
+      !!s && new Date() > new Date(new Date(`${s.date}T${s.time || '00:00:00Z'}`).getTime() + 60 * 60 * 1000);
+    const defaultTab: ResultsTab | null = isCompleted
+      ? 'race'
+      : sessionDone(race.Sprint)
+        ? 'sprint'
+        : sessionDone(race.SprintQualifying)
+          ? 'sprint_qualifying'
+          : null;
+    if (defaultTab) setTimeout(() => setActiveTab(defaultTab), 0);
 
     if (isCompleted) {
       const fetchResults = async () => {
@@ -162,7 +178,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
   interface SessionInfo {
     name: string;
     data?: { date: string; time?: string };
-    tab: 'race' | 'qualifying' | null;
+    tab: ResultsTab | null;
     isMain?: boolean;
   }
 
@@ -170,13 +186,20 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
     { name: 'Practice 1', data: race.FirstPractice, tab: null },
     { name: 'Practice 2', data: race.SecondPractice, tab: null },
     { name: 'Practice 3', data: race.ThirdPractice, tab: null },
-    { name: 'Sprint Qualifying', data: race.SprintQualifying, tab: null },
-    { name: 'Sprint', data: race.Sprint, tab: 'race' },
+    { name: 'Sprint Qualifying', data: race.SprintQualifying, tab: 'sprint_qualifying' },
+    { name: 'Sprint', data: race.Sprint, tab: 'sprint' },
     { name: 'Qualifying', data: race.Qualifying, tab: 'qualifying' },
     { name: 'Race', data: { date: race.date, time: race.time }, isMain: true, tab: 'race' },
   ] as SessionInfo[]).filter(s => !!s.data);
 
-  const scrollToResults = (tab?: 'race' | 'qualifying') => {
+  // A sprint weekend's results become viewable session-by-session: sprint
+  // qualifying / sprint results can be shown before Sunday's race has run.
+  const sessionCompleted = (s?: { date: string; time?: string }, bufferHours = 1) =>
+    !!s && new Date() > new Date(new Date(`${s.date}T${s.time || '00:00:00Z'}`).getTime() + bufferHours * 60 * 60 * 1000);
+  const sprintQualiCompleted = sessionCompleted(race.SprintQualifying);
+  const sprintCompleted = sessionCompleted(race.Sprint);
+
+  const scrollToResults = (tab?: ResultsTab) => {
     if (tab) setActiveTab(tab);
     const element = document.querySelector('.rd-results-section');
     if (element) {
@@ -310,9 +333,25 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
           })}
         </div>
 
-        {(loadingResults || (results && results.length > 0)) && (
+        {(loadingResults || (results && results.length > 0) || sprintQualiCompleted || sprintCompleted) && (
           <div className="rd-results-section">
             <div className="rd-tabs">
+              {race.SprintQualifying && (
+                <button
+                  className={`rd-tab ${activeTab === 'sprint_qualifying' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('sprint_qualifying')}
+                >
+                  Sprint Qualifying
+                </button>
+              )}
+              {race.Sprint && (
+                <button
+                  className={`rd-tab ${activeTab === 'sprint' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('sprint')}
+                >
+                  Sprint
+                </button>
+              )}
               <button
                 className={`rd-tab ${activeTab === 'qualifying' ? 'active' : ''}`}
                 onClick={() => setActiveTab('qualifying')}
@@ -395,14 +434,24 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
                       </table>
                     </div>
                   </div>
-                ) : null}
+                ) : (
+                  <div className="qr-no-data">
+                    <p>No race data available for this round yet.</p>
+                  </div>
+                )}
 
                 {results && results.length > 0 && (
                   <RaceAnalytics results={results} lapPositions={lapPositions} />
                 )}
               </>
+            ) : activeTab === 'sprint' ? (
+              <SprintResults season={race.season} round={race.round} />
             ) : (
-              <QualifyingResults season={race.season} round={race.round} />
+              <QualifyingResults
+                season={race.season}
+                round={race.round}
+                session={activeTab === 'sprint_qualifying' ? 'sprint' : 'qualifying'}
+              />
             )}
           </div>
         )}

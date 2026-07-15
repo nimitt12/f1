@@ -15,15 +15,27 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-// Register Service Worker
+// Register Service Worker (production only — in dev its stale-while-revalidate
+// cache serves outdated modules, masking code changes across reloads).
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('SW registered: ', registration);
-      })
-      .catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
+  if (import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered: ', registration);
+        })
+        .catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    });
+  } else {
+    // Remove any SW installed by a previous dev session so it stops
+    // intercepting module requests, and drop its caches.
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => registration.unregister());
+    });
+    if ('caches' in window) {
+      caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
+    }
+  }
 }

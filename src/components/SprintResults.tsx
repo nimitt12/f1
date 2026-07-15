@@ -1,60 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import Loader from './Loader';
 
-interface QualifyingResult {
+interface SprintResult {
+  id: string;
   position: string;
-  driver_number: string;
-  q1: string | null;
-  q2: string | null;
-  q3: string | null;
+  points: string;
+  grid: string;
   given_name: string;
   family_name: string;
   team_name: string;
-  code: string;
+  code?: string;
+  time?: string;
+  status?: string;
 }
 
-interface QualifyingResultsProps {
+interface SprintResultsProps {
   season: string;
   round: string;
-  // 'sprint' renders the sprint qualifying classification (SQ1/SQ2/SQ3)
-  // from its dedicated endpoint; defaults to the main qualifying session.
-  session?: 'qualifying' | 'sprint';
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
-const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, session = 'qualifying' }) => {
-  const [results, setResults] = useState<QualifyingResult[]>([]);
+const SprintResults: React.FC<SprintResultsProps> = ({ season, round }) => {
+  const [results, setResults] = useState<SprintResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const isSprint = session === 'sprint';
 
   useEffect(() => {
-    const fetchQualifying = async () => {
+    const fetchSprint = async () => {
       setLoading(true);
       setError(null);
       try {
-        const endpoint = isSprint ? 'get-all-sprint-qualifying-results' : 'get-all-qualifying-results';
-        const res = await fetch(`${BACKEND_URL}/results/${endpoint}/${season}/${round}`);
+        const res = await fetch(`${BACKEND_URL}/results/get-all-sprint-results/${season}/${round}`);
         if (res.ok) {
           const data = await res.json();
           setResults(data);
         } else {
-          setError("Failed to fetch qualifying classification");
+          setError('Failed to fetch sprint classification');
         }
       } catch (e) {
-        console.error("Failed to fetch qualifying results", e);
-        setError("Telemetry connection lost");
+        console.error('Failed to fetch sprint results', e);
+        setError('Telemetry connection lost');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchQualifying();
-  }, [season, round, isSprint]);
+    fetchSprint();
+  }, [season, round]);
 
   if (loading) {
-    return <Loader label={isSprint ? "Analyzing sprint qualifying telemetry" : "Analyzing qualifying telemetry"} />;
+    return <Loader label="Loading sprint classification" />;
   }
 
   if (error) {
@@ -64,7 +60,7 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
   if (results.length === 0) {
     return (
       <div className="qr-no-data">
-        <p>No {isSprint ? 'sprint qualifying' : 'qualifying'} data available for this round.</p>
+        <p>No sprint data available for this round.</p>
       </div>
     );
   }
@@ -73,7 +69,7 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
     <div className="qualifying-results-screen">
       <div className="qr-header">
         <div className="qr-title-wrap">
-          <h2 className="qr-title">{isSprint ? <>Sprint <em>Qualifying</em></> : <>Qualifying <em>Session</em></>}</h2>
+          <h2 className="qr-title">Sprint <em>Classification</em></h2>
           <div className="qr-subtitle">Classification // Round {round}</div>
         </div>
         <div className="qr-header-line"></div>
@@ -86,9 +82,8 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
               <th className="qr-col-pos">POS</th>
               <th className="qr-col-driver">DRIVER</th>
               <th className="qr-col-team">TEAM</th>
-              <th className="qr-col-q1">{isSprint ? 'SQ1' : 'Q1'}</th>
-              <th className="qr-col-q2">{isSprint ? 'SQ2' : 'Q2'}</th>
-              <th className="qr-col-q3">{isSprint ? 'SQ3' : 'Q3'}</th>
+              <th className="qr-col-time">TIME/STATUS</th>
+              <th className="qr-col-pts">PTS</th>
             </tr>
           </thead>
           <tbody>
@@ -96,7 +91,7 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
               const pos = Number(r.position);
               const podiumClass = pos === 1 ? 'qr-row--p1' : pos === 2 ? 'qr-row--p2' : pos === 3 ? 'qr-row--p3' : '';
               return (
-                <tr key={r.driver_number} className={`qr-row ${podiumClass} theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
+                <tr key={r.id} className={`qr-row ${podiumClass} theme-${r.team_name.toLowerCase().replace(/\s+/g, '')}`}>
                   <td className="qr-td-pos">
                     <span className="qr-pos-num">
                       {pos === 1 ? (
@@ -111,9 +106,10 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
                     </div>
                   </td>
                   <td className="qr-td-team">{r.team_name}</td>
-                  <td className={`qr-td-time ${!r.q1 ? 'knocked-out' : ''}`}>{r.q1 || '—'}</td>
-                  <td className={`qr-td-time ${!r.q2 ? 'knocked-out' : ''}`}>{r.q2 || '—'}</td>
-                  <td className={`qr-td-time ${!r.q3 ? 'knocked-out' : ''}`}>{r.q3 || '—'}</td>
+                  <td className="qr-td-time">{r.time || r.status}</td>
+                  <td className="qr-td-pts" style={{ fontWeight: 800, color: 'var(--racing)', textAlign: 'right', paddingRight: '24px' }}>
+                    {Number(r.points) > 0 ? `+${r.points}` : '0'}
+                  </td>
                 </tr>
               );
             })}
@@ -124,4 +120,4 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
   );
 };
 
-export default QualifyingResults;
+export default SprintResults;

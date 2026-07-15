@@ -134,7 +134,9 @@ const AdminPortal: React.FC = () => {
     drivers: false,
     constructors: false,
     results: false,
-    qualifying: false
+    qualifying: false,
+    sprint_results: false,
+    sprint_qualifying: false
   });
 
   // Last successful sync timestamps per dataset
@@ -142,7 +144,9 @@ const AdminPortal: React.FC = () => {
     drivers: null,
     constructors: null,
     results: null,
-    qualifying: null
+    qualifying: null,
+    sprint_results: null,
+    sprint_qualifying: null
   });
 
   // DB Data
@@ -239,7 +243,7 @@ const AdminPortal: React.FC = () => {
   };
 
   // Trigger sync route
-  const handleSync = async (type: 'drivers' | 'constructors' | 'results' | 'qualifying', endpoint: string) => {
+  const handleSync = async (type: 'drivers' | 'constructors' | 'results' | 'qualifying' | 'sprint_results' | 'sprint_qualifying', endpoint: string) => {
     setIsSyncing(prev => ({ ...prev, [type]: true }));
     addLog(`INITIATED: Synchronization trigger for ${type.toUpperCase()}...`);
     
@@ -515,6 +519,8 @@ const AdminPortal: React.FC = () => {
                     { key: 'constructors', label: 'Constructors Standings', endpoint: '/constructors/sync-constructor-season' },
                     { key: 'results', label: 'Race Results', endpoint: '/results/sync-results' },
                     { key: 'qualifying', label: 'Qualifying Times', endpoint: '/results/sync-qualifying' },
+                    { key: 'sprint_results', label: 'Sprint Results', endpoint: '/results/sync-sprint-results' },
+                    { key: 'sprint_qualifying', label: 'Sprint Qualifying Times', endpoint: '/results/sync-sprint-qualifying' },
                   ] as const).map(item => (
                     <div className="freshness-row" key={item.key}>
                       <div className="freshness-info">
@@ -593,6 +599,34 @@ const AdminPortal: React.FC = () => {
                   onClick={() => handleSync('qualifying', '/results/sync-qualifying')}
                 >
                   {isSyncing.qualifying ? 'Synchronizing...' : 'Sync Qualy Times'}
+                </button>
+              </article>
+
+              {/* Sync Card 5: Sprint Results */}
+              <article className="admin-sync-card">
+                <div className={`sync-indicator-dot ${isSyncing.sprint_results ? 'syncing' : 'idle'}`}></div>
+                <h3>Sync Sprint Results</h3>
+                <p>Pull sprint race classifications, positions, times, and sprint points for sprint-format rounds.</p>
+                <button
+                  className="admin-sync-btn"
+                  disabled={isSyncing.sprint_results}
+                  onClick={() => handleSync('sprint_results', '/results/sync-sprint-results')}
+                >
+                  {isSyncing.sprint_results ? 'Synchronizing...' : 'Sync Sprint Results'}
+                </button>
+              </article>
+
+              {/* Sync Card 6: Sprint Qualifying */}
+              <article className="admin-sync-card">
+                <div className={`sync-indicator-dot ${isSyncing.sprint_qualifying ? 'syncing' : 'idle'}`}></div>
+                <h3>Sync Sprint Qualifying</h3>
+                <p>Populate sprint qualifying session data (SQ1, SQ2, SQ3) for sprint-format rounds via OpenF1.</p>
+                <button
+                  className="admin-sync-btn"
+                  disabled={isSyncing.sprint_qualifying}
+                  onClick={() => handleSync('sprint_qualifying', '/results/sync-sprint-qualifying')}
+                >
+                  {isSyncing.sprint_qualifying ? 'Synchronizing...' : 'Sync Sprint Qualy'}
                 </button>
               </article>
             </div>
