@@ -20,6 +20,7 @@ import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
 import RaceDetails from './components/RaceDetails';
 import LiveTiming from './components/LiveTiming';
+import PrivacyPolicy from './components/PrivacyPolicy';
 import ScrollProgress from './components/ScrollProgress';
 import AdminGate from './admin/AdminGate';
 import type { Race } from './data/races';
@@ -126,6 +127,7 @@ const App: React.FC = () => {
   const isAdminPortal = window.location.pathname === '/admin-portal';
   const initialRacePath = parseRacePath(window.location.pathname);
   const initialLivePath = window.location.pathname === '/live';
+  const initialPrivacyPath = window.location.pathname === '/privacy';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     const savedUser = localStorage.getItem('f1_user');
     if (!savedUser) return null;
@@ -148,13 +150,15 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'live'>(() => {
-    // The URL is the source of truth for race details and live timing; only
-    // fall back to the persisted view (account/dashboard) otherwise.
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'live' | 'privacy'>(() => {
+    // The URL is the source of truth for race details, live timing and the
+    // privacy policy; only fall back to the persisted view (account/dashboard)
+    // otherwise.
     if (initialRacePath) return 'race_details';
     if (initialLivePath) return 'live';
+    if (initialPrivacyPath) return 'privacy';
     const saved = localStorage.getItem('f1_view') as any;
-    return saved === 'race_details' || saved === 'live' ? 'dashboard' : saved || 'dashboard';
+    return saved === 'race_details' || saved === 'live' || saved === 'privacy' ? 'dashboard' : saved || 'dashboard';
   });
   const [selectedRace, setSelectedRace] = useState<Race | null>(() => {
     const saved = localStorage.getItem('f1_selected_race');
@@ -243,6 +247,8 @@ const App: React.FC = () => {
         setSelectedRace(found ?? null);
       } else if (window.location.pathname === '/live') {
         setView('live');
+      } else if (window.location.pathname === '/privacy') {
+        setView('privacy');
       } else {
         setView('dashboard');
         setSelectedRace(null);
@@ -404,6 +410,14 @@ const App: React.FC = () => {
           <AccountPage
             user={user}
             onClose={() => setView('dashboard')}
+          />
+        ) : view === 'privacy' ? (
+          <PrivacyPolicy
+            onBack={() => {
+              setView('dashboard');
+              window.history.pushState({}, '', '/');
+              window.scrollTo(0, 0);
+            }}
           />
         ) : view === 'live' ? (
           <LiveTiming

@@ -3955,6 +3955,156 @@ body {
   }
 }
 
+/* ── Privacy policy page ─────────────────────────────────────────────── */
+.privacy-page {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 44px 28px 90px;
+}
+
+.pp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 9px 18px;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.pp-back:hover {
+  color: #fff;
+  border-color: var(--racing);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pp-header {
+  margin: 44px 0 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.pp-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.pp-logo-mark {
+  width: 30px;
+  height: 30px;
+}
+
+.pp-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--racing);
+}
+
+.pp-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(34px, 6vw, 56px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: #fff;
+  margin: 0 0 14px;
+}
+
+.pp-title span {
+  background: linear-gradient(120deg, var(--racing-hot), var(--racing));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.pp-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.pp-section {
+  margin-bottom: 38px;
+}
+
+.pp-section h2 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  margin: 0 0 14px;
+}
+
+.pp-section h3 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--racing);
+  margin: 22px 0 10px;
+}
+
+.pp-section p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.68);
+  margin: 0 0 12px;
+}
+
+.pp-section ul {
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+
+.pp-section li {
+  font-size: 15px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.68);
+  margin-bottom: 6px;
+}
+
+.pp-section strong {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
+}
+
+.pp-section a {
+  color: var(--racing);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--racing) 45%, transparent);
+  transition: border-color 0.2s ease;
+}
+
+.pp-section a:hover {
+  border-color: var(--racing);
+}
+
+@media (max-width: 560px) {
+  .privacy-page {
+    padding: 28px 20px 64px;
+  }
+  .pp-header {
+    margin: 32px 0 30px;
+  }
+}
+
 .main-section,
 .intel-section {
   background: transparent !important;

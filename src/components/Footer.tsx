@@ -2,6 +2,16 @@ import React from 'react';
 import LogoMark from './LogoMark';
 
 const Footer: React.FC = () => {
+  // SPA-navigate to the privacy policy: push the URL and fire a synthetic
+  // popstate so App's existing history listener swaps the view, regardless of
+  // which page (dashboard / race details) this footer is rendered from.
+  const openPrivacy = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.history.pushState({}, '', '/privacy');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="footer-wrap">
       <footer className="footer">
@@ -46,6 +56,7 @@ const Footer: React.FC = () => {
               <li><a href="#constructors">Constructors</a></li>
               <li><a href="#calendar">Calendar</a></li>
               <li><a href="#paddock">Paddock Intel</a></li>
+              <li><a href="/privacy" onClick={openPrivacy}>Privacy Policy</a></li>
             </ul>
           </div>
 
@@ -68,7 +79,7 @@ const Footer: React.FC = () => {
           <div className="f-col legal">
             <h4 className="f-h">PIT STOP</h4>
             <p className="f-legal-text">
-              Not affiliated with the Formula One group of companies. 
+              Not affiliated with the Formula One group of companies.
               F1, FORMULA ONE, and related marks are trademarks of Formula One Licensing BV.
             </p>
           </div>
