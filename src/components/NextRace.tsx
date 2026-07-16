@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Loader from './Loader';
 import Tilt from './Tilt';
-import { COUNTRY_FLAGS, RACES as RACES_FALLBACK, fetchRaces, type Race } from '../data/races';
+import { COUNTRY_FLAGS, RACES as RACES_FALLBACK, fetchRaces, raceSlug, type Race } from '../data/races';
 import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 
 const getTeamColor = (name: string) => {
@@ -299,13 +299,17 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
             </div>
 
             {onRaceSelect && results.length > 0 && (
-              <button
+              <a
                 className="nr-view-results-btn"
-                onClick={() => onRaceSelect(prevRace)}
+                href={`/race/${prevRace.season}/${raceSlug(prevRace)}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onRaceSelect(prevRace);
+                }}
               >
                 <span>View Full Results</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </button>
+              </a>
             )}
           </div>
 

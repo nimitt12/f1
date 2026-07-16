@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { COUNTRY_FLAGS, fetchRaces, type Race } from '../data/races';
+import { COUNTRY_FLAGS, fetchRaces, raceSlug, type Race } from '../data/races';
 import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 
 // Re-exported so existing consumers (App, RaceDetails) can keep importing the
@@ -176,15 +176,17 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
                   <div className="cal-flag-name">{race.Circuit.circuitName}</div>
                   <div className="cal-date">{formatDateRange(race.date, race.FirstPractice?.date)}</div>
                   {onRaceSelect && (
-                    <button 
-                      className="cal-details-btn" 
+                    <a
+                      className="cal-details-btn"
+                      href={`/race/${race.season}/${raceSlug(race)}`}
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         onRaceSelect(race);
                       }}
                     >
                       View Details
-                    </button>
+                    </a>
                   )}
                 </div>
               );

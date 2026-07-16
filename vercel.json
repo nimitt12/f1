@@ -13,6 +13,10 @@
       "destination": "/privacy.html"
     },
     {
+      "source": "/race/:season/:slug",
+      "destination": "/race/:season/:slug/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }

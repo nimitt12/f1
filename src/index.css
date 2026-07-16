@@ -6976,6 +6976,8 @@ a.menu-action-btn {
 
 /* Race Details Styles */
 .cal-details-btn {
+  display: inline-block;
+  text-decoration: none;
   margin-top: 16px;
   background: transparent;
   color: var(--carbon);
@@ -7904,6 +7906,7 @@ a.menu-action-btn {
 
 /* Previous Race Results Button - Restored & Enhanced */
 .nr-view-results-btn {
+  text-decoration: none;
   margin-top: 36px;
   display: inline-flex;
   align-items: center;

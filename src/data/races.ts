@@ -39,6 +39,18 @@ export interface Race {
   SprintQualifying?: { date: string; time?: string };
 }
 
+// URL slug for a race, used in `/race/:season/:slug` paths — e.g.
+// "Belgian Grand Prix" -> "belgian-grand-prix". Must stay in sync with the
+// slugify logic in scripts/generate-seo-pages.mjs, which emits the static
+// SEO page for each of these URLs.
+export const raceSlug = (race: Race): string =>
+  race.raceName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 // ISO country name -> ISO 3166-1 alpha-2 code, used for flag rendering.
 export const COUNTRY_FLAGS: Record<string, string> = {
   Australia: 'au',

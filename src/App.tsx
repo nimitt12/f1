@@ -23,7 +23,7 @@ import LiveTiming from './components/LiveTiming';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import ScrollProgress from './components/ScrollProgress';
 import AdminGate from './admin/AdminGate';
-import type { Race } from './data/races';
+import { raceSlug, type Race } from './data/races';
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -118,10 +118,16 @@ const ThemeSwitcher: React.FC = () => {
 
 // Race details live at `/race/:season/:round` so the view is shareable and
 // survives a refresh. Parse that shape out of the current path; null otherwise.
-const parseRacePath = (path: string): { season: string; round: string } | null => {
+// `raceId` is the race-name slug (canonical, e.g. "belgian-grand-prix") but
+// legacy round numbers ("10") are still accepted.
+const parseRacePath = (path: string): { season: string; raceId: string } | null => {
   const m = path.match(/^\/race\/([^/]+)\/([^/]+)\/?$/);
-  return m ? { season: m[1], round: m[2] } : null;
+  return m ? { season: m[1], raceId: decodeURIComponent(m[2]) } : null;
 };
+
+const matchesRacePath = (race: Race, target: { season: string; raceId: string }): boolean =>
+  String(race.season) === target.season &&
+  (raceSlug(race) === target.raceId || String(race.round) === target.raceId);
 
 const App: React.FC = () => {
   const isAdminPortal = window.location.pathname === '/admin-portal';
@@ -166,9 +172,7 @@ const App: React.FC = () => {
     // On a deep link / refresh, only trust the cached race if it matches the
     // path; otherwise it'll be resolved from the calendar once it loads.
     if (initialRacePath) {
-      return parsed && String(parsed.season) === initialRacePath.season && String(parsed.round) === initialRacePath.round
-        ? parsed
-        : null;
+      return parsed && matchesRacePath(parsed, initialRacePath) ? parsed : null;
     }
     return parsed;
   });
@@ -189,11 +193,11 @@ const App: React.FC = () => {
     }
   }, [view, selectedRace]);
 
-  // Open a race's details and reflect it in the URL (`/race/:season/:round`).
+  // Open a race's details and reflect it in the URL (`/race/:season/:slug`).
   const openRaceDetails = (race: Race) => {
     setSelectedRace(race);
     setView('race_details');
-    window.history.pushState({}, '', `/race/${race.season}/${race.round}`);
+    window.history.pushState({}, '', `/race/${race.season}/${raceSlug(race)}`);
     window.scrollTo(0, 0);
   };
 
@@ -224,9 +228,7 @@ const App: React.FC = () => {
     if (view !== 'race_details' || selectedRace || races.length === 0) return;
     const target = parseRacePath(window.location.pathname);
     if (!target) return;
-    const found = races.find(
-      (r) => String(r.season) === target.season && String(r.round) === target.round
-    );
+    const found = races.find((r) => matchesRacePath(r, target));
     if (found) {
       setSelectedRace(found);
     } else {
@@ -241,9 +243,7 @@ const App: React.FC = () => {
       const target = parseRacePath(window.location.pathname);
       if (target) {
         setView('race_details');
-        const found = races.find(
-          (r) => String(r.season) === target.season && String(r.round) === target.round
-        );
+        const found = races.find((r) => matchesRacePath(r, target));
         setSelectedRace(found ?? null);
       } else if (window.location.pathname === '/live') {
         setView('live');

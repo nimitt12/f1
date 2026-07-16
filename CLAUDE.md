@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 - `npm run dev` — start Vite dev server
-- `npm run build` — typecheck (`tsc -b`) then build for production
+- `npm run build` — typecheck (`tsc -b`), build for production, then generate per-race SEO pages + sitemap (`scripts/generate-seo-pages.mjs`)
 - `npm run lint` — run ESLint over the project
 - `npm run preview` — preview the production build locally
 
@@ -32,6 +32,8 @@ Several components hardcode the production backend URL (`https://pitwall-backend
 **Auth model.** Google Sign-In (`@react-oauth/google`) produces a credential that's exchanged with the backend at `POST /auth/google`; the backend's returned user object is normalized (handles legacy `full_name`/`avatar_url` field names) and cached in `localStorage` under `f1_user`. There is no client-side session/token refresh — the user object itself is the persisted session. This pattern is duplicated in both [src/components/LoginModal.tsx](src/components/LoginModal.tsx) and [src/components/Hero.tsx](src/components/Hero.tsx); keep them consistent if changing the auth flow.
 
 **Data fetching.** No data-fetching library or shared API client — every component calls `fetch` directly against backend REST endpoints (`/drivers/get-all-drivers-season-rankings`, `/constructors/get-all-constructors-season-rankings`, `/results/get-all-results/:season/:round`, `/results/get-all-qualifying-results/:season/:round`, `/profile/:id`, etc.) inside its own `useEffect`. Each component owns its own loading/error state; there is no shared cache or query layer.
+
+**SEO pages.** `/live` and `/privacy` have their own HTML entry points ([live.html](live.html), [privacy.html](privacy.html)) built via Vite multi-page `rollupOptions.input` and served through `vercel.json` rewrites, each with route-specific title/canonical/JSON-LD. After `vite build`, [scripts/generate-seo-pages.mjs](scripts/generate-seo-pages.mjs) emits `dist/race/<season>/<slug>/index.html` for every race (race URLs use name slugs, e.g. `/race/2026/belgian-grand-prix` — built by `raceSlug`, defined in both `src/data/races.ts` and the script, which must stay in sync; legacy `/race/:season/:round` numeric URLs still resolve client-side) (SportsEvent + BreadcrumbList structured data, weekend schedule as crawlable fallback content) and the full `dist/sitemap.xml` — the calendar comes from `GET /races` with the bundled snapshot in [src/data/races.ts](src/data/races.ts) as fallback. The script derives race pages from `dist/index.html` via marker replacements that throw if the template drifts. There is no `public/sitemap.xml`; it's generated. In-app navigation to these routes must stay as real `<a href>` anchors (with `preventDefault` + `pushState` handlers) so crawlers can discover them.
 
 **F1 news proxy.** `/f1-news` is rewritten to `https://www.formula1.com/en/latest/all.xml` both in dev (`vite.config.ts` server proxy) and in production (`vercel.json` rewrites) to avoid CORS — keep these two in sync if the upstream URL changes. [src/components/NewsIntel.tsx](src/components/NewsIntel.tsx) fetches the rewritten path, parses the RSS, and extracts per-item images (enclosure / `media:*` / inline `<img>`) with the channel `<image>` as a fallback.
 
