@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ======================================================
+       PRIMARY SEO — /privacy
+  ====================================================== -->
+  <title>Privacy Policy | My PitWall</title>
+  <meta name="description"
+    content="How My PitWall handles your data: what we collect when you sign in with Google, how analytics are used, and how to contact us about your privacy." />
+  <link rel="canonical" href="https://www.mypitwall.in/privacy" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- ======================================================
+       OPEN GRAPH
+  ====================================================== -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="My PitWall" />
+  <meta property="og:title" content="Privacy Policy | My PitWall" />
+  <meta property="og:description"
+    content="How My PitWall handles your data: sign-in, analytics, and how to contact us about your privacy." />
+  <meta property="og:url" content="https://www.mypitwall.in/privacy" />
+  <meta property="og:image" content="https://www.mypitwall.in/screenshot-desktop.png" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ======================================================
+       STRUCTURED DATA (JSON-LD)
+  ====================================================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://www.mypitwall.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Privacy Policy",
+            "item": "https://www.mypitwall.in/privacy"
+          }
+        ]
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://www.mypitwall.in/privacy#webpage",
+        "url": "https://www.mypitwall.in/privacy",
+        "name": "Privacy Policy | My PitWall",
+        "description": "How My PitWall handles your data: what we collect when you sign in with Google, how analytics are used, and how to contact us about your privacy.",
+        "isPartOf": { "@id": "https://www.mypitwall.in/#website" },
+        "publisher": { "@id": "https://www.mypitwall.in/#organization" }
+      }
+    ]
+  }
+  </script>
+
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xmrb39ynvr");
+  </script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-F856VYD95Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-F856VYD95Y');
+  </script>
+
+  <!-- ======================================================
+       PWA & THEME
+  ====================================================== -->
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=5" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=5" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=5" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=5" />
+
+  <!-- ======================================================
+       PERFORMANCE — preconnect & font loading
+  ====================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://pitwall-backend-dq9r.onrender.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;700&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body>
+  <noscript>
+    <p>My PitWall requires JavaScript to display this page. Please enable JavaScript in your browser.</p>
+  </noscript>
+  <div id="root">
+    <!-- Crawlable fallback / branded loading state. React (createRoot) replaces
+         this on mount; search engines and non-JS crawlers read it as real content. -->
+    <main style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:2rem;background:#0a0a0a;color:#f5f5f5;font-family:'Inter',system-ui,sans-serif;text-align:center">
+      <img src="/logo.svg" alt="My PitWall logo" width="96" height="96" style="width:96px;height:96px;object-fit:contain;margin-bottom:.5rem" />
+      <h1 style="font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.4rem);margin:0;letter-spacing:.04em">
+        My PitWall Privacy Policy
+      </h1>
+      <p style="max-width:46rem;font-size:1.05rem;line-height:1.6;color:#cfcfcf;margin:0">
+        Learn what data My PitWall collects when you sign in with Google, how
+        analytics help us improve the dashboard, and how to reach us with any
+        privacy questions.
+      </p>
+      <nav style="margin-top:.75rem;font-size:.95rem">
+        <a href="/" style="color:#f87171;text-decoration:none">&larr; Back to the My PitWall dashboard</a>
+      </nav>
+      <p style="font-size:.85rem;color:#7a7a7a;margin-top:1rem">Loading…</p>
+    </main>
+  </div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

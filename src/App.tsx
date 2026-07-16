@@ -353,10 +353,15 @@ const App: React.FC = () => {
         {view === 'dashboard' ? (
           <>
             <ThemeSwitcher />
-            <button className="lt-entry-pill" onClick={openLiveTiming} aria-label="Open live timing">
+            <a
+              className="lt-entry-pill"
+              href="/live"
+              onClick={(e) => { e.preventDefault(); openLiveTiming(); }}
+              aria-label="Open live timing"
+            >
               <i aria-hidden="true" />
               Live Timing
-            </button>
+            </a>
             <Ticker />
             <Hero
               user={user}

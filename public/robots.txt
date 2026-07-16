@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin-portal
 
 Sitemap: https://www.mypitwall.in/sitemap.xml

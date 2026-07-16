@@ -5,6 +5,14 @@
       "destination": "https://www.formula1.com/en/latest/all.xml"
     },
     {
+      "source": "/live",
+      "destination": "/live.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }
