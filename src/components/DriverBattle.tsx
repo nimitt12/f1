@@ -21,16 +21,39 @@ interface ApiDriverRanking {
   podiums: string;
 }
 
-interface BattleDriver {
-  driverId: string;
-  slot: string;
+interface LastRaceResult {
+  round: string;
+  position: string;
+  status: string;
+  points: string;
+  race_name: string;
+}
+
+interface ComparisonDriver {
+  driver_id: string;
   number: string;
-  name: string;
-  team: string;
-  pts: number;
-  wins: number;
-  podiums: number;
-  color: string;
+  code: string;
+  given_name: string;
+  family_name: string;
+  nationality: string;
+  constructor_name: string;
+  points: string;
+  wins: string;
+  position: string;
+  podiums: string;
+  poles: string;
+  fastest_laps: string;
+  points_finishes: string;
+  last5: LastRaceResult[];
+}
+
+interface ComparisonResponse {
+  season: string;
+  drivers: [ComparisonDriver, ComparisonDriver];
+  h2h: {
+    quali: { driver1: number; driver2: number };
+    race: { driver1: number; driver2: number };
+  };
 }
 
 const TEAM_COLORS: Record<string, string> = {
@@ -61,25 +84,53 @@ const NAME_TO_SLUG: Record<string, string> = {
   'Cadillac F1 Team': 'cadillac',
 };
 
+const NATIONALITY_TO_CODE: Record<string, string> = {
+  'Italian': 'ITA', 'British': 'GBR', 'Dutch': 'NED', 'Spanish': 'ESP',
+  'French': 'FRA', 'German': 'GER', 'Monegasque': 'MON', 'Australian': 'AUS',
+  'Canadian': 'CAN', 'Japanese': 'JPN', 'Thai': 'THA', 'Danish': 'DEN',
+  'Finnish': 'FIN', 'American': 'USA', 'Brazilian': 'BRA', 'Chinese': 'CHN',
+  'New Zealander': 'NZL', 'Argentine': 'ARG', 'Mexican': 'MEX', 'Austrian': 'AUT',
+  'Belgian': 'BEL', 'Swiss': 'SUI', 'Swedish': 'SWE', 'Polish': 'POL',
+  'Russian': 'RUS', 'Indonesian': 'INA', 'Indian': 'IND',
+};
+
 const teamSlug = (constructorName: string) =>
   NAME_TO_SLUG[constructorName] || constructorName.toLowerCase().replace(/ /g, '_');
 
-const toBattleDriver = (d: ApiDriverRanking): BattleDriver => ({
-  driverId: d.driver_id,
-  slot: `P${d.position}`,
-  number: d.number,
-  name: `${d.given_name} ${d.family_name}`,
-  team: d.constructor_name.toUpperCase(),
-  pts: parseInt(d.points) || 0,
-  wins: parseInt(d.wins) || 0,
-  podiums: parseInt(d.podiums) || 0,
-  color: TEAM_COLORS[teamSlug(d.constructor_name)] || '#ffffff',
-});
+const nationalityCode = (nationality: string) =>
+  NATIONALITY_TO_CODE[nationality] || nationality.slice(0, 3).toUpperCase();
+
+const teamColor = (constructorName: string) =>
+  TEAM_COLORS[teamSlug(constructorName)] || '#ffffff';
+
+// Result rows carry the running-order position even for retirees; a driver
+// only reads as "classified" when status is Finished or a lapped-behind status.
+const isClassified = (status: string) => status === 'Finished' || status.startsWith('+');
+
+const formChipInfo = (r: LastRaceResult): { label: string; cls: string } => {
+  if (!isClassified(r.status)) return { label: 'DNF', cls: 'dnf' };
+  const pos = parseInt(r.position, 10);
+  if (pos === 1) return { label: '1', cls: 'win' };
+  if (pos <= 3) return { label: String(pos), cls: 'podium' };
+  return { label: String(pos), cls: 'other' };
+};
+
+const COMPARE_ROWS: { label: string; key: keyof ComparisonDriver }[] = [
+  { label: 'Championship Points', key: 'points' },
+  { label: 'Grand Prix Wins', key: 'wins' },
+  { label: 'Podiums', key: 'podiums' },
+  { label: 'Pole Positions', key: 'poles' },
+  { label: 'Fastest Laps', key: 'fastest_laps' },
+  { label: 'Points Finishes', key: 'points_finishes' },
+];
 
 const DriverBattle: React.FC = () => {
   const [allDrivers, setAllDrivers] = useState<ApiDriverRanking[]>([]);
+  const [season, setSeason] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<[string, string] | null>(null);
+  const [comparison, setComparison] = useState<ComparisonResponse | null>(null);
+  const [comparisonLoading, setComparisonLoading] = useState(true);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [draft, setDraft] = useState<string[]>([]);
 
@@ -91,6 +142,7 @@ const DriverBattle: React.FC = () => {
         const data: ApiDriverRanking[] = await response.json();
         setAllDrivers(data);
         if (data.length >= 2) {
+          setSeason(data[0].season);
           setSelected([data[0].driver_id, data[1].driver_id]);
         }
       } catch (err) {
@@ -103,6 +155,25 @@ const DriverBattle: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (!season || !selected) return;
+    const fetchComparison = async () => {
+      setComparisonLoading(true);
+      try {
+        const response = await fetch(`${BACKEND_URL}/drivers/compare/${season}/${selected[0]}/${selected[1]}`);
+        if (!response.ok) throw new Error('Comparison fetch failed');
+        const data: ComparisonResponse = await response.json();
+        setComparison(data);
+      } catch (err) {
+        console.error('Driver comparison fetch failed', err);
+        setComparison(null);
+      } finally {
+        setComparisonLoading(false);
+      }
+    };
+    fetchComparison();
+  }, [season, selected]);
+
+  useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setPickerOpen(false);
     };
@@ -110,15 +181,10 @@ const DriverBattle: React.FC = () => {
     return () => window.removeEventListener('keydown', handleEsc);
   }, []);
 
-  const drivers = useMemo<BattleDriver[]>(() => {
-    if (!selected) return [];
-    return selected
-      .map((id) => {
-        const found = allDrivers.find((d) => d.driver_id === id);
-        return found ? toBattleDriver(found) : null;
-      })
-      .filter(Boolean) as BattleDriver[];
-  }, [selected, allDrivers]);
+  const seasonDrivers = useMemo(
+    () => allDrivers.filter((d) => d.season === season),
+    [allDrivers, season]
+  );
 
   const openPicker = () => {
     setDraft(selected ? [...selected] : []);
@@ -141,11 +207,14 @@ const DriverBattle: React.FC = () => {
     }
   };
 
-  if (loading || drivers.length < 2) {
+  if (loading || comparisonLoading || !comparison) {
     return (
       <section className="driver-battle-section">
         <div className="battle-header">
-          <h2 className="battle-title">Driver's <em>Clash</em></h2>
+          <div>
+            <span className="battle-eyebrow">Head to Head{season ? ` · ${season}` : ''}</span>
+            <h2 className="battle-title">Driver's <em>Clash</em></h2>
+          </div>
         </div>
         <div className="battle-container" style={{ opacity: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Loader label="Synchronizing data" />
@@ -154,16 +223,21 @@ const DriverBattle: React.FC = () => {
     );
   }
 
-  const stats = [
-    { label: 'Championship Points', key: 'pts' },
-    { label: 'Grand Prix Wins', key: 'wins' },
-    { label: 'Podiums', key: 'podiums' },
-  ];
+  const [d1, d2] = comparison.drivers;
+  const color1 = teamColor(d1.constructor_name);
+  const color2 = teamColor(d2.constructor_name);
+  const pts1 = parseInt(d1.points, 10) || 0;
+  const pts2 = parseInt(d2.points, 10) || 0;
+  const gap = Math.abs(pts1 - pts2);
+  const gapLeader = pts1 === pts2 ? null : pts1 > pts2 ? 0 : 1;
 
   return (
     <section className="driver-battle-section">
       <div className="battle-header">
-        <h2 className="battle-title">Driver's <em>Clash</em></h2>
+        <div>
+          <span className="battle-eyebrow">Head to Head · {comparison.season}</span>
+          <h2 className="battle-title">Driver's <em>Clash</em></h2>
+        </div>
 
         <button className="battle-pick-btn" onClick={openPicker}>
           <span className="battle-pick-icon" aria-hidden="true">⇄</span>
@@ -173,55 +247,108 @@ const DriverBattle: React.FC = () => {
 
       <div className="battle-container">
         {/* Driver 1 */}
-        <button
-          className="battle-card p1"
-          onClick={openPicker}
-          style={{ '--team-color': drivers[0].color } as React.CSSProperties}
-        >
-          <div className="battle-bg-name">{drivers[0].slot}</div>
-          <div className="battle-emblem">
-            <span className="battle-emblem-num">{drivers[0].number}</span>
+        <div className="battle-card p1" style={{ '--team-color': color1 } as React.CSSProperties}>
+          <div className="battle-card-top">
+            <button className="battle-rank" onClick={openPicker} aria-label="Change driver 1">
+              <span className="battle-rank-label">Position</span>
+              <span className="battle-rank-value">P{d1.position}</span>
+            </button>
+            <div className="battle-card-info">
+              <div className="battle-tags">
+                <span className="battle-meta">#{d1.number} · {nationalityCode(d1.nationality)}</span>
+              </div>
+              <h3 className="battle-name">{d1.given_name} {d1.family_name}</h3>
+              <span className="battle-team">{d1.constructor_name}</span>
+            </div>
           </div>
-          <div className="battle-info">
-            <h3 className="battle-name">{drivers[0].name}</h3>
-            <span className="battle-team">{drivers[0].team}</span>
+          <div className="battle-quickstats">
+            <div className="battle-qstat"><strong>{d1.points}</strong><span>Points</span></div>
+            <div className="battle-qstat"><strong>{d1.wins}</strong><span>Wins</span></div>
+            <div className="battle-qstat"><strong>{d1.podiums}</strong><span>Podiums</span></div>
           </div>
-        </button>
+          <div className="battle-form">
+            <span className="battle-form-label">Last 5 Races</span>
+            <div className="battle-form-chips">
+              {d1.last5.map((r, i) => {
+                const chip = formChipInfo(r);
+                return <span key={i} className={`battle-chip ${chip.cls}`} title={r.race_name}>{chip.label}</span>;
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* VS Divider */}
         <div className="battle-vs">
           <div className="vs-circle">VS</div>
+          {gapLeader !== null && (
+            <div className="vs-gap">
+              <span>Gap</span>
+              <strong style={{ color: gapLeader === 0 ? color1 : color2 }}>+{gap}</strong>
+              <span>Pts</span>
+            </div>
+          )}
         </div>
 
         {/* Driver 2 */}
-        <button
-          className="battle-card p2"
-          onClick={openPicker}
-          style={{ '--team-color': drivers[1].color } as React.CSSProperties}
-        >
-          <div className="battle-bg-name">{drivers[1].slot}</div>
-          <div className="battle-emblem">
-            <span className="battle-emblem-num">{drivers[1].number}</span>
+        <div className="battle-card p2" style={{ '--team-color': color2 } as React.CSSProperties}>
+          <div className="battle-card-top">
+            <div className="battle-card-info">
+              <div className="battle-tags">
+                <span className="battle-meta">{nationalityCode(d2.nationality)} · #{d2.number}</span>
+              </div>
+              <h3 className="battle-name">{d2.given_name} {d2.family_name}</h3>
+              <span className="battle-team">{d2.constructor_name}</span>
+            </div>
+            <button className="battle-rank" onClick={openPicker} aria-label="Change driver 2">
+              <span className="battle-rank-label">Position</span>
+              <span className="battle-rank-value">P{d2.position}</span>
+            </button>
           </div>
-          <div className="battle-info">
-            <h3 className="battle-name">{drivers[1].name}</h3>
-            <span className="battle-team">{drivers[1].team}</span>
+          <div className="battle-quickstats">
+            <div className="battle-qstat"><strong>{d2.points}</strong><span>Points</span></div>
+            <div className="battle-qstat"><strong>{d2.wins}</strong><span>Wins</span></div>
+            <div className="battle-qstat"><strong>{d2.podiums}</strong><span>Podiums</span></div>
           </div>
-        </button>
+          <div className="battle-form">
+            <span className="battle-form-label">Last 5 Races</span>
+            <div className="battle-form-chips">
+              {d2.last5.map((r, i) => {
+                const chip = formChipInfo(r);
+                return <span key={i} className={`battle-chip ${chip.cls}`} title={r.race_name}>{chip.label}</span>;
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {/* Stats Overlay */}
-        <div
-          className="battle-stats-overlay"
-          style={{ '--p1-color': drivers[0].color, '--p2-color': drivers[1].color } as React.CSSProperties}
-        >
-          {stats.map((stat, idx) => {
-            const v1 = drivers[0][stat.key as keyof BattleDriver] as number;
-            const v2 = drivers[1][stat.key as keyof BattleDriver] as number;
+      {/* Season comparison panel */}
+      <div className="battle-compare" style={{ '--p1-color': color1, '--p2-color': color2 } as React.CSSProperties}>
+        <div className="compare-head">
+          <h3 className="compare-title">Season Comparison</h3>
+          <div className="compare-badges">
+            <span className="compare-badge">Quali H2H <strong>{comparison.h2h.quali.driver1}-{comparison.h2h.quali.driver2}</strong></span>
+            <span className="compare-badge">Race H2H <strong>{comparison.h2h.race.driver1}-{comparison.h2h.race.driver2}</strong></span>
+          </div>
+        </div>
+
+        <div className="compare-rows">
+          {COMPARE_ROWS.map((row) => {
+            const v1 = parseInt(d1[row.key] as string, 10) || 0;
+            const v2 = parseInt(d2[row.key] as string, 10) || 0;
+            const max = Math.max(v1, v2, 1);
+            const w1 = (v1 / max) * 100;
+            const w2 = (v2 / max) * 100;
             return (
-              <div key={idx} className="battle-stat-row">
-                <div className={`stat-val v1 ${v1 >= v2 ? 'leading' : ''}`}>{v1}</div>
-                <div className="stat-label">{stat.label}</div>
-                <div className={`stat-val v2 ${v2 >= v1 ? 'leading' : ''}`}>{v2}</div>
+              <div key={row.label} className="compare-row">
+                <span className="compare-val left">{v1}</span>
+                <div className="compare-bar left">
+                  <div className={`compare-fill ${v1 >= v2 ? 'leading' : 'trailing'}`} style={{ width: `${w1}%` }} />
+                </div>
+                <span className="compare-label">{row.label}</span>
+                <div className="compare-bar right">
+                  <div className={`compare-fill ${v2 >= v1 ? 'leading' : 'trailing'}`} style={{ width: `${w2}%` }} />
+                </div>
+                <span className="compare-val right">{v2}</span>
               </div>
             );
           })}
@@ -242,8 +369,8 @@ const DriverBattle: React.FC = () => {
             <div className="dpick-slots">
               {[0, 1].map((i) => {
                 const id = draft[i];
-                const d = id ? allDrivers.find((x) => x.driver_id === id) : null;
-                const color = d ? (TEAM_COLORS[teamSlug(d.constructor_name)] || '#fff') : '#666';
+                const d = id ? seasonDrivers.find((x) => x.driver_id === id) : null;
+                const color = d ? teamColor(d.constructor_name) : '#666';
                 return (
                   <div
                     key={i}
@@ -266,7 +393,7 @@ const DriverBattle: React.FC = () => {
             </div>
 
             <div className="dpick-grid">
-              {[...allDrivers]
+              {[...seasonDrivers]
                 .sort((a, b) => {
                   const ca = a.constructor_name || '';
                   const cb = b.constructor_name || '';
@@ -274,9 +401,8 @@ const DriverBattle: React.FC = () => {
                   return (parseInt(a.number, 10) || 0) - (parseInt(b.number, 10) || 0);
                 })
                 .map((d) => {
-                const color = TEAM_COLORS[teamSlug(d.constructor_name)] || '#fff';
-                const order = draft.indexOf(d.driver_id);
-                const isSel = order !== -1;
+                const color = teamColor(d.constructor_name);
+                const isSel = draft.includes(d.driver_id);
                 return (
                   <button
                     key={d.driver_id}
