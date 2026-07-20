@@ -41,6 +41,13 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/f1-news/, '/en/latest/all.xml'),
       },
+      // Article pages don't carry images in the RSS feed itself; NewsIntel
+      // fetches each article through here and scrapes its og:image meta tag.
+      '/f1-article': {
+        target: 'https://www.formula1.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/f1-article/, ''),
+      },
     },
   },
 })

@@ -342,11 +342,11 @@ const DriverBattle: React.FC = () => {
               <div key={row.label} className="compare-row">
                 <span className="compare-val left">{v1}</span>
                 <div className="compare-bar left">
-                  <div className={`compare-fill ${v1 >= v2 ? 'leading' : 'trailing'}`} style={{ width: `${w1}%` }} />
+                  <div className="compare-fill p1" style={{ width: `${w1}%` }} />
                 </div>
                 <span className="compare-label">{row.label}</span>
                 <div className="compare-bar right">
-                  <div className={`compare-fill ${v2 >= v1 ? 'leading' : 'trailing'}`} style={{ width: `${w2}%` }} />
+                  <div className="compare-fill p2" style={{ width: `${w2}%` }} />
                 </div>
                 <span className="compare-val right">{v2}</span>
               </div>

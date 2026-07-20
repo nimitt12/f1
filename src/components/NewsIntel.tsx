@@ -16,11 +16,14 @@ interface NewsItem {
 const NewsIntel: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Derived (not copied) so the modal picks up the og:image once it lands,
+  // even if it resolves after the article was opened.
+  const selectedNews = selectedId ? news.find(n => n.id === selectedId) ?? null : null;
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSelectedNews(null);
+      if (e.key === 'Escape') setSelectedId(null);
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
@@ -105,10 +108,37 @@ const NewsIntel: React.FC = () => {
         });
 
         setNews(parsedItems);
+        setLoading(false);
+
+        // The RSS feed itself carries no per-article images, so backfill by
+        // fetching each article page (via the /f1-article proxy, to dodge
+        // CORS) and reading its og:image meta tag. Fires in parallel and
+        // patches items into state as each one resolves.
+        parsedItems
+          .filter((item) => !item.image)
+          .forEach(async (item) => {
+            const ogImage = await fetchOgImage(item.link);
+            if (!ogImage) return;
+            setNews((prev) =>
+              prev.map((n) => (n.id === item.id ? { ...n, image: ogImage } : n))
+            );
+          });
       } catch (err) {
         console.error('Failed to fetch F1 news:', err);
-      } finally {
         setLoading(false);
+      }
+    };
+
+    const fetchOgImage = async (link: string): Promise<string | undefined> => {
+      try {
+        const { pathname } = new URL(link);
+        const response = await fetch(`/f1-article${pathname}`);
+        if (!response.ok) return undefined;
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || undefined;
+      } catch {
+        return undefined;
       }
     };
 
@@ -138,7 +168,7 @@ const NewsIntel: React.FC = () => {
           <article 
             key={item.id} 
             className={`news-item ${index === 0 ? 'lead' : 'neutral'}`}
-            onClick={() => setSelectedNews(item)}
+            onClick={() => setSelectedId(item.id)}
             style={{ cursor: 'pointer' }}
           >
             {item.image && (
@@ -176,9 +206,9 @@ const NewsIntel: React.FC = () => {
 
       {/* News Modal - Rendered via Portal at body root */}
       {selectedNews && createPortal(
-        <div className="news-modal-overlay" onClick={() => setSelectedNews(null)}>
+        <div className="news-modal-overlay" onClick={() => setSelectedId(null)}>
           <div className="news-modal-window" onClick={e => e.stopPropagation()}>
-            <button className="news-modal-close" onClick={() => setSelectedNews(null)}>×</button>
+            <button className="news-modal-close" onClick={() => setSelectedId(null)}>×</button>
 
             {selectedNews.image && (
               <div className="news-modal-hero">

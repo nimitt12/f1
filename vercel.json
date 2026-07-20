@@ -5,6 +5,10 @@
       "destination": "https://www.formula1.com/en/latest/all.xml"
     },
     {
+      "source": "/f1-article/:path*",
+      "destination": "https://www.formula1.com/:path*"
+    },
+    {
       "source": "/live",
       "destination": "/live.html"
     },

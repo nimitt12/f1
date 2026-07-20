@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { COUNTRY_FLAGS, type Race } from '../data/races';
+import { COUNTRY_FLAGS, RACE_DURATION_MS, SESSION_DURATION_MS, type Race } from '../data/races';
 
 const Flag: React.FC<{ code: string }> = ({ code }) => {
   if (!code || code.length !== 2) return <span className="rl-flag-fallback">🏁</span>;
@@ -15,13 +15,32 @@ const Flag: React.FC<{ code: string }> = ({ code }) => {
   );
 };
 
-const pad = (n: number) => String(Math.max(0, n)).padStart(2, '0');
+const StatIcon: React.FC<{ kind: 'clock' | 'stopwatch' | 'flag' }> = ({ kind }) => {
+  if (kind === 'clock') {
+    return (
+      <svg className="rl-stat-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.5 2" />
+      </svg>
+    );
+  }
+  if (kind === 'stopwatch') {
+    return (
+      <svg className="rl-stat-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="13" r="8" />
+        <path d="M12 13v-4M9 3h6M18.5 6.5l1-1" />
+      </svg>
+    );
+  }
+  return (
+    <svg className="rl-stat-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 3v18" />
+      <path d="M5 4h9l-1.5 3L14 10H5" />
+    </svg>
+  );
+};
 
-// A typical Grand Prix runs ~2h; give it a generous window before we call it a
-// wrap so the banner stays "live" for the whole broadcast.
-const RACE_DURATION_MS = 2.75 * 60 * 60 * 1000;
-// Practice / qualifying / sprint sessions are shorter.
-const SESSION_DURATION_MS = 1.5 * 60 * 60 * 1000;
+const pad = (n: number) => String(Math.max(0, n)).padStart(2, '0');
 
 type Phase = 'pre' | 'underway' | 'finished';
 type SessionStatus = 'done' | 'live' | 'next' | 'upcoming';
@@ -71,6 +90,13 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
     };
   }, [phase, start, now]);
 
+  // Race completion, 0 → 1 — drives the broadcast-style progress rail/bar.
+  const raceProgress = useMemo(() => {
+    if (phase === 'pre') return 0;
+    if (phase === 'finished') return 1;
+    return Math.min(1, Math.max(0, (now - start) / RACE_DURATION_MS));
+  }, [phase, now, start]);
+
   const total = races.length;
   const completed = races.filter((r) => r.date < race.date).length;
   const localStart = fmtTime(start);
@@ -92,15 +118,17 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
       .map(([label, s]) => {
         const ts = new Date(`${s!.date}T${s!.time || '12:00:00Z'}`).getTime();
         const isRace = label === 'Grand Prix';
-        return { label, ts, isRace };
+        const icon: 'clock' | 'stopwatch' | 'flag' = isRace ? 'flag' : label.includes('Quali') ? 'stopwatch' : 'clock';
+        return { label, ts, isRace, icon };
       })
       .sort((a, b) => a.ts - b.ts);
 
-    const withStatus = list.map((s): { label: string; ts: number; isRace: boolean; status: SessionStatus } => {
+    const withStatus = list.map((s): { label: string; ts: number; isRace: boolean; icon: 'clock' | 'stopwatch' | 'flag'; status: SessionStatus; frac: number } => {
       const dur = s.isRace ? RACE_DURATION_MS : SESSION_DURATION_MS;
       const status: SessionStatus =
         now >= s.ts && now < s.ts + dur ? 'live' : now >= s.ts + dur ? 'done' : 'upcoming';
-      return { ...s, status };
+      const frac = status === 'done' ? 1 : status === 'live' ? Math.min(1, Math.max(0, (now - s.ts) / dur)) : 0;
+      return { ...s, status, frac };
     });
 
     // Promote the first still-upcoming session to "next".
@@ -122,6 +150,11 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
   return (
     <section className="rl-section">
       <div className={`rl-banner rl-phase-${phase}`} role="region" aria-label="Race day live">
+        {phase !== 'pre' && (
+          <div className="rl-progress-rail" aria-hidden="true">
+            <div className="rl-progress-rail-fill" style={{ width: `${raceProgress * 100}%` }} />
+          </div>
+        )}
         <div className="rl-sheen" aria-hidden="true" />
 
         <div className="rl-grid">
@@ -133,7 +166,9 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
             </div>
 
             <div className="rl-headline">
-              <Flag code={code} />
+              <div className="rl-flag-frame">
+                <Flag code={code} />
+              </div>
               <h2 className="rl-race-name">
                 {race.raceName.replace(' Grand Prix', '')}
                 <span> Grand Prix</span>
@@ -148,21 +183,33 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
 
             <div className="rl-stats">
               <div className="rl-stat">
-                <span className="rl-stat-label">Lights Out</span>
+                <span className="rl-stat-label">
+                  <StatIcon kind="clock" />
+                  Lights Out
+                </span>
                 <span className="rl-stat-val">{localStart}</span>
               </div>
               <div className="rl-stat">
-                <span className="rl-stat-label">Circuit Time</span>
+                <span className="rl-stat-label">
+                  <StatIcon kind="stopwatch" />
+                  Circuit Time
+                </span>
                 <span className="rl-stat-val">
                   {race.time ? race.time.replace(':00Z', '') : 'TBC'}
                   <em>local</em>
                 </span>
               </div>
               <div className="rl-stat">
-                <span className="rl-stat-label">Season</span>
+                <span className="rl-stat-label">
+                  <StatIcon kind="flag" />
+                  Season
+                </span>
                 <span className="rl-stat-val">
                   {completed}
                   <em>/ {total} done</em>
+                </span>
+                <span className="rl-stat-bar" aria-hidden="true">
+                  <span className="rl-stat-bar-fill" style={{ width: `${(completed / total) * 100}%` }} />
                 </span>
               </div>
             </div>
@@ -175,7 +222,7 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
                 </button>
               )}
               {onRaceSelect && (
-                <button className="rl-cta" onClick={() => onRaceSelect(race)}>
+                <button className="rl-cta rl-cta-ghost" onClick={() => onRaceSelect(race)}>
                   <span>Open Race Center</span>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14" />
@@ -193,7 +240,10 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
                 <span key={i} className="rl-light" style={{ animationDelay: `${i * 0.18}s` }} />
               ))}
             </div>
-            <div className="rl-lights-caption">{phaseCopy.lights}</div>
+            <div className="rl-lights-caption">
+              {phase === 'underway' && <span className="rl-live-dot" aria-hidden="true" />}
+              {phaseCopy.lights}
+            </div>
 
             <div className="rl-timer-label">{phaseCopy.headline}</div>
             <div className={`rl-timer ${phaseCopy.timerClass}`}>
@@ -212,6 +262,12 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
                 <span className="rl-cell-unit">Sec</span>
               </div>
             </div>
+
+            {phase !== 'pre' && (
+              <div className="rl-progress-track" aria-hidden="true">
+                <span className="rl-progress-fill" style={{ width: `${raceProgress * 100}%` }} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -220,7 +276,10 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
           {sessions.map((s) => (
             <div key={s.label} className={`rl-session rl-session-${s.status} ${s.isRace ? 'rl-session-race' : ''}`} role="listitem">
               <div className="rl-session-top">
-                <span className="rl-session-name">{s.label}</span>
+                <span className="rl-session-label">
+                  <StatIcon kind={s.icon} />
+                  <span className="rl-session-name">{s.label}</span>
+                </span>
                 {s.status === 'live' && <span className="rl-badge-live">● Live</span>}
                 {s.status === 'next' && <span className="rl-badge-next">Up Next</span>}
                 {s.status === 'done' && <span className="rl-badge-check">✓</span>}
@@ -228,6 +287,11 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
               <div className="rl-session-time">
                 {fmtDay(s.ts)} · {fmtTime(s.ts)}
               </div>
+              {s.status === 'live' && (
+                <span className="rl-session-progress" aria-hidden="true">
+                  <span className="rl-session-progress-fill" style={{ width: `${s.frac * 100}%` }} />
+                </span>
+              )}
             </div>
           ))}
         </div>

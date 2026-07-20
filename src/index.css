@@ -1073,19 +1073,62 @@ body {
 
 .rl-banner {
   position: relative;
-  padding: 30px 34px;
-  border-radius: 18px;
+  padding: 34px 38px 30px;
+  border-radius: 20px;
   overflow: hidden;
-  color: #f4f1ea;
+  color: #fff;
+  --rl-live: #ff3b52;
+  --rl-live-glow: color-mix(in srgb, var(--rl-live) 45%, transparent);
+  /* Full-bleed team livery — the whole card is bathed in the active theme's
+     racing colors rather than a neutral dark card with a thin accent rail. */
   background:
-    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.08), transparent 48%),
-    radial-gradient(110% 140% at 100% 0%, color-mix(in srgb, var(--racing) 12%, transparent), transparent 50%),
-    linear-gradient(135deg, rgba(42, 42, 49, 0.96), rgba(22, 22, 27, 0.97));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+    radial-gradient(150% 130% at 6% -12%, color-mix(in srgb, var(--racing-hot) 90%, transparent) 0%, transparent 50%),
+    radial-gradient(120% 130% at 104% -6%, color-mix(in srgb, var(--racing) 80%, transparent) 0%, transparent 56%),
+    radial-gradient(130% 150% at 100% 118%, rgba(0, 0, 0, 0.78), transparent 58%),
+    radial-gradient(90% 110% at -6% 112%, color-mix(in srgb, var(--racing-deep) 55%, transparent), transparent 55%),
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--racing-hot) 75%, transparent) 0%,
+      color-mix(in srgb, var(--racing) 62%, #10090c 30%) 45%,
+      color-mix(in srgb, var(--racing-deep) 68%, #0a0608 55%) 100%);
+  border: 1px solid color-mix(in srgb, var(--racing-hot) 45%, rgba(255, 255, 255, 0.16));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.07) inset,
-    0 28px 70px rgba(0, 0, 0, 0.45);
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
+    0 8px 26px rgba(0, 0, 0, 0.4);
   animation: rlReveal 0.7s var(--ease-out) both;
+  transition: box-shadow 0.6s var(--ease);
+}
+
+/* Live phase: the ambient glow itself turns urgent-red, layered on top of the
+   team livery so "it's live right now" reads at a glance regardless of theme. */
+.rl-phase-underway {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 0 100px var(--rl-live-glow),
+    0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
+    0 8px 26px rgba(0, 0, 0, 0.4);
+  animation: rlReveal 0.7s var(--ease-out) both, rlLiveThrob 3.2s ease-in-out infinite;
+}
+
+/* Live race-completion rail across the very top edge — a broadcast-style scrub bar */
+.rl-progress-rail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.rl-progress-rail-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--racing), var(--rl-live));
+  box-shadow: 0 0 12px var(--rl-live-glow);
+  transition: width 1s linear;
 }
 
 /* Animated accent rail down the left edge — the "live" signature */
@@ -1099,6 +1142,19 @@ body {
   background: linear-gradient(180deg, var(--racing), var(--racing-hot));
   box-shadow: 0 0 18px var(--racing);
   animation: rlRail 2.4s ease-in-out infinite;
+  z-index: 3;
+}
+
+.rl-phase-underway::before {
+  background: linear-gradient(180deg, var(--rl-live), #ff8a63);
+  box-shadow: 0 0 22px var(--rl-live-glow);
+  animation: rlRailLive 1.4s ease-in-out infinite;
+}
+
+.rl-phase-finished::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12));
+  box-shadow: none;
+  animation: none;
 }
 
 /* Carbon weave texture, matching the dark race blocks */
@@ -1131,6 +1187,17 @@ body {
   pointer-events: none;
 }
 
+/* Live phase: the sweep itself carries a red-hot edge instead of plain white */
+.rl-phase-underway .rl-sheen {
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    color-mix(in srgb, var(--rl-live) 38%, rgba(255, 255, 255, 0.12)) 48%,
+    transparent 64%
+  );
+  animation-duration: 4.2s;
+}
+
 .rl-grid {
   position: relative;
   z-index: 2;
@@ -1149,16 +1216,52 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
+  padding: 8px 8px 8px 14px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: rgba(8, 6, 8, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
 }
 
 .rl-pulse {
+  position: relative;
   width: 9px;
   height: 9px;
   border-radius: 50%;
   background: var(--racing-hot);
-  box-shadow: 0 0 0 0 var(--racing-hot);
-  animation: rlPulse 1.5s ease-out infinite;
+  flex-shrink: 0;
+}
+
+.rl-pulse::before,
+.rl-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--racing-hot);
+  animation: rlPulseRing 1.8s ease-out infinite;
+}
+
+.rl-pulse::after {
+  animation-delay: 0.6s;
+}
+
+.rl-phase-underway .rl-pulse,
+.rl-phase-underway .rl-pulse::before,
+.rl-phase-underway .rl-pulse::after {
+  background: var(--rl-live);
+}
+
+.rl-phase-finished .rl-pulse {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.rl-phase-finished .rl-pulse::before,
+.rl-phase-finished .rl-pulse::after {
+  display: none;
 }
 
 .rl-status-text {
@@ -1170,30 +1273,46 @@ body {
   color: #fff;
 }
 
+.rl-phase-underway .rl-status-text {
+  color: var(--rl-live);
+  text-shadow: 0 0 16px var(--rl-live-glow);
+}
+
 .rl-status-tag {
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--racing-hot-ticker);
-  padding: 4px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* --- Headline --- */
 .rl-headline {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: 18px;
+  margin-bottom: 14px;
 }
 
-.rl-flag {
-  border-radius: 4px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+.rl-flag-frame {
   flex-shrink: 0;
+  padding: 3px;
+  border-radius: 11px;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08));
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 0 1px color-mix(in srgb, var(--racing-hot) 35%, transparent);
+}
+
+.rl-flag-frame .rl-flag {
+  display: block;
+  width: 46px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .rl-flag-fallback {
@@ -1207,7 +1326,11 @@ body {
   line-height: 1;
   letter-spacing: -0.01em;
   margin: 0;
-  color: #fff;
+  background: linear-gradient(180deg, #fff, rgba(244, 241, 234, 0.82));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 14px rgba(0, 0, 0, 0.45));
 }
 
 .rl-race-name span {
@@ -1217,19 +1340,21 @@ body {
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--racing-hot-ticker);
-  margin-top: 8px;
+  -webkit-text-fill-color: var(--racing-hot-ticker);
+  margin-top: 9px;
 }
 
 .rl-circuit {
   font-family: var(--font-mono);
   font-size: 12.5px;
   letter-spacing: 0.05em;
-  color: rgba(244, 241, 234, 0.62);
-  margin-bottom: 22px;
+  color: rgba(244, 241, 234, 0.72);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+  margin-bottom: 24px;
 }
 
 .rl-circuit strong {
-  color: rgba(255, 255, 255, 0.9);
+  color: #fff;
   font-weight: 600;
 }
 
@@ -1243,26 +1368,38 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .rl-stat {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 12px 18px;
+  gap: 6px;
+  padding: 13px 18px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  min-width: 96px;
+  background: linear-gradient(160deg, rgba(10, 8, 10, 0.4), rgba(6, 4, 6, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  min-width: 100px;
 }
 
 .rl-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-mono);
   font-size: 9.5px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(244, 241, 234, 0.62);
+}
+
+.rl-stat-icon {
+  flex-shrink: 0;
+  opacity: 0.8;
 }
 
 .rl-stat-val {
@@ -1281,7 +1418,33 @@ body {
   margin-left: 4px;
 }
 
+.rl-stat-bar {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 3px;
+  margin-top: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.rl-stat-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--racing-deep), var(--racing));
+}
+
 /* --- CTA --- */
+.rl-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .rl-cta {
   display: inline-flex;
   align-items: center;
@@ -1298,7 +1461,7 @@ body {
   color: #fff;
   background: linear-gradient(135deg, var(--racing), var(--racing-deep));
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
 }
 
 .rl-cta:hover {
@@ -1314,16 +1477,54 @@ body {
   transform: translateX(4px);
 }
 
+.rl-cta-timing {
+  background: linear-gradient(135deg, #ff3b52, #b3122b);
+  box-shadow: 0 8px 24px rgba(255, 59, 82, 0.35);
+}
+
+.rl-cta-timing:hover {
+  box-shadow: 0 12px 32px rgba(255, 59, 82, 0.45);
+}
+
+.rl-cta-timing .rl-cta-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  animation: rlBlink 1.4s steps(1) infinite;
+}
+
+.rl-cta-ghost {
+  background: rgba(8, 6, 8, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+}
+
+.rl-cta-ghost:hover {
+  background: rgba(14, 11, 14, 0.62);
+  border-color: rgba(255, 255, 255, 0.36);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
 /* --- Right side: live timer --- */
 .rl-right {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  padding: 24px 28px;
-  border-radius: 14px;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.18));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 26px 30px;
+  border-radius: 16px;
+  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.55));
+  border: 1px solid color-mix(in srgb, var(--racing-hot) 30%, rgba(255, 255, 255, 0.16));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -20px 40px rgba(0, 0, 0, 0.4),
+    0 20px 44px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px) saturate(1.2);
+  -webkit-backdrop-filter: blur(6px) saturate(1.2);
   min-width: 300px;
 }
 
@@ -1345,8 +1546,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   min-width: 64px;
+  padding: 10px 6px 9px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.28));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 -8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .rl-cell-num {
@@ -1359,10 +1565,22 @@ body {
   text-shadow: 0 0 24px rgba(255, 255, 255, 0.12);
 }
 
+.rl-timer-pre .rl-cell-num,
+.rl-timer-pre .rl-colon {
+  color: #eef4ff;
+  text-shadow: 0 0 22px rgba(150, 190, 255, 0.35);
+}
+
 .rl-timer-live .rl-cell-num,
 .rl-timer-live .rl-colon {
-  color: var(--racing-hot);
-  text-shadow: 0 0 26px var(--racing);
+  color: var(--rl-live);
+  text-shadow: 0 0 28px var(--rl-live-glow);
+}
+
+.rl-timer-done .rl-cell-num,
+.rl-timer-done .rl-colon {
+  color: #f4d58d;
+  text-shadow: 0 0 18px rgba(244, 213, 141, 0.3);
 }
 
 .rl-cell-unit {
@@ -1380,24 +1598,61 @@ body {
   line-height: 1.05;
   color: rgba(255, 255, 255, 0.35);
   animation: rlBlink 1.5s steps(1) infinite;
+  align-self: center;
+  margin-top: 6px;
+}
+
+/* --- Race-completion progress bar inside the timer console --- */
+.rl-progress-track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.09);
+  overflow: hidden;
+}
+
+.rl-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--racing), var(--rl-live));
+  box-shadow: 0 0 10px var(--rl-live-glow);
+  transition: width 1s linear;
 }
 
 /* --- F1 start-lights gantry --- */
 .rl-lights {
   display: flex;
   gap: 10px;
-  padding: 10px 16px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 11px 17px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.35));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .rl-light {
+  position: relative;
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background: #2a0c0c;
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.rl-light::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  width: 5px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  filter: blur(0.5px);
 }
 
 /* Pre-race: lights armed, glowing red in an F1 illumination sweep */
@@ -1410,7 +1665,8 @@ body {
 /* Race underway: lights out — go */
 .rl-lights-underway .rl-light {
   background: radial-gradient(circle at 50% 35%, #6dffa8, #14a85a 75%);
-  box-shadow: 0 0 14px rgba(40, 220, 120, 0.65), inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 16px rgba(40, 220, 120, 0.7), inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+  animation: rlLightsLiveGlow 2.6s ease-in-out infinite;
 }
 
 .rl-lights-finished .rl-light:nth-child(odd) {
@@ -1421,6 +1677,9 @@ body {
 }
 
 .rl-lights-caption {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-family: var(--font-mono);
   font-size: 9.5px;
   letter-spacing: 0.22em;
@@ -1428,50 +1687,104 @@ body {
   color: var(--racing-hot-ticker);
 }
 
+.rl-phase-underway .rl-lights-caption {
+  color: var(--rl-live);
+}
+
+.rl-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rl-live);
+  box-shadow: 0 0 8px var(--rl-live-glow);
+  animation: rlBlink 1.2s steps(1) infinite;
+}
+
 /* --- Weekend session timeline --- */
 .rl-sessions {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 26px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .rl-session {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  gap: 9px;
+  padding: 14px 16px 13px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(0, 0, 0, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 6px 18px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px) saturate(1.2);
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+/* Thin colored accent bar along the top edge, distinct per state */
+.rl-session::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 
 .rl-session-done {
-  opacity: 0.62;
+  opacity: 0.55;
+}
+
+.rl-session-done .rl-session-label .rl-stat-icon {
+  opacity: 0.5;
 }
 
 .rl-session-next {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: color-mix(in srgb, var(--racing-hot) 55%, rgba(255, 255, 255, 0.25));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--racing-hot) 18%, transparent), rgba(8, 6, 8, 0.58));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 12px 28px color-mix(in srgb, var(--racing-hot) 28%, rgba(0, 0, 0, 0.3));
+  transform: translateY(-3px);
+}
+
+.rl-session-next::before {
+  background: linear-gradient(90deg, var(--racing-hot), var(--racing));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--racing-hot) 65%, transparent);
 }
 
 .rl-session.rl-session-live {
-  border-color: var(--racing);
-  background: rgba(168, 85, 247, 0.1);
-  box-shadow: 0 0 0 1px var(--racing), 0 0 24px rgba(168, 85, 247, 0.25);
+  border-color: var(--rl-live);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--rl-live) 24%, transparent), rgba(22, 4, 8, 0.6));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 1px var(--rl-live),
+    0 16px 36px var(--rl-live-glow);
+  transform: translateY(-3px);
+}
+
+.rl-session.rl-session-live::before {
+  background: var(--rl-live);
+  box-shadow: 0 0 14px var(--rl-live-glow);
 }
 
 .rl-session.rl-session-race {
   border-color: rgba(255, 255, 255, 0.14);
 }
-.rl-session.rl-session-race.rl-session-next,
-.rl-session.rl-session-race.rl-session-live {
+.rl-session.rl-session-race.rl-session-next {
   border-color: var(--racing-hot);
+}
+.rl-session.rl-session-race.rl-session-live {
+  border-color: var(--rl-live);
 }
 
 .rl-session-top {
@@ -1481,6 +1794,24 @@ body {
   gap: 8px;
 }
 
+.rl-session-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.rl-session-label .rl-stat-icon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+}
+
+.rl-session-next .rl-session-label .rl-stat-icon,
+.rl-session-live .rl-session-label .rl-stat-icon {
+  color: #fff;
+}
+
 .rl-session-name {
   font-family: var(--font-display);
   font-size: 12px;
@@ -1488,43 +1819,74 @@ body {
   letter-spacing: 0.02em;
   color: #fff;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rl-session-time {
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.1em;
-  color: rgba(244, 241, 234, 0.5);
+  color: rgba(244, 241, 234, 0.58);
+}
+
+.rl-session-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.rl-session-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--rl-live);
+  box-shadow: 0 0 8px var(--rl-live-glow);
+  transition: width 1s linear;
 }
 
 .rl-badge-live,
 .rl-badge-next,
 .rl-badge-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-family: var(--font-mono);
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 7px;
+  border-radius: 5px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .rl-badge-live {
   color: #fff;
-  background: var(--racing);
+  background: var(--rl-live);
+  box-shadow: 0 2px 10px var(--rl-live-glow);
   animation: rlBlink 1.4s steps(1) infinite;
 }
 
 .rl-badge-next {
-  color: var(--racing-hot-ticker);
-  background: rgba(255, 255, 255, 0.08);
+  color: #17120c;
+  background: linear-gradient(135deg, var(--racing-hot), var(--racing));
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--racing-hot) 45%, transparent);
 }
 
 .rl-badge-check {
-  color: #6dffa8;
-  background: transparent;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
   padding: 0;
+  border-radius: 50%;
+  color: #6dffa8;
+  background: color-mix(in srgb, #2ee88a 20%, transparent);
+  font-size: 9px;
 }
 
 @keyframes rlLightSweep {
@@ -1533,6 +1895,15 @@ body {
   }
   50% {
     filter: brightness(1.15);
+  }
+}
+
+@keyframes rlLightsLiveGlow {
+  0%, 100% {
+    filter: brightness(0.9);
+  }
+  50% {
+    filter: brightness(1.2);
   }
 }
 
@@ -1556,6 +1927,34 @@ body {
   }
 }
 
+@keyframes rlLiveThrob {
+  0%, 100% {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.22) inset,
+      0 0 0 1px rgba(0, 0, 0, 0.4),
+      0 0 70px var(--rl-live-glow),
+      0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
+      0 8px 26px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.22) inset,
+      0 0 0 1px rgba(0, 0, 0, 0.4),
+      0 0 120px var(--rl-live-glow),
+      0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
+      0 8px 26px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes rlRailLive {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @keyframes rlSheen {
   0%, 70% {
     transform: translateX(-100%);
@@ -1565,15 +1964,14 @@ body {
   }
 }
 
-@keyframes rlPulse {
+@keyframes rlPulseRing {
   0% {
-    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.55);
-  }
-  70% {
-    box-shadow: 0 0 0 12px rgba(168, 85, 247, 0);
+    opacity: 0.55;
+    transform: scale(1);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+    opacity: 0;
+    transform: scale(3.2);
   }
 }
 
@@ -1588,7 +1986,7 @@ body {
 
 @media (max-width: 760px) {
   .rl-banner {
-    padding: 24px 22px;
+    padding: 26px 22px;
   }
   .rl-grid {
     grid-template-columns: 1fr;
@@ -1608,11 +2006,14 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .rl-banner,
   .rl-banner::before,
   .rl-sheen,
-  .rl-pulse,
+  .rl-pulse::before,
+  .rl-pulse::after,
   .rl-colon,
   .rl-light,
+  .rl-live-dot,
   .rl-badge-live {
     animation: none;
   }
@@ -3292,8 +3693,65 @@ body {
   pointer-events: none;
 }
 
+/* Every row: compact thumbnail beside the text instead of a full-bleed
+   hero — with every item now carrying a real article photo, a hero-per-row
+   layout made the list absurdly tall. The lead item keeps its larger
+   headline/background treatment but shares this same thumbnail style. */
+.news-item.neutral,
+.news-item.lead {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  grid-template-areas:
+    "thumb meta"
+    "thumb content";
+  column-gap: 18px;
+}
+
+.news-item.lead {
+  grid-template-columns: 180px 1fr;
+}
+
+.news-item.neutral .news-thumb,
 .news-item.lead .news-thumb {
-  aspect-ratio: 16 / 9;
+  grid-area: thumb;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  align-self: start;
+}
+
+.news-item.neutral .news-thumb::after,
+.news-item.lead .news-thumb::after {
+  display: none;
+}
+
+.news-item.neutral .news-meta,
+.news-item.lead .news-meta {
+  grid-area: meta;
+}
+
+.news-item.neutral .news-content-wrap,
+.news-item.lead .news-content-wrap {
+  grid-area: content;
+}
+
+@media (max-width: 640px) {
+  .news-item.neutral,
+  .news-item.lead {
+    display: block;
+  }
+
+  .news-item.neutral .news-thumb,
+  .news-item.lead .news-thumb {
+    margin: -22px -24px 16px -26px;
+    aspect-ratio: 16 / 8.2;
+    border-radius: 0;
+  }
+
+  .news-item.neutral .news-thumb::after,
+  .news-item.lead .news-thumb::after {
+    display: block;
+  }
 }
 
 .news-meta {
@@ -5142,7 +5600,8 @@ body {
   align-items: stretch;
   background: #050505;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
   overflow: hidden;
   position: relative;
   box-shadow:
@@ -5476,13 +5935,14 @@ body {
 
 /* ── Season comparison panel ─────────────────────────────────────────── */
 .battle-compare {
-  margin-top: 20px;
+  margin-top: 0;
   background: #050505;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0 0 20px 20px;
   padding: 24px 28px 8px;
   box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.4),
+    0 40px 100px rgba(0, 0, 0, 0.5),
     0 2px 0 rgba(255, 255, 255, 0.04) inset;
 }
 
@@ -5575,15 +6035,18 @@ body {
   transition: width 0.6s var(--ease-out);
 }
 
-.compare-fill.leading {
+.compare-fill.p1 {
   background: linear-gradient(90deg,
-    color-mix(in srgb, var(--racing) 65%, transparent),
-    var(--racing-hot));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--racing) 55%, transparent);
+    color-mix(in srgb, var(--p1-color) 65%, transparent),
+    var(--p1-color));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--p1-color) 55%, transparent);
 }
 
-.compare-fill.trailing {
-  background: rgba(255, 255, 255, 0.16);
+.compare-fill.p2 {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--p2-color) 65%, transparent),
+    var(--p2-color));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--p2-color) 55%, transparent);
 }
 
 .compare-label {
@@ -12933,44 +13396,6 @@ body {
 
 .lt-footnote-delay { color: var(--racing-hot); }
 
-/* ---------- dashboard entry pill ---------- */
-
-.lt-entry-pill {
-  text-decoration: none;
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  background: rgba(10, 10, 12, 0.72);
-  backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 40px;
-  padding: 11px 18px;
-  cursor: pointer;
-  font-family: var(--font-display);
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #fff;
-  transition: all 0.25s var(--ease);
-}
-
-.lt-entry-pill:hover {
-  border-color: rgba(248, 113, 113, 0.6);
-  box-shadow: 0 6px 24px rgba(248, 113, 113, 0.25);
-}
-
-.lt-entry-pill i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #f87171;
-  animation: lt-blink 1.4s ease-in-out infinite;
-}
-
 /* ---------- responsive ---------- */
 
 @media (max-width: 1100px) {
@@ -12989,7 +13414,6 @@ body {
   .lt-weather { gap: 8px 16px; padding: 10px 16px; }
   .lt-masthead { padding: 16px 16px 14px; }
   .lt-side { flex-direction: column; }
-  .lt-entry-pill { bottom: 84px; left: 16px; }
 }
 
 /* ============================================================
@@ -13192,22 +13616,6 @@ body {
 @media (max-width: 480px) {
   .ltb-features { grid-template-columns: 1fr 1fr; }
   .ltb-title { font-size: 1.8rem; }
-}
-
-/* Race-day banner CTA row — live timing sits beside the race center button. */
-.rl-cta-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.rl-cta-timing .rl-cta-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #f87171;
-  animation: lt-blink 1.4s ease-in-out infinite;
 }
 
 /* ---------- replay transport ---------- */

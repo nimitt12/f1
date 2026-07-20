@@ -51,6 +51,41 @@ export const raceSlug = (race: Race): string =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
+// A typical Grand Prix runs ~2h; give it a generous window before we call it
+// a wrap so the live banner/session cards stay "live" for the whole
+// broadcast.
+export const RACE_DURATION_MS = 2.75 * 60 * 60 * 1000;
+// Practice / qualifying / sprint sessions are shorter.
+export const SESSION_DURATION_MS = 1.5 * 60 * 60 * 1000;
+// How long after the chequered flag the race-day takeover stays up before
+// handing back to the "next race" card.
+export const POST_RACE_GRACE_MS = 3 * 60 * 60 * 1000;
+
+const sessionStartMs = (s?: { date: string; time?: string }): number | null =>
+  s && s.date ? new Date(`${s.date}T${s.time || '12:00:00Z'}`).getTime() : null;
+
+/**
+ * The full "race weekend" window for a round: from its earliest scheduled
+ * session (first practice, or sprint quali on sprint weekends) through
+ * {@link POST_RACE_GRACE_MS} after the Grand Prix itself is expected to
+ * finish. Used to decide when the race-day live takeover should replace the
+ * "next race" card, instead of gating on a single calendar date.
+ */
+export const raceWeekendWindow = (race: Race): { start: number; end: number } => {
+  const raceStart = new Date(`${race.date}T${race.time || '15:00:00Z'}`).getTime();
+  const sessionStarts = [
+    sessionStartMs(race.FirstPractice),
+    sessionStartMs(race.SecondPractice),
+    sessionStartMs(race.ThirdPractice),
+    sessionStartMs(race.SprintQualifying),
+    sessionStartMs(race.Sprint),
+    sessionStartMs(race.Qualifying),
+  ].filter((t): t is number => t != null);
+  const start = Math.min(raceStart, ...sessionStarts);
+  const end = raceStart + RACE_DURATION_MS + POST_RACE_GRACE_MS;
+  return { start, end };
+};
+
 // ISO country name -> ISO 3166-1 alpha-2 code, used for flag rendering.
 export const COUNTRY_FLAGS: Record<string, string> = {
   Australia: 'au',
