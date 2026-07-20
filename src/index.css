@@ -12851,6 +12851,16 @@ body {
   overflow: hidden;
 }
 
+.lt-console:fullscreen,
+.lt-console:-webkit-full-screen {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  border-radius: 0;
+  overflow-y: auto;
+}
+
 /* ---------- masthead ---------- */
 
 .lt-masthead {
@@ -13124,6 +13134,33 @@ body {
   border-color: color-mix(in srgb, var(--racing) 55%, transparent);
 }
 
+.lt-delay-custom {
+  color-scheme: dark;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  padding: 13px 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 2px 6px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  width: 100%;
+}
+.lt-delay-custom::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.lt-delay-custom:hover,
+.lt-delay-custom:focus {
+  border-color: color-mix(in srgb, var(--racing) 55%, transparent);
+  outline: none;
+}
+
 /* Explicit dark option styling — fallback for browsers that don't honor
    color-scheme on the native popup (older Windows Chromium/Edge). */
 .lt-delay select option,
@@ -13161,6 +13198,13 @@ body {
   border-color: var(--racing-hot);
   color: #fff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 6px 20px color-mix(in srgb, var(--racing) 35%, transparent);
+}
+
+.lt-fullscreen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px;
 }
 
 /* ---------- weather strip ---------- */

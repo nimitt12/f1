@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SiteHeader from './SiteHeader';
 import type { AuthUser } from './Hero';
 import { useLiveTiming, replayControl, fetchArchiveIndex } from '../hooks/useLiveTiming';
@@ -397,6 +397,9 @@ const LiveSkeleton: React.FC = () => (
 
 const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSettings }) => {
   const [delay, setDelay] = useState(0);
+  const [customDelay, setCustomDelay] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const consoleRef = useRef<HTMLElement | null>(null);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [replayStarting, setReplayStarting] = useState(false);
   const [scrub, setScrub] = useState<number | null>(null);
@@ -416,6 +419,20 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    const onFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      consoleRef.current?.requestFullscreen();
+    }
+  };
 
   const pickArchiveSession = async (path: string, name: string) => {
     setReplayStarting(true);
@@ -541,7 +558,7 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
         />
       </div>
 
-      <section className="lt-console">
+      <section className="lt-console" ref={consoleRef}>
         {/* ---------- status masthead ---------- */}
         <header className="lt-masthead">
           <div className="lt-mast-left">
@@ -590,15 +607,54 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
               {!inReplay && (
                 <label className="lt-delay">
                   <span>Broadcast sync</span>
-                  <select value={delay} onChange={(e) => setDelay(Number(e.target.value))}>
+                  <select
+                    value={customDelay ? 'custom' : delay}
+                    onChange={(e) => {
+                      if (e.target.value === 'custom') {
+                        setCustomDelay(true);
+                      } else {
+                        setCustomDelay(false);
+                        setDelay(Number(e.target.value));
+                      }
+                    }}
+                  >
                     {DELAY_OPTIONS.map((d) => (
                       <option key={d} value={d}>{d === 0 ? 'Real time' : `+${d}s`}</option>
                     ))}
+                    <option value="custom">Custom</option>
                   </select>
+                  {customDelay && (
+                    <input
+                      type="number"
+                      className="lt-delay-custom"
+                      min={0}
+                      max={600}
+                      step={1}
+                      placeholder="Seconds"
+                      value={delay === 0 ? '' : delay}
+                      onChange={(e) => {
+                        const raw = Number(e.target.value);
+                        const clamped = Number.isFinite(raw) ? Math.min(600, Math.max(0, raw)) : 0;
+                        setDelay(clamped);
+                      }}
+                    />
+                  )}
                 </label>
               )}
               <button className="lt-demo-btn" onClick={() => setArchiveOpen(true)}>
                 Archive
+              </button>
+              <button
+                className="lt-demo-btn lt-fullscreen-btn"
+                onClick={toggleFullscreen}
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              >
+                {isFullscreen ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" /></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" /></svg>
+                )}
               </button>
             </div>
           </div>
