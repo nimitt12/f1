@@ -12,6 +12,14 @@ const Footer: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  // Same SPA-navigation pattern as openPrivacy, for the account deletion page.
+  const openAccountDeletion = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.history.pushState({}, '', '/account-deletion');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="footer-wrap">
       <footer className="footer">
@@ -57,6 +65,7 @@ const Footer: React.FC = () => {
               <li><a href="#calendar">Calendar</a></li>
               <li><a href="#paddock">Paddock Intel</a></li>
               <li><a href="/privacy" onClick={openPrivacy}>Privacy Policy</a></li>
+              <li><a href="/account-deletion" onClick={openAccountDeletion}>Delete My Account</a></li>
             </ul>
           </div>
 

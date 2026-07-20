@@ -21,6 +21,7 @@ import BootLoader from './components/BootLoader';
 import RaceDetails from './components/RaceDetails';
 import LiveTiming from './components/LiveTiming';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import AccountDeletionRequest from './components/AccountDeletionRequest';
 import ScrollProgress from './components/ScrollProgress';
 import AdminGate from './admin/AdminGate';
 import { raceSlug, type Race } from './data/races';
@@ -134,6 +135,7 @@ const App: React.FC = () => {
   const initialRacePath = parseRacePath(window.location.pathname);
   const initialLivePath = window.location.pathname === '/live';
   const initialPrivacyPath = window.location.pathname === '/privacy';
+  const initialDeletionPath = window.location.pathname === '/account-deletion';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     const savedUser = localStorage.getItem('f1_user');
     if (!savedUser) return null;
@@ -156,15 +158,16 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'live' | 'privacy'>(() => {
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'live' | 'privacy' | 'account_deletion'>(() => {
     // The URL is the source of truth for race details, live timing and the
     // privacy policy; only fall back to the persisted view (account/dashboard)
     // otherwise.
     if (initialRacePath) return 'race_details';
     if (initialLivePath) return 'live';
     if (initialPrivacyPath) return 'privacy';
+    if (initialDeletionPath) return 'account_deletion';
     const saved = localStorage.getItem('f1_view') as any;
-    return saved === 'race_details' || saved === 'live' || saved === 'privacy' ? 'dashboard' : saved || 'dashboard';
+    return saved === 'race_details' || saved === 'live' || saved === 'privacy' || saved === 'account_deletion' ? 'dashboard' : saved || 'dashboard';
   });
   const [selectedRace, setSelectedRace] = useState<Race | null>(() => {
     const saved = localStorage.getItem('f1_selected_race');
@@ -249,6 +252,8 @@ const App: React.FC = () => {
         setView('live');
       } else if (window.location.pathname === '/privacy') {
         setView('privacy');
+      } else if (window.location.pathname === '/account-deletion') {
+        setView('account_deletion');
       } else {
         setView('dashboard');
         setSelectedRace(null);
@@ -409,6 +414,15 @@ const App: React.FC = () => {
           />
         ) : view === 'privacy' ? (
           <PrivacyPolicy
+            onBack={() => {
+              setView('dashboard');
+              window.history.pushState({}, '', '/');
+              window.scrollTo(0, 0);
+            }}
+          />
+        ) : view === 'account_deletion' ? (
+          <AccountDeletionRequest
+            user={user}
             onBack={() => {
               setView('dashboard');
               window.history.pushState({}, '', '/');
