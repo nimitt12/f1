@@ -1,3 +1,4 @@
+import { authFetch } from '../lib/auth';
 import React, { useState, useEffect } from 'react';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
@@ -47,7 +48,7 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
     const fetchPrefs = async () => {
       if (!user) return;
       try {
-        const response = await fetch(`${BACKEND_URL}/profile/${user.id}`);
+        const response = await authFetch(`${BACKEND_URL}/profile/${encodeURIComponent(user.id)}`);
         if (response.ok) {
           const data = await response.json();
           if (data) {
@@ -76,7 +77,7 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
     setIsSaving(true);
     
     try {
-      const response = await fetch(`${BACKEND_URL}/profile/${user.id}`, {
+      const response = await authFetch(`${BACKEND_URL}/profile/${encodeURIComponent(user.id)}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

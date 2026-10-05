@@ -1,3 +1,4 @@
+import { signInWithGoogle } from '../lib/auth';
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 
@@ -29,23 +30,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
   const handleSuccess = async (credentialResponse: any) => {
     if (credentialResponse.credential) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/google`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken: credentialResponse.credential })
-        });
-        
-        if (!response.ok) throw new Error('Backend authentication failed');
-        
-        const data = await response.json();
-        // Persist the JWT so the admin portal can authorize against the backend
-        if (data.token) localStorage.setItem('f1_token', data.token);
-        // Standardize the user object (handle potential full_name/avatar_url from backend)
-        const userData = {
-          ...data.user,
-          name: data.user.name || data.user.full_name || 'User',
-          picture: data.user.picture || data.user.avatar_url || data.user.picture_url || ''
-        };
+        const userData = await signInWithGoogle(credentialResponse.credential);
         onLoginSuccess(userData);
       } catch (error) {
         console.error('Backend auth failed:', error);

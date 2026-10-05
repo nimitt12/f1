@@ -1,3 +1,4 @@
+import { deepMerge, LiveQueue, parseLiveMessage, safeKey, validateLiveValue } from '../lib/liveData';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -35,34 +36,6 @@ export interface LiveTimingState {
 }
 
 /**
- * Merge an F1 feed delta into the current value — mirrors the backend's
- * semantics exactly: objects merge key-by-key recursively, everything else
- * replaces, and array patches arrive as objects keyed by stringified index.
- */
-const deepMerge = (base: any, patch: any): any => {
-  if (patch === null || typeof patch !== 'object' || Array.isArray(patch)) return patch;
-  if (Array.isArray(base)) {
-    const next = base.slice();
-    for (const [key, value] of Object.entries(patch)) {
-      const idx = Number(key);
-      if (Number.isInteger(idx)) next[idx] = deepMerge(next[idx], value);
-    }
-    return next;
-  }
-  const target: Record<string, any> = base && typeof base === 'object' ? { ...base } : {};
-  for (const [key, value] of Object.entries(patch)) {
-    target[key] = deepMerge(target[key], value);
-  }
-  return target;
-};
-
-interface QueuedUpdate {
-  receivedAt: number;
-  topic: string;
-  data: any;
-}
-
-/**
  * Subscribes to the backend's live timing SSE stream and exposes the merged
  * session state. Supports an optional broadcast-sync delay: updates are
  * buffered client-side and applied `delayMs` after arrival so the timing
@@ -78,49 +51,88 @@ export const useLiveTiming = (delayMs: number) => {
   });
 
   const topicsRef = useRef<Record<string, any>>({});
-  const queueRef = useRef<QueuedUpdate[]>([]);
+  const queueRef = useRef(new LiveQueue());
   const delayRef = useRef(delayMs);
 
   useEffect(() => {
-    delayRef.current = delayMs;
+    delayRef.current = Number.isFinite(delayMs) ? Math.max(0, Math.min(delayMs, 300_000)) : 0;
   }, [delayMs]);
 
   useEffect(() => {
-    const source = new EventSource(`${BACKEND_URL}/live/stream`);
+    const queue = queueRef.current;
+    let source = new EventSource(`${BACKEND_URL}/live/stream`);
     let closed = false;
 
-    source.onopen = () => setState((s) => ({ ...s, streamOpen: true }));
-    source.onerror = () => setState((s) => ({ ...s, streamOpen: false }));
-
-    source.addEventListener('snapshot', (e) => {
-      const snap = JSON.parse((e as MessageEvent).data);
-      queueRef.current = [];
-      topicsRef.current = snap.topics || {};
-      setState({
-        topics: topicsRef.current,
-        status: snap.status,
-        streamOpen: true,
-        simulated: !!snap.simulated,
-        replay: snap.replay || null,
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    // On overflow/malformed data, discard deltas and reconnect for a full snapshot.
+    const recover = () => {
+      source.close();
+      queue.clear();
+      topicsRef.current = {};
+      setState(s => ({ ...s, topics: {}, status: 'error', streamOpen: false }));
+      if (!closed && !retry) retry = setTimeout(() => {
+        retry = undefined;
+        if (!closed) {
+          source = new EventSource(`${BACKEND_URL}/live/stream`);
+          attach();
+        }
+      }, 5000);
+    };
+    const listen = (name: string, handler: (data: any, bytes: number) => void) => {
+      source.addEventListener(name, event => {
+        if (closed) return;
+        try {
+          const text = (event as MessageEvent).data;
+          handler(parseLiveMessage(text), text.length * 2);
+        } catch { recover(); }
       });
-    });
+    };
+    const validStatus = (status: unknown): status is LiveStatus =>
+      ['idle', 'connecting', 'connected', 'error'].includes(String(status));
+    const checkReplay = (replay: any) => {
+      if (replay == null) return;
+      if (typeof replay.path !== 'string' || typeof replay.name !== 'string' ||
+          !['speed', 'offsetMs', 'durationMs'].every(key => Number.isFinite(replay[key]) && replay[key] >= 0)) {
+        throw new Error('Invalid replay state');
+      }
+    };
+    const attach = () => {
+      source.onopen = () => setState((s) => ({ ...s, streamOpen: true }));
+      source.onerror = () => setState((s) => ({ ...s, streamOpen: false }));
 
-    // Replay transport progress — applied immediately (never delay-buffered)
-    // so the scrubber tracks the backend clock.
-    source.addEventListener('replay', (e) => {
-      const progress = JSON.parse((e as MessageEvent).data);
-      setState((s) => ({ ...s, replay: progress || null }));
-    });
+      listen('snapshot', (snap) => {
+        if (!snap || !validStatus(snap.status) || !snap.topics || typeof snap.topics !== 'object' || Array.isArray(snap.topics) || Object.keys(snap.topics).length > 128) throw new Error('Invalid snapshot');
+        checkReplay(snap.replay);
+        queue.clear();
+        topicsRef.current = snap.topics || {};
+        setState({
+          topics: topicsRef.current,
+          status: snap.status,
+          streamOpen: true,
+          simulated: !!snap.simulated,
+          replay: snap.replay || null,
+        });
+      });
 
-    source.addEventListener('update', (e) => {
-      const { topic, data } = JSON.parse((e as MessageEvent).data);
-      queueRef.current.push({ receivedAt: Date.now(), topic, data });
-    });
+      // Replay transport progress — applied immediately (never delay-buffered)
+      // so the scrubber tracks the backend clock.
+      listen('replay', (progress) => {
+        checkReplay(progress);
+        setState((s) => ({ ...s, replay: progress || null }));
+      });
 
-    source.addEventListener('status', (e) => {
-      const { status, simulated } = JSON.parse((e as MessageEvent).data);
-      setState((s) => ({ ...s, status, simulated: !!simulated }));
-    });
+      listen('update', ({ topic, data }, bytes) => {
+        if (typeof topic !== 'string' || !/^[A-Za-z][A-Za-z0-9]{0,63}$/.test(topic) || !safeKey(topic)) throw new Error('Invalid topic');
+        queue.push({ receivedAt: Date.now(), topic, data, bytes });
+      });
+
+      listen('status', ({ status, simulated }) => {
+        if (!validStatus(status)) throw new Error('Invalid status');
+        setState((s) => ({ ...s, status, simulated: !!simulated }));
+      });
+
+    };
+    attach();
 
     // Drain the buffer 5x/sec, applying every update older than the delay.
     // Compressed topics (CarData/Position) are full snapshots, not deltas.
@@ -128,23 +140,30 @@ export const useLiveTiming = (delayMs: number) => {
       if (closed) return;
       const due = Date.now() - delayRef.current;
       let applied = false;
-      while (queueRef.current.length > 0 && queueRef.current[0].receivedAt <= due) {
-        const { topic, data } = queueRef.current.shift()!;
-        topicsRef.current = {
-          ...topicsRef.current,
-          [topic]:
-            topic === 'CarData' || topic === 'Position'
-              ? data
-              : deepMerge(topicsRef.current[topic], data),
-        };
-        applied = true;
-      }
-      if (applied) setState((s) => ({ ...s, topics: topicsRef.current }));
+      try {
+        for (const { topic, data } of queue.drain(due)) {
+          if (!Object.hasOwn(topicsRef.current, topic) && Object.keys(topicsRef.current).length >= 128) throw new Error('Too many topics');
+          topicsRef.current = {
+            ...topicsRef.current,
+            [topic]:
+              topic === 'CarData' || topic === 'Position'
+                ? data
+                : deepMerge(topicsRef.current[topic], data),
+          };
+          applied = true;
+        }
+        if (applied) {
+          validateLiveValue(topicsRef.current);
+          setState((s) => ({ ...s, topics: topicsRef.current }));
+        }
+      } catch { recover(); }
     }, 200);
 
     return () => {
       closed = true;
       clearInterval(flush);
+      clearTimeout(retry);
+      queue.clear();
       source.close();
     };
   }, []);

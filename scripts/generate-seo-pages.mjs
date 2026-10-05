@@ -35,6 +35,19 @@ const raceSlug = (race) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
+// API data controls output paths: reject unsafe seasons and malformed entries.
+export const validateRaces = (races) => {
+  if (!Array.isArray(races) || races.length > 1000) throw new Error('Invalid calendar');
+  for (const race of races) {
+    if (!race || !/^\d{4}$/.test(String(race.season)) ||
+        !/^\d{1,3}$/.test(String(race.round)) ||
+        typeof race.raceName !== 'string' || race.raceName.length > 300 || !raceSlug(race) ||
+        !race.Circuit?.Location || typeof race.Circuit.circuitName !== 'string') {
+      throw new Error('Invalid calendar entry');
+    }
+  }
+};
+
 export const loadRacesFromSnapshot = () => {
   const src = readFileSync(resolve(ROOT, 'src/data/races.ts'), 'utf8');
   const m = src.match(/export const RACES: Race\[\] = \[([\s\S]*?)\n\];/);
@@ -49,6 +62,7 @@ const loadRaces = async () => {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         console.log(`[seo] calendar: ${data.length} races from ${BACKEND_URL}/races`);
+        validateRaces(data);
         return [...data].sort((a, b) => Number(a.round) - Number(b.round));
       }
     }
@@ -139,17 +153,18 @@ const raceJsonLd = (race) => {
       },
     ],
   };
-  return JSON.stringify(graph, null, 2);
+  return JSON.stringify(graph, null, 2).replace(/</g, '\\u003c');
 };
 
 // Replace `pattern` (which must match) in `html` — throws if the template
 // drifted so a broken build fails loudly instead of shipping stale meta.
 const mustReplace = (html, pattern, replacement, what) => {
   if (!pattern.test(html)) throw new Error(`Template marker not found: ${what}`);
-  return html.replace(pattern, replacement);
+  return html.replace(pattern, () => replacement);
 };
 
-const racePage = (template, race) => {
+export const racePage = (template, race) => {
+  validateRaces([race]);
   const path = `/race/${race.season}/${raceSlug(race)}`;
   const url = `${SITE}${path}`;
   const loc = race.Circuit.Location;
@@ -247,6 +262,7 @@ const racePage = (template, race) => {
 };
 
 export const buildSitemap = (races) => {
+  validateRaces(races);
   const today = new Date().toISOString().slice(0, 10);
   const entry = (loc, lastmod, changefreq, priority) =>
     `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;

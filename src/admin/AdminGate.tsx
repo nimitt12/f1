@@ -3,7 +3,7 @@ import './admin.css';
 import AdminPortal from './AdminPortal';
 import Loader from '../components/Loader';
 import LogoMark from '../components/LogoMark';
-import { getToken } from './adminAuth';
+import { getToken, authFetch } from './adminAuth';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
 
@@ -22,6 +22,8 @@ const AdminGate: React.FC = () => {
 
   useEffect(() => {
     let active = true;
+    const signOut = () => setStatus('unauthenticated');
+    window.addEventListener('pitwall:signout', signOut);
 
     const verify = async () => {
       const token = getToken();
@@ -31,18 +33,17 @@ const AdminGate: React.FC = () => {
       }
 
       try {
-        const res = await fetch(`${BACKEND_URL}/admin/verify`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await authFetch(`${BACKEND_URL}/admin/verify`);
         if (!active) return;
 
         if (res.ok) {
           setStatus('authorized');
         } else if (res.status === 403) {
           setStatus('denied');
-        } else {
-          // 401 — token missing/expired/invalid
+        } else if (res.status === 401) {
           setStatus('unauthenticated');
+        } else {
+          setStatus('error');
         }
       } catch {
         if (active) setStatus('error');
@@ -52,6 +53,7 @@ const AdminGate: React.FC = () => {
     verify();
     return () => {
       active = false;
+      window.removeEventListener('pitwall:signout', signOut);
     };
   }, []);
 

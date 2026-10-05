@@ -1,6 +1,7 @@
+import { getToken } from './lib/auth';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import Ticker from './components/Ticker';
 import Hero from './components/Hero';
 import RaceLive from './components/RaceLive';
@@ -18,13 +19,14 @@ import DriverBattle from './components/DriverBattle';
 import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
-import RaceDetails from './components/RaceDetails';
-import LiveTiming from './components/LiveTiming';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AccountDeletionRequest from './components/AccountDeletionRequest';
 import ScrollProgress from './components/ScrollProgress';
-import AdminGate from './admin/AdminGate';
 import { raceSlug, type Race } from './data/races';
+
+const RaceDetails = lazy(() => import('./components/RaceDetails'));
+const LiveTiming = lazy(() => import('./components/LiveTiming'));
+const AdminGate = lazy(() => import('./admin/AdminGate'));
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -123,7 +125,9 @@ const ThemeSwitcher: React.FC = () => {
 // legacy round numbers ("10") are still accepted.
 const parseRacePath = (path: string): { season: string; raceId: string } | null => {
   const m = path.match(/^\/race\/([^/]+)\/([^/]+)\/?$/);
-  return m ? { season: m[1], raceId: decodeURIComponent(m[2]) } : null;
+  try {
+    return m ? { season: m[1], raceId: decodeURIComponent(m[2]) } : null;
+  } catch { return null; }
 };
 
 const matchesRacePath = (race: Race, target: { season: string; raceId: string }): boolean =>
@@ -137,13 +141,15 @@ const App: React.FC = () => {
   const initialPrivacyPath = window.location.pathname === '/privacy';
   const initialDeletionPath = window.location.pathname === '/account-deletion';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
-    const savedUser = localStorage.getItem('f1_user');
+    localStorage.removeItem('f1_user');
+    if (!getToken()) return null;
+    const savedUser = sessionStorage.getItem('f1_user');
     if (!savedUser) return null;
     try {
       const parsed = JSON.parse(savedUser);
       // If legacy session missing ID, clear it
       if (!parsed.id) {
-        localStorage.removeItem('f1_user');
+        sessionStorage.removeItem('f1_user');
         return null;
       }
       // Standardize the user object for existing sessions
@@ -154,7 +160,7 @@ const App: React.FC = () => {
       };
     } catch (e) {
       console.error("Error parsing user data:", e);
-      localStorage.removeItem('f1_user');
+      sessionStorage.removeItem('f1_user');
       return null;
     }
   });
@@ -167,11 +173,13 @@ const App: React.FC = () => {
     if (initialPrivacyPath) return 'privacy';
     if (initialDeletionPath) return 'account_deletion';
     const saved = localStorage.getItem('f1_view') as any;
-    return saved === 'race_details' || saved === 'live' || saved === 'privacy' || saved === 'account_deletion' ? 'dashboard' : saved || 'dashboard';
+    return saved === 'account' ? 'account' : 'dashboard';
   });
   const [selectedRace, setSelectedRace] = useState<Race | null>(() => {
     const saved = localStorage.getItem('f1_selected_race');
-    const parsed: Race | null = saved ? JSON.parse(saved) : null;
+    let parsed: Race | null = null;
+    try { parsed = saved ? JSON.parse(saved) : null; } catch { /* Ignore corrupt cache. */ }
+    if (parsed && (typeof parsed.raceName !== 'string' || !parsed.Circuit)) parsed = null;
     // On a deep link / refresh, only trust the cached race if it matches the
     // path; otherwise it'll be resolved from the calendar once it loads.
     if (initialRacePath) {
@@ -309,20 +317,24 @@ const App: React.FC = () => {
   useEffect(() => {
     setShowGlobalLogin(!user);
     if (user && user.id) {
-      localStorage.setItem('f1_user', JSON.stringify(user));
+      sessionStorage.setItem('f1_user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('f1_user');
+      sessionStorage.removeItem('f1_user');
     }
   }, [user]);
 
+  useEffect(() => {
+    const signOut = () => setUser(null);
+    window.addEventListener('pitwall:signout', signOut);
+    return () => window.removeEventListener('pitwall:signout', signOut);
+  }, []);
+
   if (isAdminPortal) {
-    return (
-      <AdminGate />
-    );
+    return <Suspense fallback={<p role="status">Loading admin portal…</p>}><AdminGate /></Suspense>;
   }
 
   return (
-    <>
+    <Suspense fallback={<p role="status">Loading Pitwall…</p>}>
       {showBoot && <BootLoader onComplete={() => setShowBoot(false)} />}
       
       <LoginModal 
@@ -453,7 +465,7 @@ const App: React.FC = () => {
           />
         )}
       </div>
-    </>
+    </Suspense>
   );
 };
 

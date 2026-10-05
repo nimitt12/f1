@@ -1,3 +1,4 @@
+import { authFetch } from '../lib/auth';
 import React, { useState } from 'react';
 import LogoMark from './LogoMark';
 import Footer from './Footer';
@@ -22,7 +23,7 @@ const AccountDeletionRequest: React.FC<AccountDeletionRequestProps> = ({ onBack,
     setStatus('submitting');
     setErrorMsg('');
     try {
-      const response = await fetch(`${BACKEND_URL}/account/delete-request`, {
+      const response = await authFetch(`${BACKEND_URL}/account/delete-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, email: user.email, reason: reason.trim() || undefined }),

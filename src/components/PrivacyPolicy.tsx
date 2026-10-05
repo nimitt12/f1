@@ -77,10 +77,11 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBack }) => {
             <h3>Preferences stored on your device</h3>
             <p>
               To make the site work smoothly, we store some data locally in your browser
-              (localStorage) — such as your chosen team theme, the last view you had open, the last
-              race you looked at, and your signed-in user profile. This data stays on your device,
-              is never transmitted to analytics services by us, and you can remove it at any time
-              by signing out or clearing your browser's site data.
+              (localStorage) — such as your chosen team theme, the last view you had open, and the
+              last race you looked at. Your sign-in token and cached profile use tab-scoped
+              sessionStorage and are cleared when you sign out or close the tab. The token is
+              sent to our API to authenticate account requests. We do not send these stored values
+              to analytics services. You can clear preferences through your browser's site data settings.
             </p>
           </section>
 

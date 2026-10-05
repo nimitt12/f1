@@ -1,3 +1,4 @@
+import { safeArticleUrl, safeImageUrl } from '../lib/newsUrls';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Loader from './Loader';
@@ -30,6 +31,9 @@ const NewsIntel: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(25_000)]);
+
     // Pull an image out of an RSS <item> wherever the feed happens to put one:
     // <enclosure>, the media: namespace, or an <img> embedded in the HTML body.
     const extractImage = (item: Element): string | undefined => {
@@ -60,8 +64,10 @@ const NewsIntel: React.FC = () => {
 
     const fetchNews = async () => {
       try {
-        const response = await fetch('/f1-news');
+        const response = await fetch('/f1-news', { signal });
+        if (!response.ok) throw new Error('News unavailable');
         const xmlText = await response.text();
+        if (xmlText.length > 2_000_000) throw new Error('News feed too large');
 
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
@@ -69,15 +75,17 @@ const NewsIntel: React.FC = () => {
 
         const parsedItems: NewsItem[] = Array.from(items).slice(0, 10).map((item, index) => {
           const title = item.querySelector('title')?.textContent || '';
-          const link = item.querySelector('link')?.textContent || '';
+          const link = safeArticleUrl(item.querySelector('link')?.textContent || '') || '';
           const pubDate =
             item.querySelector('pubDate')?.textContent ||
             item.getElementsByTagName('dc:date')[0]?.textContent ||
             '';
 
           const rawDescription = item.querySelector('description')?.textContent || '';
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = rawDescription;
+          // Template contents are inert: images and event handlers cannot run.
+          const template = document.createElement('template');
+          template.innerHTML = rawDescription;
+          const tempDiv = template.content;
 
           // Full content (cleaned but not truncated)
           const fullContent = tempDiv.querySelector('p')?.textContent || tempDiv.textContent || '';
@@ -103,27 +111,26 @@ const NewsIntel: React.FC = () => {
             fullContent,
             category,
             pubDate,
-            image: extractImage(item),
+            image: safeImageUrl(extractImage(item)),
           };
         });
 
+        if (signal.aborted) return;
         setNews(parsedItems);
         setLoading(false);
 
-        // The RSS feed itself carries no per-article images, so backfill by
-        // fetching each article page (via the /f1-article proxy, to dodge
-        // CORS) and reading its og:image meta tag. Fires in parallel and
-        // patches items into state as each one resolves.
-        parsedItems
-          .filter((item) => !item.image)
-          .forEach(async (item) => {
+        // Limit article backfill to three concurrent requests per mount.
+        const pending = parsedItems.filter(item => !item.image && item.link);
+        await Promise.all(Array.from({ length: 3 }, async () => {
+          while (pending.length && !signal.aborted) {
+            const item = pending.shift()!;
             const ogImage = await fetchOgImage(item.link);
-            if (!ogImage) return;
-            setNews((prev) =>
-              prev.map((n) => (n.id === item.id ? { ...n, image: ogImage } : n))
-            );
-          });
+            if (!ogImage || signal.aborted) continue;
+            setNews(prev => prev.map(n => n.id === item.id ? { ...n, image: ogImage } : n));
+          }
+        }));
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error('Failed to fetch F1 news:', err);
         setLoading(false);
       }
@@ -131,18 +138,23 @@ const NewsIntel: React.FC = () => {
 
     const fetchOgImage = async (link: string): Promise<string | undefined> => {
       try {
-        const { pathname } = new URL(link);
-        const response = await fetch(`/f1-article${pathname}`);
+        const trusted = safeArticleUrl(link);
+        if (!trusted) return undefined;
+        const { pathname } = new URL(trusted);
+        const response = await fetch(`/f1-article${pathname}`, { signal });
         if (!response.ok) return undefined;
         const html = await response.text();
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        return doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || undefined;
+        if (html.length > 8_000_000) return undefined;
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        return safeImageUrl(template.content.querySelector('meta[property="og:image"]')?.getAttribute('content') || undefined);
       } catch {
         return undefined;
       }
     };
 
     fetchNews();
+    return () => controller.abort();
   }, []);
 
   const formatDate = (dateStr: string) => {
@@ -239,7 +251,8 @@ const NewsIntel: React.FC = () => {
             <div className="news-modal-footer">
               <button 
                 className="news-modal-link-btn"
-                onClick={() => window.open(selectedNews.link, '_blank')}
+                disabled={!selectedNews.link}
+                onClick={() => window.open(selectedNews.link, '_blank', 'noopener,noreferrer')}
               >
                 READ FULL STORY ON FORMULA1.COM
               </button>
