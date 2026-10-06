@@ -5,6 +5,7 @@ import './admin.css';
 import CrudManager from './CrudManager';
 import TriviaManager from './TriviaManager';
 import Loader from '../components/Loader';
+import { authFetch } from './adminAuth';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -195,7 +196,7 @@ const AdminPortal: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`${BACKEND_URL}/db-test`);
+      const res = await authFetch(`${BACKEND_URL}/db-test`);
       if (res.ok) {
         setDbStatus('CONNECTED');
       } else {
@@ -248,7 +249,7 @@ const AdminPortal: React.FC = () => {
     addLog(`INITIATED: Synchronization trigger for ${type.toUpperCase()}...`);
     
     try {
-      const res = await fetch(`${BACKEND_URL}${endpoint}`);
+      const res = await authFetch(`${BACKEND_URL}${endpoint}`);
       const data = await res.json();
       
       if (res.ok) {
@@ -296,7 +297,7 @@ const AdminPortal: React.FC = () => {
       // 2. DB Connectivity
       logLine('Testing database pool connectivity (/db-test)...');
       const dbStart = performance.now();
-      const dbRes = await fetch(`${BACKEND_URL}/db-test`);
+      const dbRes = await authFetch(`${BACKEND_URL}/db-test`);
       const dbTime = Math.round(performance.now() - dbStart);
       if (dbRes.ok) {
         const data = await dbRes.json();
