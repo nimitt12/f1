@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Loader from './Loader';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface ApiDriverRanking {
   id: string;

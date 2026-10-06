@@ -1,6 +1,6 @@
 import type { AuthUser } from '../components/Hero';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 export const TOKEN_KEY = 'f1_token';
 
 // Tab-scoped storage remains readable by JavaScript. HttpOnly sessions need backend support.

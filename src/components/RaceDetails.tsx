@@ -42,7 +42,7 @@ interface LapPositionsData {
   drivers: Record<string, LapPoint[]>;
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Fixed team accent colors (mirrors the --<team> CSS custom properties in
 // index.css). Used to pick a readable label color against a filled bar.

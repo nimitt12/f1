@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 // Interfaces for Ergast API
 interface Constructor {
   constructorId: string;
@@ -123,7 +125,7 @@ const ConstructorsStandings: React.FC = () => {
   useEffect(() => {
     const fetchStandings = async () => {
       try {
-        const response = await fetch('https://pitwall-backend-dq9r.onrender.com/constructors/get-all-constructors-season-rankings');
+        const response = await fetch(`${BACKEND_URL}/constructors/get-all-constructors-season-rankings`);
         const data: ApiConstructorRanking[] = await response.json();
         
         // Map the flat API response to the nested structure the component expects

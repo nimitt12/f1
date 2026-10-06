@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 // Interfaces for Ergast API
 interface Driver {
   driverId: string;
@@ -163,7 +165,7 @@ const DriversStandings: React.FC = () => {
   useEffect(() => {
     const fetchStandings = async () => {
       try {
-        const response = await fetch('https://pitwall-backend-dq9r.onrender.com/drivers/get-all-drivers-season-rankings');
+        const response = await fetch(`${BACKEND_URL}/drivers/get-all-drivers-season-rankings`);
         const data: ApiDriverRanking[] = await response.json();
         
         const mappedStandings: DriverStanding[] = data.map((item) => {

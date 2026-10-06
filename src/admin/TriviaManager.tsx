@@ -5,7 +5,7 @@ import { authFetch } from './adminAuth';
 import { generateTriviaFacts } from '../lib/trivia';
 import Loader from '../components/Loader';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface TriviaRow {
   id: string;

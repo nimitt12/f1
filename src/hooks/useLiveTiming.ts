@@ -2,8 +2,7 @@ import { deepMerge, LiveQueue, parseLiveMessage, safeKey, validateLiveValue } fr
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 /** Relay connection status reported by the backend. */
 export type LiveStatus = 'idle' | 'connecting' | 'connected' | 'error';

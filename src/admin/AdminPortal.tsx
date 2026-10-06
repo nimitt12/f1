@@ -6,7 +6,7 @@ import CrudManager from './CrudManager';
 import TriviaManager from './TriviaManager';
 import Loader from '../components/Loader';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const navItems = ['Overview', 'Race Ops', 'Drivers DB', 'Constructors DB', 'Trivia', 'Database', 'Systems'];
 

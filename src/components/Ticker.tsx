@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { generateTriviaFacts } from '../lib/trivia';
 
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Ticker: React.FC = () => {
   const [facts, setFacts] = useState<string[]>([]);

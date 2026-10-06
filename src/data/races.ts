@@ -7,8 +7,7 @@
 // bundled `RACES` snapshot below when the network/endpoint is unavailable so
 // the UI always has something to render.
 
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Ergast/Jolpica-shaped race record. Superset of every field the public
 // components read; nested objects are optional because not every round has a

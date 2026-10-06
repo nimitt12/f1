@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import LogoMark from './LogoMark';
 import Footer from './Footer';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface AccountDeletionRequestProps {
   onBack: () => void;

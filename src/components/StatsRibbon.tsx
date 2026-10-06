@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 interface TickerStats {
   topDriver: string;
   topDriverPoints: string;
@@ -17,7 +19,7 @@ const StatsRibbon: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('https://pitwall-backend-dq9r.onrender.com/results/get-stats-overall/2026');
+        const res = await fetch(`${BACKEND_URL}/results/get-stats-overall/2026`);
         const data = await res.json();
         setStats(data);
       } catch (e) {

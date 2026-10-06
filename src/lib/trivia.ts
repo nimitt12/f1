@@ -3,8 +3,7 @@
 // in the admin portal, and to seed "suggested" lines in the admin Trivia editor.
 import { RACES, fetchRaces, type Race } from '../data/races';
 
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface RaceResult {
   id: string;

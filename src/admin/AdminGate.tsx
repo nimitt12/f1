@@ -5,7 +5,7 @@ import Loader from '../components/Loader';
 import LogoMark from '../components/LogoMark';
 import { getToken, authFetch } from './adminAuth';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 type GateStatus = 'loading' | 'authorized' | 'unauthenticated' | 'denied' | 'error';
 

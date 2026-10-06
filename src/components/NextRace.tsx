@@ -4,6 +4,8 @@ import Tilt from './Tilt';
 import { COUNTRY_FLAGS, RACES as RACES_FALLBACK, fetchRaces, raceSlug, type Race } from '../data/races';
 import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const getTeamColor = (name: string) => {
   const lower = name.toLowerCase();
   if (lower.includes('mercedes')) return 'var(--mercedes)';
@@ -139,7 +141,7 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
     const fetchResults = async () => {
       setLoadingResults(true);
       try {
-        const res = await fetch(`https://pitwall-backend-dq9r.onrender.com/results/get-all-results/${prevRace.season}/${prevRace.round}`);
+        const res = await fetch(`${BACKEND_URL}/results/get-all-results/${prevRace.season}/${prevRace.round}`);
         const data = await res.json();
         if (active) setResults(Array.isArray(data) ? data : []);
       } catch (e) {

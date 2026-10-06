@@ -1,7 +1,7 @@
 import { authFetch } from '../lib/auth';
 import React, { useState, useEffect } from 'react';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface AccountSettingsProps {
   onClose: () => void;

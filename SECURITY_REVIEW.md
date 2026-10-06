@@ -33,7 +33,7 @@ These are requirements to verify, not confirmed server vulnerabilities:
 
 - No deployment was performed. Headers become effective only after Vercel deploys these changes. `vite preview` does not automatically emulate Vercel headers.
 - Existing users must sign in again. Token and cached profile now live in `sessionStorage`; independent new tabs may require sign-in. Backend ownership checks remain mandatory even with tab-scoped state.
-- CSP `connect-src` includes the current production API. If `VITE_BACKEND_URL` changes for a deployment, update that origin in `vercel.json`. The production authentication client requires HTTPS.
+- CSP `connect-src` permits HTTPS API connections so the deployment can use the origin configured by `VITE_BACKEND_URL`. The production authentication client requires HTTPS.
 - The CSP permits inline styles because the app uses React style props and inline fallback layouts. HTTPS images remain broadly allowed for existing remote artwork. Google and existing analytics scripts remain trusted third parties; this is not a nonce-based strict CSP.
 - Verify Google sign-in (including popup mode), news thumbnails, analytics, radio playback, offline navigation and live/archive streaming on a deployment preview. No browser integration tests or real-account login were run in this environment. Oversized real sessions may need measured adjustments to the live-data budgets; overflow deliberately reconnects rather than silently losing deltas.
 - The service worker caps cached assets; an offline route whose lazy chunk has not previously loaded is not guaranteed to work. Public navigation is refreshed from the network when online.

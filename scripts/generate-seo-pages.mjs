@@ -16,11 +16,16 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { loadEnv } from 'vite';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = resolve(ROOT, 'dist');
 const SITE = 'https://www.mypitwall.in';
-const BACKEND_URL = process.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = loadEnv(process.env.NODE_ENV ?? 'production', ROOT, '').VITE_BACKEND_URL;
+
+if (!BACKEND_URL) {
+  throw new Error('VITE_BACKEND_URL is required');
+}
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

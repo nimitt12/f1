@@ -4,7 +4,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## What this is
 
-"Pitwall" — a Formula 1 stats/dashboard PWA (React 19 + TypeScript + Vite). No backend code lives in this repo; the app is a pure frontend client of a separate hosted API (`pitwall-backend-dq9r.onrender.com`).
+"Pitwall" — a Formula 1 stats/dashboard PWA (React 19 + TypeScript + Vite). No backend code lives in this repo; the app is a pure frontend client of a separately hosted API.
 
 ## Commands
 
@@ -21,7 +21,7 @@ Requires a `.env` with:
 - `VITE_GOOGLE_CLIENT_ID` — Google OAuth client ID, used by `GoogleOAuthProvider` in [src/main.tsx](src/main.tsx)
 - `VITE_BACKEND_URL` — base URL of the hosted backend API
 
-Several components hardcode the production backend URL (`https://pitwall-backend-dq9r.onrender.com`) as a fallback or directly instead of reading `VITE_BACKEND_URL` — be consistent with whichever pattern the surrounding file already uses when touching API calls.
+All backend API calls must use `VITE_BACKEND_URL`. Do not hardcode a backend URL or add a fallback URL.
 
 ## Architecture
 

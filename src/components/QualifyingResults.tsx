@@ -21,7 +21,7 @@ interface QualifyingResultsProps {
   session?: 'qualifying' | 'sprint';
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, session = 'qualifying' }) => {
   const [results, setResults] = useState<QualifyingResult[]>([]);

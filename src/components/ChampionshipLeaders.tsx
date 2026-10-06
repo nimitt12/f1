@@ -55,7 +55,7 @@ const CONS_NAME_TO_NAT: Record<string, string> = {
   'Williams': 'British', 'Cadillac F1 Team': 'American', 'Aston Martin': 'British',
 };
 
-const BACKEND = 'https://pitwall-backend-dq9r.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // ─── API shapes ─────────────────────────────────────────────────────────────
 interface ApiDriverRanking {
@@ -152,8 +152,8 @@ const ChampionshipLeaders: React.FC = () => {
     const load = async () => {
       try {
         const [dRes, cRes] = await Promise.all([
-          fetch(`${BACKEND}/drivers/get-all-drivers-season-rankings`),
-          fetch(`${BACKEND}/constructors/get-all-constructors-season-rankings`),
+          fetch(`${BACKEND_URL}/drivers/get-all-drivers-season-rankings`),
+          fetch(`${BACKEND_URL}/constructors/get-all-constructors-season-rankings`),
         ]);
         const dData: ApiDriverRanking[] = await dRes.json();
         const cData: ApiConstructorRanking[] = await cRes.json();
