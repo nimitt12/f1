@@ -1,4 +1,5 @@
 import { deepMerge, LiveQueue, parseLiveMessage, safeKey, validateLiveValue } from '../lib/liveData';
+import { authFetch } from '../lib/auth';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -169,14 +170,14 @@ export const useLiveTiming = (delayMs: number) => {
 
   const setSimulation = useCallback(async (on: boolean) => {
     try {
-      await fetch(`${BACKEND_URL}/live/simulate/${on ? 'start' : 'stop'}`, { method: 'POST' });
+      await authFetch(`${BACKEND_URL}/live/simulate/${on ? 'start' : 'stop'}`, { method: 'POST' });
     } catch (err) {
       console.error('Failed to toggle live timing simulation:', err);
     }
   }, []);
 
   const startReplay = useCallback(async (path: string, name: string, speed = 1) => {
-    const res = await fetch(`${BACKEND_URL}/live/replay/start`, {
+    const res = await authFetch(`${BACKEND_URL}/live/replay/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path, name, speed }),
@@ -193,7 +194,7 @@ export const replayControl = async (
   body?: Record<string, unknown>,
 ): Promise<void> => {
   try {
-    await fetch(`${BACKEND_URL}/live/replay/${action}`, {
+    await authFetch(`${BACKEND_URL}/live/replay/${action}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: body ? JSON.stringify(body) : undefined,
