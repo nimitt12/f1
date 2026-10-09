@@ -26,6 +26,13 @@ import { raceSlug, type Race } from './data/races';
 
 const RaceDetails = lazy(() => import('./components/RaceDetails'));
 const LiveTiming = lazy(() => import('./components/LiveTiming'));
+const SchedulePage = lazy(() => import('./components/SchedulePage'));
+const ResultsPage = lazy(() => import('./components/ResultsPage'));
+const DriverStandingsPage = lazy(() => import('./components/DriverStandingsPage'));
+const DriverDetailPage = lazy(() => import('./components/DriverDetailPage'));
+const ConstructorStandingsPage = lazy(() => import('./components/ConstructorStandingsPage'));
+const ConstructorDetailPage = lazy(() => import('./components/ConstructorDetailPage'));
+const ClashPage = lazy(() => import('./components/ClashPage'));
 const AdminGate = lazy(() => import('./admin/AdminGate'));
 
 const themes = [
@@ -134,12 +141,33 @@ const matchesRacePath = (race: Race, target: { season: string; raceId: string })
   String(race.season) === target.season &&
   (raceSlug(race) === target.raceId || String(race.round) === target.raceId);
 
+const parseDriverPath = (path: string): { season: string; driverId: string } | null => {
+  const match = path.match(/^\/driver\/([^/]+)\/([^/]+)\/?$/);
+  try {
+    return match ? { season: match[1], driverId: decodeURIComponent(match[2]) } : null;
+  } catch { return null; }
+};
+
+const parseConstructorPath = (path: string): { season: string; constructorId: string } | null => {
+  const match = path.match(/^\/constructor\/([^/]+)\/([^/]+)\/?$/);
+  try {
+    return match ? { season: match[1], constructorId: decodeURIComponent(match[2]) } : null;
+  } catch { return null; }
+};
+
 const App: React.FC = () => {
   const isAdminPortal = window.location.pathname === '/admin-portal';
   const initialRacePath = parseRacePath(window.location.pathname);
+  const initialDriverPath = parseDriverPath(window.location.pathname);
+  const initialConstructorPath = parseConstructorPath(window.location.pathname);
   const initialLivePath = window.location.pathname === '/live';
   const initialPrivacyPath = window.location.pathname === '/privacy';
   const initialDeletionPath = window.location.pathname === '/account-deletion';
+  const initialSchedulePath = window.location.pathname === '/schedule' || window.location.pathname === '/schedule/';
+  const initialResultsPath = window.location.pathname === '/results' || window.location.pathname === '/results/';
+  const initialStandingsPath = window.location.pathname === '/standings' || window.location.pathname === '/standings/';
+  const initialConstructorStandingsPath = window.location.pathname === '/constructor-standings' || window.location.pathname === '/constructor-standings/';
+  const initialClashPath = window.location.pathname === '/clash' || window.location.pathname === '/clash/';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     localStorage.removeItem('f1_user');
     if (!getToken()) return null;
@@ -164,12 +192,19 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'live' | 'privacy' | 'account_deletion'>(() => {
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'driver_details' | 'constructor_details' | 'live' | 'schedule' | 'results' | 'standings' | 'constructor_standings' | 'clash' | 'privacy' | 'account_deletion'>(() => {
     // The URL is the source of truth for race details, live timing and the
     // privacy policy; only fall back to the persisted view (account/dashboard)
     // otherwise.
     if (initialRacePath) return 'race_details';
+    if (initialDriverPath) return 'driver_details';
+    if (initialConstructorPath) return 'constructor_details';
     if (initialLivePath) return 'live';
+    if (initialSchedulePath) return 'schedule';
+    if (initialResultsPath) return 'results';
+    if (initialStandingsPath) return 'standings';
+    if (initialConstructorStandingsPath) return 'constructor_standings';
+    if (initialClashPath) return 'clash';
     if (initialPrivacyPath) return 'privacy';
     if (initialDeletionPath) return 'account_deletion';
     const saved = localStorage.getItem('f1_view') as any;
@@ -187,6 +222,7 @@ const App: React.FC = () => {
     }
     return parsed;
   });
+  const [raceReturnView, setRaceReturnView] = useState<'dashboard' | 'schedule' | 'results'>('dashboard');
   const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
   const [showBoot, setShowBoot] = useState(true);
 
@@ -206,6 +242,7 @@ const App: React.FC = () => {
 
   // Open a race's details and reflect it in the URL (`/race/:season/:slug`).
   const openRaceDetails = (race: Race) => {
+    setRaceReturnView(view === 'schedule' || view === 'results' ? view : 'dashboard');
     setSelectedRace(race);
     setView('race_details');
     window.history.pushState({}, '', `/race/${race.season}/${raceSlug(race)}`);
@@ -214,9 +251,17 @@ const App: React.FC = () => {
 
   // Leave race details, returning to the dashboard at the root URL.
   const closeRaceDetails = () => {
+    setView(raceReturnView);
+    setSelectedRace(null);
+    window.history.pushState({}, '', raceReturnView === 'schedule' ? '/schedule' : raceReturnView === 'results' ? '/results' : '/');
+    window.scrollTo(0, 0);
+  };
+
+  const goToDashboard = () => {
     setView('dashboard');
     setSelectedRace(null);
     window.history.pushState({}, '', '/');
+    window.scrollTo(0, 0);
   };
 
   // Open the live timing console at `/live` so it's shareable and
@@ -230,6 +275,55 @@ const App: React.FC = () => {
   const closeLiveTiming = () => {
     setView('dashboard');
     window.history.pushState({}, '', '/');
+  };
+
+  const closeSchedule = () => {
+    setView('dashboard');
+    window.history.pushState({}, '', '/');
+    window.scrollTo(0, 0);
+  };
+
+  const openResults = () => {
+    setView('results');
+    window.history.pushState({}, '', '/results');
+    window.scrollTo(0, 0);
+  };
+
+  const openDriverProfile = (season: string, driverId: string) => {
+    setView('driver_details');
+    window.history.pushState({}, '', `/driver/${season}/${encodeURIComponent(driverId)}`);
+    window.scrollTo(0, 0);
+  };
+
+  const closeDriverProfile = () => {
+    setView('standings');
+    window.history.pushState({}, '', '/standings');
+    window.scrollTo(0, 0);
+  };
+
+  const openConstructorProfile = (season: string, constructorId: string) => {
+    setView('constructor_details');
+    window.history.pushState({}, '', `/constructor/${season}/${encodeURIComponent(constructorId)}`);
+    window.scrollTo(0, 0);
+  };
+
+  const closeConstructorProfile = () => {
+    setView('constructor_standings');
+    window.history.pushState({}, '', '/constructor-standings');
+    window.scrollTo(0, 0);
+  };
+
+  const closeResults = () => {
+    setView('dashboard');
+    window.history.pushState({}, '', '/');
+    window.scrollTo(0, 0);
+  };
+
+  const openClash = (driverIds: [string, string]) => {
+    const params = new URLSearchParams({ driver1: driverIds[0], driver2: driverIds[1] });
+    setView('clash');
+    window.history.pushState({}, '', `/clash?${params.toString()}`);
+    window.scrollTo(0, 0);
   };
 
   // When deep-linked to `/race/:season/:round` (refresh / shared link) the
@@ -252,12 +346,28 @@ const App: React.FC = () => {
   useEffect(() => {
     const onPopState = () => {
       const target = parseRacePath(window.location.pathname);
+      const driverTarget = parseDriverPath(window.location.pathname);
+      const constructorTarget = parseConstructorPath(window.location.pathname);
       if (target) {
         setView('race_details');
         const found = races.find((r) => matchesRacePath(r, target));
         setSelectedRace(found ?? null);
+      } else if (driverTarget) {
+        setView('driver_details');
+      } else if (constructorTarget) {
+        setView('constructor_details');
       } else if (window.location.pathname === '/live') {
         setView('live');
+      } else if (window.location.pathname === '/schedule' || window.location.pathname === '/schedule/') {
+        setView('schedule');
+      } else if (window.location.pathname === '/results' || window.location.pathname === '/results/') {
+        setView('results');
+      } else if (window.location.pathname === '/standings' || window.location.pathname === '/standings/') {
+        setView('standings');
+      } else if (window.location.pathname === '/constructor-standings' || window.location.pathname === '/constructor-standings/') {
+        setView('constructor_standings');
+      } else if (window.location.pathname === '/clash' || window.location.pathname === '/clash/') {
+        setView('clash');
       } else if (window.location.pathname === '/privacy') {
         setView('privacy');
       } else if (window.location.pathname === '/account-deletion') {
@@ -386,7 +496,7 @@ const App: React.FC = () => {
                   onOpenLiveTiming={openLiveTiming}
                 />
               ) : (
-                <NextRace onRaceSelect={openRaceDetails} />
+                <NextRace onRaceSelect={openRaceDetails} onViewAllResults={openResults} />
               )}
             </Parallax>
             <Parallax speed={0.045} delay={20}>
@@ -399,14 +509,14 @@ const App: React.FC = () => {
               <Calendar onRaceSelect={openRaceDetails} />
             </Parallax>
             <Parallax speed={0.05}>
-              <DriverBattle />
+              <DriverBattle onOpenClash={openClash} />
             </Parallax>
 
             <Parallax speed={0.03} delay={80}>
               <section className="main-section">
                 <div className="main-grid">
-                  <DriversStandings />
-                  <ConstructorsStandings />
+                  <DriversStandings onDriverSelect={openDriverProfile} />
+                  <ConstructorsStandings onConstructorSelect={openConstructorProfile} />
                 </div>
               </section>
             </Parallax>
@@ -448,6 +558,114 @@ const App: React.FC = () => {
             setUser={setUser as any}
             onOpenSettings={() => setView('account')}
           />
+        ) : view === 'schedule' ? (
+          <>
+            <ThemeSwitcher />
+            <SchedulePage
+              user={user as any}
+              setUser={setUser as any}
+              onBack={closeSchedule}
+              onRaceSelect={openRaceDetails}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                closeSchedule();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'results' ? (
+          <>
+            <ThemeSwitcher />
+            <ResultsPage
+              user={user as any}
+              setUser={setUser as any}
+              onBack={closeResults}
+              onRaceSelect={openRaceDetails}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                closeResults();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'standings' ? (
+          <>
+            <ThemeSwitcher />
+            <DriverStandingsPage
+              user={user as any}
+              setUser={setUser as any}
+              onBack={goToDashboard}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                goToDashboard();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'constructor_standings' ? (
+          <>
+            <ThemeSwitcher />
+            <ConstructorStandingsPage
+              user={user as any}
+              setUser={setUser as any}
+              onBack={goToDashboard}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                goToDashboard();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'clash' ? (
+          <>
+            <ThemeSwitcher />
+            <ClashPage
+              user={user as any}
+              setUser={setUser as any}
+              onBack={goToDashboard}
+              onOpenSettings={() => setView('account')}
+              initialDriverIds={(() => {
+                const params = new URLSearchParams(window.location.search);
+                const driver1 = params.get('driver1');
+                const driver2 = params.get('driver2');
+                return driver1 && driver2 ? [driver1, driver2] : null;
+              })()}
+              onHomeNavigate={(hash) => {
+                goToDashboard();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'driver_details' && parseDriverPath(window.location.pathname) ? (
+          <>
+            <ThemeSwitcher />
+            <DriverDetailPage
+              {...parseDriverPath(window.location.pathname)!}
+              user={user as any}
+              setUser={setUser as any}
+              onBack={closeDriverProfile}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                goToDashboard();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'constructor_details' && parseConstructorPath(window.location.pathname) ? (
+          <>
+            <ThemeSwitcher />
+            <ConstructorDetailPage
+              {...parseConstructorPath(window.location.pathname)!}
+              user={user as any}
+              setUser={setUser as any}
+              onBack={closeConstructorProfile}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                goToDashboard();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
         ) : (
           <RaceDetails
             race={selectedRace}
@@ -456,7 +674,7 @@ const App: React.FC = () => {
             setUser={setUser as any}
             onOpenSettings={() => setView('account')}
             onHomeNavigate={(hash) => {
-              closeRaceDetails();
+              goToDashboard();
               // Defer until the dashboard has mounted, then scroll to the section.
               setTimeout(() => {
                 document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });

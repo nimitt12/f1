@@ -109,6 +109,20 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
     }
   };
 
+  const openSchedule = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.history.pushState({}, '', '/schedule');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
+  const openResults = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.history.pushState({}, '', '/results');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
   return (
     <section id="calendar" className="cal-section">
       <div className="cal-head">
@@ -117,6 +131,8 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
         </div>
         <div className="cal-head-right">
           <div className="cal-meta">22 Rounds · Mar → Dec 2026</div>
+          <a className="cal-full-schedule cal-view-results" href="/results" onClick={openResults}>View all results ↗</a>
+          <a className="cal-full-schedule" href="/schedule" onClick={openSchedule}>Full schedule ↗</a>
           <div className="cal-nav">
             <button onClick={scrollLeft} className="cal-nav-btn" aria-label="Scroll Left">&#8592;</button>
             <button onClick={scrollRight} className="cal-nav-btn" aria-label="Scroll Right">&#8594;</button>

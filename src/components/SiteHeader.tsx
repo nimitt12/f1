@@ -66,6 +66,30 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
     }
   };
 
+  const openSchedule = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    window.history.pushState({}, '', '/schedule');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
+  const openStandings = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    window.history.pushState({}, '', '/standings');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
+  const openConstructorStandings = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    window.history.pushState({}, '', '/constructor-standings');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
   return (
     <>
       <div className="hero-top">
@@ -151,19 +175,40 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
             </div>
 
             <nav className="menu-nav-links">
+              <a href="/schedule" onClick={openSchedule} style={{ '--menu-i': 0 } as React.CSSProperties}>
+                <span className="menu-link-index">01</span>
+                <span className="menu-link-body">
+                  <span className="menu-link-label">Schedule</span>
+                  <span className="menu-link-desc">Every race, sprint and session</span>
+                </span>
+                <span className="menu-link-arrow" aria-hidden="true">→</span>
+              </a>
+              <a href="/standings" onClick={openStandings} style={{ '--menu-i': 1 } as React.CSSProperties}>
+                <span className="menu-link-index">02</span>
+                <span className="menu-link-body">
+                  <span className="menu-link-label">Driver Standings</span>
+                  <span className="menu-link-desc">Points and ranking evolution</span>
+                </span>
+                <span className="menu-link-arrow" aria-hidden="true">→</span>
+              </a>
+              <a href="/constructor-standings" onClick={openConstructorStandings} style={{ '--menu-i': 2 } as React.CSSProperties}>
+                <span className="menu-link-index">03</span>
+                <span className="menu-link-body">
+                  <span className="menu-link-label">Constructor Standings</span>
+                  <span className="menu-link-desc">Team championship analytics</span>
+                </span>
+                <span className="menu-link-arrow" aria-hidden="true">→</span>
+              </a>
               {[
-                { hash: 'calendar', label: 'Calendar', desc: 'Full season race schedule' },
-                { hash: 'drivers', label: 'Drivers', desc: "Drivers' championship standings" },
-                { hash: 'constructors', label: 'Constructors', desc: "Constructors' standings" },
                 { hash: 'paddock', label: 'Paddock Intel', desc: 'Latest F1 news & analysis' },
               ].map((item, i) => (
                 <a
                   key={item.hash}
                   href={`#${item.hash}`}
                   onClick={(e) => handleSectionLink(e, item.hash)}
-                  style={{ '--menu-i': i } as React.CSSProperties}
+                  style={{ '--menu-i': i + 3 } as React.CSSProperties}
                 >
-                  <span className="menu-link-index">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="menu-link-index">{String(i + 4).padStart(2, '0')}</span>
                   <span className="menu-link-body">
                     <span className="menu-link-label">{item.label}</span>
                     <span className="menu-link-desc">{item.desc}</span>

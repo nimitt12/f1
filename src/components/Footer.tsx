@@ -20,6 +20,13 @@ const Footer: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  const openSchedule = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.history.pushState({}, '', '/schedule');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="footer-wrap">
       <footer className="footer">
@@ -62,7 +69,7 @@ const Footer: React.FC = () => {
             <ul>
               <li><a href="#drivers">Drivers</a></li>
               <li><a href="#constructors">Constructors</a></li>
-              <li><a href="#calendar">Calendar</a></li>
+              <li><a href="/schedule" onClick={openSchedule}>Schedule</a></li>
               <li><a href="#paddock">Paddock Intel</a></li>
               <li><a href="/privacy" onClick={openPrivacy}>Privacy Policy</a></li>
               <li><a href="/account-deletion" onClick={openAccountDeletion}>Delete My Account</a></li>

@@ -157,9 +157,14 @@ const DriverSkeleton: React.FC = () => (
   </div>
 );
 
-const DriversStandings: React.FC = () => {
+interface DriversStandingsProps {
+  onDriverSelect?: (season: string, driverId: string) => void;
+}
+
+const DriversStandings: React.FC<DriversStandingsProps> = ({ onDriverSelect }) => {
   const [standings, setStandings] = useState<DriverStanding[]>([]);
   const [round, setRound] = useState<string>('0');
+  const [season, setSeason] = useState<string>(String(new Date().getFullYear()));
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -192,6 +197,7 @@ const DriversStandings: React.FC = () => {
         setStandings(mappedStandings);
         if (data.length > 0) {
           setRound(data[0].rounds);
+          setSeason(data[0].season);
         }
       } catch (err) {
         console.error('Failed to parse standings', err);
@@ -234,10 +240,17 @@ const DriversStandings: React.FC = () => {
             const ptsDiff = leaderPoints - parseFloat(item.points);
 
             return (
-              <div 
+              <a
                 key={item.Driver.driverId}
+                href={`/driver/${season}/${encodeURIComponent(item.Driver.driverId)}`}
                 className={`driver-row ${isLeader ? 'leader' : ''}`} 
                 style={{ '--team-color': teamColor, animationDelay: `${delay}s` } as React.CSSProperties}
+                aria-label={`View ${driverName}'s ${season} season profile`}
+                onClick={(event) => {
+                  if (!onDriverSelect) return;
+                  event.preventDefault();
+                  onDriverSelect(season, item.Driver.driverId);
+                }}
               >
                 <div className="driver-pos">{item.position.padStart(2, '0')}</div>
                 <div className="driver-info">
@@ -272,8 +285,9 @@ const DriversStandings: React.FC = () => {
                   <div className="driver-pts">{item.points}</div>
                   <div className="driver-pts-sub" style={{ color: 'var(--paper)' }}>pts</div>
                   {ptsDiff > 0 && <div className="driver-pts-sub">-{ptsDiff}</div>}
+                  <span className="driver-profile-link">Profile <b aria-hidden="true">↗</b></span>
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>

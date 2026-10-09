@@ -13,6 +13,38 @@
       "destination": "/live.html"
     },
     {
+      "source": "/schedule",
+      "destination": "/schedule.html"
+    },
+    {
+      "source": "/schedule/",
+      "destination": "/schedule.html"
+    },
+    {
+      "source": "/results",
+      "destination": "/results.html"
+    },
+    {
+      "source": "/results/",
+      "destination": "/results.html"
+    },
+    {
+      "source": "/standings",
+      "destination": "/standings.html"
+    },
+    {
+      "source": "/standings/",
+      "destination": "/standings.html"
+    },
+    {
+      "source": "/constructor-standings",
+      "destination": "/constructor-standings.html"
+    },
+    {
+      "source": "/constructor-standings/",
+      "destination": "/constructor-standings.html"
+    },
+    {
       "source": "/privacy",
       "destination": "/privacy.html"
     },

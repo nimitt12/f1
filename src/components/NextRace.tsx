@@ -106,9 +106,10 @@ interface RaceResult {
 
 interface NextRaceProps {
   onRaceSelect?: (race: Race) => void;
+  onViewAllResults?: () => void;
 }
 
-const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
+const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults }) => {
   // Seed with the bundled calendar so the first paint has data, then refresh
   // from the admin-managed backend calendar.
   const [races, setRaces] = useState<Race[]>(RACES_FALLBACK);
@@ -300,19 +301,34 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect }) => {
               </div>
             </div>
 
-            {onRaceSelect && results.length > 0 && (
-              <a
-                className="nr-view-results-btn"
-                href={`/race/${prevRace.season}/${raceSlug(prevRace)}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onRaceSelect(prevRace);
-                }}
-              >
-                <span>View Full Results</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </a>
-            )}
+            <div className="prev-results-actions">
+              {onRaceSelect && results.length > 0 && (
+                <a
+                  className="nr-view-results-btn nr-latest-results-btn"
+                  href={`/race/${prevRace.season}/${raceSlug(prevRace)}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onRaceSelect(prevRace);
+                  }}
+                >
+                  <span>Latest Race</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              )}
+              {onViewAllResults && (
+                <a
+                  className="nr-view-results-btn nr-all-results-btn"
+                  href="/results"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onViewAllResults();
+                  }}
+                >
+                  <span>View All Results</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              )}
+            </div>
           </div>
 
           {results.length > 0 ? (

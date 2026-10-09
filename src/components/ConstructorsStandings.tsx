@@ -43,6 +43,10 @@ const NAME_TO_SLUG: Record<string, string> = {
   'Aston Martin': 'aston_martin',
 };
 
+const constructorSlug = (name: string) => NAME_TO_SLUG[name]
+  || name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+
 const NAME_TO_NAT: Record<string, string> = {
   'Mercedes': 'German',
   'Ferrari': 'Italian',
@@ -117,9 +121,14 @@ const ConstructorSkeleton: React.FC = () => (
   </div>
 );
 
-const ConstructorsStandings: React.FC = () => {
+interface ConstructorsStandingsProps {
+  onConstructorSelect?: (season: string, constructorId: string) => void;
+}
+
+const ConstructorsStandings: React.FC<ConstructorsStandingsProps> = ({ onConstructorSelect }) => {
   const [standings, setStandings] = useState<ConstructorStanding[]>([]);
   const [round, setRound] = useState<string>('0');
+  const [season, setSeason] = useState<string>(String(new Date().getFullYear()));
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -135,7 +144,7 @@ const ConstructorsStandings: React.FC = () => {
           wins: item.wins.toString(),
           rounds: item.rounds.toString(),
           Constructor: {
-            constructorId: NAME_TO_SLUG[item.name] || 'unknown',
+            constructorId: constructorSlug(item.name),
             name: item.name,
             nationality: NAME_TO_NAT[item.name] || 'Unknown',
             url: ''
@@ -145,6 +154,7 @@ const ConstructorsStandings: React.FC = () => {
         setStandings(mappedStandings);
         if (data.length > 0) {
           setRound(data[0].rounds.toString());
+          setSeason(data[0].season.toString());
         }
       } catch (err) {
         console.error('Failed to parse standings', err);
@@ -185,13 +195,20 @@ const ConstructorsStandings: React.FC = () => {
         const barDelay = 5.5 + index * 0.05;
 
         return (
-          <div 
+          <a
             key={item.Constructor.constructorId}
+            href={`/constructor/${season}/${encodeURIComponent(item.Constructor.constructorId)}`}
             className={`con-row ${isLeader ? 'leader' : ''}`}
             style={{ 
               '--team-color': teamColor, 
               animationDelay: `${delay}s` 
             } as React.CSSProperties}
+            aria-label={`View ${item.Constructor.name}'s ${season} season profile`}
+            onClick={(event) => {
+              if (!onConstructorSelect) return;
+              event.preventDefault();
+              onConstructorSelect(season, item.Constructor.constructorId);
+            }}
           >
             <div className="con-top">
               <div className="con-pos">{item.position.padStart(2, '0')}</div>
@@ -208,7 +225,7 @@ const ConstructorsStandings: React.FC = () => {
                   )}
                 </div>
               </div>
-              <div className="con-pts">{item.points}</div>
+              <div className="con-pts">{item.points}<span className="con-profile-link">Profile ↗</span></div>
             </div>
             <div className="con-bar">
               <div 
@@ -219,7 +236,7 @@ const ConstructorsStandings: React.FC = () => {
                 }}
               ></div>
             </div>
-          </div>
+          </a>
         );
       })}
         </div>

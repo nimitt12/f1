@@ -27,6 +27,10 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         live: resolve(__dirname, 'live.html'),
+        schedule: resolve(__dirname, 'schedule.html'),
+        results: resolve(__dirname, 'results.html'),
+        standings: resolve(__dirname, 'standings.html'),
+        constructorStandings: resolve(__dirname, 'constructor-standings.html'),
         privacy: resolve(__dirname, 'privacy.html'),
       },
     },

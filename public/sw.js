@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pitwall-v7';
+const CACHE_NAME = 'pitwall-v8';
 const ASSETS_TO_CACHE = [
   '/', '/index.html', '/manifest.json', '/logo.svg', '/favicon.ico',
   '/favicon-16x16.png', '/favicon-32x32.png', '/apple-touch-icon.png',
@@ -45,7 +45,7 @@ self.addEventListener('fetch', event => {
       request.headers.has('Authorization') || url.search) return;
 
   // Account/admin/API/proxy responses must never enter the offline cache.
-  const publicPage = ['/', '/index.html', '/live', '/privacy'].includes(url.pathname) ||
+  const publicPage = ['/', '/index.html', '/live', '/schedule', '/schedule/', '/results', '/results/', '/standings', '/standings/', '/constructor-standings', '/constructor-standings/', '/privacy'].includes(url.pathname) ||
     /^\/race\/\d{4}\/[a-z0-9-]+\/?$/.test(url.pathname);
   if (request.mode === 'navigate') {
     if (!publicPage) return;

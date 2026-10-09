@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Loader from './Loader';
 
@@ -124,7 +124,20 @@ const COMPARE_ROWS: { label: string; key: keyof ComparisonDriver }[] = [
   { label: 'Points Finishes', key: 'points_finishes' },
 ];
 
-const DriverBattle: React.FC = () => {
+interface DriverBattleProps {
+  initialDriverIds?: [string, string] | null;
+  onOpenClash?: (driverIds: [string, string]) => void;
+  onSelectionChange?: (driverIds: [string, string]) => void;
+  showMoreButton?: boolean;
+}
+
+const DriverBattle: React.FC<DriverBattleProps> = ({
+  initialDriverIds = null,
+  onOpenClash,
+  onSelectionChange,
+  showMoreButton = true,
+}) => {
+  const initialDriverIdsRef = useRef(initialDriverIds);
   const [allDrivers, setAllDrivers] = useState<ApiDriverRanking[]>([]);
   const [season, setSeason] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -143,7 +156,13 @@ const DriverBattle: React.FC = () => {
         setAllDrivers(data);
         if (data.length >= 2) {
           setSeason(data[0].season);
-          setSelected([data[0].driver_id, data[1].driver_id]);
+          const availableIds = new Set(data.map((driver) => driver.driver_id));
+          const requestedIds = initialDriverIdsRef.current;
+          setSelected(
+            requestedIds && requestedIds.every((id) => availableIds.has(id))
+              ? requestedIds
+              : [data[0].driver_id, data[1].driver_id]
+          );
         }
       } catch (err) {
         console.error('Battle data fetch failed', err);
@@ -172,6 +191,10 @@ const DriverBattle: React.FC = () => {
     };
     fetchComparison();
   }, [season, selected]);
+
+  useEffect(() => {
+    if (selected) onSelectionChange?.(selected);
+  }, [onSelectionChange, selected]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -239,10 +262,17 @@ const DriverBattle: React.FC = () => {
           <h2 className="battle-title">Driver's <em>Clash</em></h2>
         </div>
 
-        <button className="battle-pick-btn" onClick={openPicker}>
-          <span className="battle-pick-icon" aria-hidden="true">⇄</span>
-          Select Drivers
-        </button>
+        <div className="battle-header-actions">
+          {showMoreButton && onOpenClash && selected && (
+            <button className="battle-more-btn" onClick={() => onOpenClash(selected)}>
+              More Clash Info <span aria-hidden="true">↗</span>
+            </button>
+          )}
+          <button className="battle-pick-btn" onClick={openPicker}>
+            <span className="battle-pick-icon" aria-hidden="true">⇄</span>
+            Select Drivers
+          </button>
+        </div>
       </div>
 
       <div className="battle-container">
