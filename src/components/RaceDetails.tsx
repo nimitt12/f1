@@ -33,6 +33,17 @@ interface RaceResult {
 interface LapPoint {
   lap: number;
   position: number;
+  time?: string | null;
+  timeMs?: number | null;
+}
+
+interface PitStop {
+  driverId: string;
+  lap: number;
+  stop: number;
+  time: string | null;
+  duration: string | null;
+  durationMs: number | null;
 }
 
 interface LapPositionsData {
@@ -40,6 +51,7 @@ interface LapPositionsData {
   round: string;
   totalLaps: number;
   drivers: Record<string, LapPoint[]>;
+  pitStops?: PitStop[];
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -578,39 +590,58 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
     return { ...r, gapSeconds: seconds, gapString: i === 0 ? 'LEADER' : r.time || `+${seconds.toFixed(3)}s` };
   });
 
-  // 9. Pace Trajectory Data
-  // Total race laps = max laps completed across the field (the winner runs full distance).
-  const paceLaps = Math.max(0, ...results.map(r => Number(r.laps) || 0)) || 50;
+  // 9. Real race-pace data. Jolpica supplies each driver's recorded lap time;
+  // a three-lap rolling average smooths individual timing-line noise while pit
+  // stops remain visible as annotated events.
+  const paceLaps = lapPositions?.totalLaps || Math.max(0, ...results.map(r => Number(r.laps) || 0)) || 50;
   const paceWidth = 900;
   const paceHeight = 250;
-  const paceMaxGap = top10Gaps.length > 0 ? (top10Gaps.slice(0, 5)[top10Gaps.slice(0, 5).length - 1]?.gapSeconds * 1.2 || 10) : 10;
-  
-  const top5PaceLines = top10Gaps.slice(0, 5).map(d => {
-    const seed = (d.code || d.family_name).charCodeAt(0) + (d.code || d.family_name).charCodeAt((d.code || d.family_name).length - 1);
-    const finalGap = d.gapSeconds;
-    const points: string[] = [];
-    points.push(`0,0`); // lap 0
-    for (let lap = 1; lap <= paceLaps; lap++) {
-      const progress = lap / paceLaps;
-      const baseCurve = Math.pow(progress, 1.5) * finalGap;
-      const noise = (Math.sin(progress * 15 + seed) * (finalGap * 0.15)) * Math.sin(progress * Math.PI);
-      const gap = Math.max(0, baseCurve + noise);
-      const x = (lap / paceLaps) * paceWidth;
-      const y = (gap / paceMaxGap) * paceHeight;
-      points.push(`${x},${y}`);
-    }
+  const pacePrefix = lapPositions ? `${lapPositions.season}_${lapPositions.round}_` : '';
+  const paceDriverId = (result: RaceResult) => pacePrefix && result.id.startsWith(pacePrefix)
+    ? result.id.slice(pacePrefix.length)
+    : result.id;
+  const rollingPace = top10Gaps.slice(0, 5).map((result) => {
+    const driverId = paceDriverId(result);
+    const laps = (lapPositions?.drivers[driverId] || []).filter((lap) => Number.isFinite(lap.timeMs) && Number(lap.timeMs) > 0);
+    const rolling = laps.map((lap, index) => {
+      const window = laps.slice(Math.max(0, index - 2), index + 1).filter((entry) => entry.lap >= lap.lap - 2);
+      return { lap: lap.lap, timeMs: window.reduce((sum, entry) => sum + Number(entry.timeMs), 0) / window.length };
+    });
+    return { result, driverId, rolling, laps };
+  }).filter((driver) => driver.rolling.length > 0);
+  const paceBenchmark = new Map<number, number>();
+  rollingPace.forEach((driver) => driver.rolling.forEach((point) => {
+    paceBenchmark.set(point.lap, Math.min(paceBenchmark.get(point.lap) ?? Number.POSITIVE_INFINITY, point.timeMs));
+  }));
+  const allPaceDeltas = rollingPace.flatMap((driver) => driver.rolling.map((point) => Math.max(0, (point.timeMs - (paceBenchmark.get(point.lap) || point.timeMs)) / 1000))).sort((a, b) => a - b);
+  const paceMaxGap = Math.max(1, allPaceDeltas[Math.floor(allPaceDeltas.length * .95)] || 1);
+  const formatLapTime = (milliseconds: number) => {
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = (milliseconds % 60000) / 1000;
+    return `${minutes}:${seconds.toFixed(3).padStart(6, '0')}`;
+  };
+  const top5PaceLines = rollingPace.map(({ result, driverId, rolling, laps }) => {
+    const pacePoints = rolling.map((point) => {
+      const delta = Math.max(0, (point.timeMs - (paceBenchmark.get(point.lap) || point.timeMs)) / 1000);
+      return { lap: point.lap, delta, x: (point.lap / paceLaps) * paceWidth, y: (Math.min(delta, paceMaxGap) / paceMaxGap) * paceHeight };
+    });
+    const times = laps.map((lap) => Number(lap.timeMs)).sort((a, b) => a - b);
+    const median = times[Math.floor(times.length / 2)];
+    const driverStops = (lapPositions?.pitStops || []).filter((stop) => stop.driverId === driverId);
     return {
-      id: d.id,
-      code: d.code || d.family_name.substring(0,3).toUpperCase(),
-      color: `var(--${getTeamKey(d.team_name)}, var(--racing))`,
-      pointsStr: points.join(' '),
-      finalY: (finalGap / paceMaxGap) * paceHeight,
-      name: `${d.given_name} ${d.family_name}`.trim(),
-      team: d.team_name,
-      position: d.position,
-      grid: d.grid,
-      points: d.points,
-      gapString: d.gapString
+      id: result.id,
+      code: result.code || result.family_name.substring(0, 3).toUpperCase(),
+      color: `var(--${getTeamKey(result.team_name)}, var(--racing))`,
+      pointsStr: pacePoints.map((point) => `${point.x},${point.y}`).join(' '),
+      finalY: pacePoints.at(-1)?.y || 0,
+      name: `${result.given_name} ${result.family_name}`.trim(),
+      team: result.team_name,
+      position: result.position,
+      grid: result.grid,
+      medianPace: median ? formatLapTime(median) : '—',
+      fastestLap: times[0] ? formatLapTime(times[0]) : '—',
+      stops: driverStops,
+      pacePoints,
     };
   });
 
@@ -1059,9 +1090,11 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
       </div>
 
         <div id="rd-sec-trajectory" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px', overflow: 'hidden' }}>
-          <h3 className="ra-chart-title" style={{ marginBottom: '24px' }}>Race Pace Trajectory (Delta to Leader)</h3>
+          <h3 className="ra-chart-title" style={{ marginBottom: '8px' }}>Race Pace &amp; Pit Stops</h3>
+          <p style={{ margin: '0 0 20px', color: 'rgba(255,255,255,.48)', fontSize: '11px' }}>Real three-lap rolling pace delta to the fastest selected driver on each lap. Pit stops are marked with diamonds.</p>
           
           <div style={{ position: 'relative', width: '100%', height: '280px', background: 'radial-gradient(90% 120% at 50% 0%, rgba(168,85,247,0.1) 0%, transparent 60%), rgba(0,0,0,0.25)', borderRadius: '12px', border: '1px solid rgba(168,85,247,0.14)', boxShadow: 'inset 0 0 50px rgba(0,0,0,0.5)' }}>
+            {top5PaceLines.length === 0 && <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', padding: '30px', color: 'rgba(255,255,255,.48)', fontSize: '12px', textAlign: 'center' }}>Lap timing is not available from Jolpica for this race.</div>}
             {/* SVG Graph */}
             <svg viewBox={`0 0 ${paceWidth} ${paceHeight + 30}`} style={{ width: '100%', height: '100%', overflow: 'visible' }} preserveAspectRatio="none">
               {/* Grid Lines */}
@@ -1102,6 +1135,14 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
                     strokeLinejoin="round"
                     style={{ filter: `drop-shadow(0 4px 6px ${line.color}${isHovered ? 'cc' : '80'})` }}
                   />
+
+                  {/* Real pit-stop events from Jolpica */}
+                  {line.stops.map((stop) => {
+                    const x = (stop.lap / paceLaps) * paceWidth;
+                    const nearest = line.pacePoints.reduce((best, point) => Math.abs(point.lap - stop.lap) < Math.abs(best.lap - stop.lap) ? point : best, line.pacePoints[0]);
+                    if (!nearest) return null;
+                    return <g key={`${line.id}-stop-${stop.stop}`} style={{ pointerEvents: 'none' }}><line x1={x} x2={x} y1="0" y2={paceHeight} stroke={line.color} strokeWidth="1" strokeDasharray="3 5" opacity=".35" /><rect x={x - 4} y={nearest.y - 4} width="8" height="8" fill={line.color} transform={`rotate(45 ${x} ${nearest.y})`}><title>{line.code} stop {stop.stop} · lap {stop.lap}{stop.duration ? ` · ${stop.duration}` : ''}</title></rect></g>;
+                  })}
 
                   {/* Final Data Point Dot & Label */}
                   <circle cx={paceWidth} cy={line.finalY} r={isHovered ? "6" : "4"} fill={line.color} />
@@ -1165,8 +1206,9 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
                     {[
                       { k: 'Finish', v: `P${line.position}` },
                       { k: 'Grid', v: `P${line.grid}` },
-                      { k: 'Gap to Leader', v: line.gapString },
-                      { k: 'Points', v: line.points }
+                      { k: 'Median lap', v: line.medianPace },
+                      { k: 'Fastest lap', v: line.fastestLap },
+                      { k: 'Pit stops', v: line.stops.length }
                     ].map(row => (
                       <div key={row.k} style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', fontSize: '11px', padding: '2px 0' }}>
                         <span style={{ color: 'rgba(255,255,255,0.5)' }}>{row.k}</span>
@@ -1180,6 +1222,7 @@ const RaceAnalytics: React.FC<{ results: RaceResult[]; lapPositions: LapPosition
             
             <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '1px' }}>LAP 1</div>
             <div style={{ position: 'absolute', bottom: '10px', right: '40px', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '1px' }}>LAP {paceLaps}</div>
+            {top5PaceLines.length > 0 && <div style={{ position: 'absolute', top: '8px', right: '10px', fontSize: '9px', color: 'rgba(255,255,255,.36)', fontFamily: 'JetBrains Mono' }}>+{paceMaxGap.toFixed(1)}s SCALE</div>}
           </div>
         </div>
         <div id="rd-sec-yield" className="ra-chart-box ra-full-width-chart" style={{ padding: '24px' }}>

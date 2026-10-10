@@ -45,6 +45,14 @@
       "destination": "/constructor-standings.html"
     },
     {
+      "source": "/statistics",
+      "destination": "/statistics.html"
+    },
+    {
+      "source": "/statistics/",
+      "destination": "/statistics.html"
+    },
+    {
       "source": "/privacy",
       "destination": "/privacy.html"
     },

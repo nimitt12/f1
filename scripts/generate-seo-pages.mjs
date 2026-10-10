@@ -278,6 +278,7 @@ export const buildSitemap = (races) => {
     entry(`${SITE}/results`, today, 'weekly', '0.9'),
     entry(`${SITE}/standings`, today, 'weekly', '0.9'),
     entry(`${SITE}/constructor-standings`, today, 'weekly', '0.9'),
+    entry(`${SITE}/statistics`, today, 'weekly', '0.9'),
     ...races.map((r) => entry(`${SITE}/race/${r.season}/${raceSlug(r)}`, today, 'weekly', '0.7')),
     entry(`${SITE}/privacy`, today, 'yearly', '0.3'),
   ];
@@ -298,5 +299,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`[seo] wrote ${races.length} race pages to dist/race/`);
 
   writeFileSync(resolve(DIST, 'sitemap.xml'), buildSitemap(races));
-  console.log(`[seo] wrote dist/sitemap.xml (${races.length + 7} URLs)`);
+  console.log(`[seo] wrote dist/sitemap.xml (${races.length + 8} URLs)`);
 }

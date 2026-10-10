@@ -45,7 +45,7 @@ self.addEventListener('fetch', event => {
       request.headers.has('Authorization') || url.search) return;
 
   // Account/admin/API/proxy responses must never enter the offline cache.
-  const publicPage = ['/', '/index.html', '/live', '/schedule', '/schedule/', '/results', '/results/', '/standings', '/standings/', '/constructor-standings', '/constructor-standings/', '/privacy'].includes(url.pathname) ||
+  const publicPage = ['/', '/index.html', '/live', '/schedule', '/schedule/', '/results', '/results/', '/standings', '/standings/', '/constructor-standings', '/constructor-standings/', '/statistics', '/statistics/', '/privacy'].includes(url.pathname) ||
     /^\/race\/\d{4}\/[a-z0-9-]+\/?$/.test(url.pathname);
   if (request.mode === 'navigate') {
     if (!publicPage) return;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Loader from './Loader';
 
 interface QualifyingResult {
@@ -22,6 +22,12 @@ interface QualifyingResultsProps {
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const qualifyingTimeToMs = (value: string | null) => {
+  if (!value) return null;
+  const parts = value.split(':');
+  const seconds = parts.length === 2 ? Number(parts[0]) * 60 + Number(parts[1]) : Number(parts[0]);
+  return Number.isFinite(seconds) ? Math.round(seconds * 1000) : null;
+};
 
 const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, session = 'qualifying' }) => {
   const [results, setResults] = useState<QualifyingResult[]>([]);
@@ -53,6 +59,20 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
     fetchQualifying();
   }, [season, round, isSprint]);
 
+  const heatmap = useMemo(() => {
+    const sessionFastest = ([0, 1, 2] as const).map((sessionIndex) => {
+      const times = results.map((result) => qualifyingTimeToMs([result.q1, result.q2, result.q3][sessionIndex])).filter((time): time is number => time !== null);
+      return times.length ? Math.min(...times) : null;
+    });
+    return results.map((result) => ({
+      ...result,
+      deltas: ([result.q1, result.q2, result.q3] as const).map((time, index) => {
+        const milliseconds = qualifyingTimeToMs(time);
+        return milliseconds === null || sessionFastest[index] === null ? null : milliseconds - sessionFastest[index]!;
+      }),
+    }));
+  }, [results]);
+
   if (loading) {
     return <Loader label={isSprint ? "Analyzing sprint qualifying telemetry" : "Analyzing qualifying telemetry"} />;
   }
@@ -68,6 +88,8 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
       </div>
     );
   }
+
+  const sessionLabels = isSprint ? ['SQ1', 'SQ2', 'SQ3'] : ['Q1', 'Q2', 'Q3'];
 
   return (
     <div className="qualifying-results-screen">
@@ -120,6 +142,25 @@ const QualifyingResults: React.FC<QualifyingResultsProps> = ({ season, round, se
           </tbody>
         </table>
       </div>
+
+      <section className="qr-delta-panel" aria-labelledby="qr-delta-title">
+        <header><div><span>ONE-LAP PERFORMANCE</span><h3 id="qr-delta-title">Session delta heatmap</h3></div><small>DELTA TO SESSION FASTEST</small></header>
+        <div className="qr-delta-scroll">
+          <div className="qr-delta-grid">
+            <div className="qr-delta-head"><span>Driver</span>{sessionLabels.map((label) => <span key={label}>{label}</span>)}</div>
+            {heatmap.map((driver) => <div className="qr-delta-row" key={driver.driver_number}>
+              <div><b>{driver.position}</b><span><strong>{driver.code}</strong><small>{driver.team_name}</small></span></div>
+              {driver.deltas.map((delta, index) => {
+                const intensity = delta === null ? 0 : Math.max(.1, 1 - Math.min(delta, 2500) / 2800);
+                const time = [driver.q1, driver.q2, driver.q3][index];
+                return <span key={sessionLabels[index]} className={delta === null ? 'empty' : ''} style={delta === null ? undefined : { background: `color-mix(in srgb, var(--racing) ${Math.round(intensity * 36)}%, #fff)` }}>
+                  <b>{time || '—'}</b><small>{delta === null ? 'NO TIME' : delta === 0 ? 'FASTEST' : `+${(delta / 1000).toFixed(3)}`}</small>
+                </span>;
+              })}
+            </div>)}
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

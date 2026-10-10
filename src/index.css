@@ -1580,956 +1580,309 @@ body {
 .rl-section {
   margin: 8px auto 0;
   max-width: 1440px;
-  padding: 0 36px;
-  animation: fadeUpSlow 0.7s ease both 0.55s;
+  padding: 0 var(--gutter);
 }
 
 .rl-banner {
+  --rl-live: #ff465b;
+  --rl-accent: color-mix(in srgb, var(--racing-hot) 72%, white);
   position: relative;
-  padding: 34px 38px 30px;
-  border-radius: 20px;
+  isolation: isolate;
   overflow: hidden;
-  color: #fff;
-  --rl-live: #ff3b52;
-  --rl-live-glow: color-mix(in srgb, var(--rl-live) 45%, transparent);
-  /* Full-bleed team livery — the whole card is bathed in the active theme's
-     racing colors rather than a neutral dark card with a thin accent rail. */
+  padding: 26px 34px 28px;
+  border: 1px solid #ffffff24;
+  border-radius: 20px;
+  color: #f5f7fa;
   background:
-    radial-gradient(150% 130% at 6% -12%, color-mix(in srgb, var(--racing-hot) 90%, transparent) 0%, transparent 50%),
-    radial-gradient(120% 130% at 104% -6%, color-mix(in srgb, var(--racing) 80%, transparent) 0%, transparent 56%),
-    radial-gradient(130% 150% at 100% 118%, rgba(0, 0, 0, 0.78), transparent 58%),
-    radial-gradient(90% 110% at -6% 112%, color-mix(in srgb, var(--racing-deep) 55%, transparent), transparent 55%),
-    linear-gradient(135deg,
-      color-mix(in srgb, var(--racing-hot) 75%, transparent) 0%,
-      color-mix(in srgb, var(--racing) 62%, #10090c 30%) 45%,
-      color-mix(in srgb, var(--racing-deep) 68%, #0a0608 55%) 100%);
-  border: 1px solid color-mix(in srgb, var(--racing-hot) 45%, rgba(255, 255, 255, 0.16));
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
-    0 8px 26px rgba(0, 0, 0, 0.4);
-  animation: rlReveal 0.7s var(--ease-out) both;
-  transition: box-shadow 0.6s var(--ease);
+    radial-gradient(ellipse at 82% 0%, color-mix(in srgb, var(--racing) 17%, transparent), transparent 56%),
+    linear-gradient(120deg, #191d22, #0c1015 65%);
+  box-shadow: 0 24px 60px #00000030, inset 0 1px 0 #ffffff09;
 }
 
-/* Live phase: the ambient glow itself turns urgent-red, layered on top of the
-   team livery so "it's live right now" reads at a glance regardless of theme. */
-.rl-phase-underway {
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    0 0 100px var(--rl-live-glow),
-    0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
-    0 8px 26px rgba(0, 0, 0, 0.4);
-  animation: rlReveal 0.7s var(--ease-out) both, rlLiveThrob 3.2s ease-in-out infinite;
-}
-
-/* Live race-completion rail across the very top edge — a broadcast-style scrub bar */
-.rl-progress-rail {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  z-index: 3;
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.rl-progress-rail-fill {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--racing), var(--rl-live));
-  box-shadow: 0 0 12px var(--rl-live-glow);
-  transition: width 1s linear;
-}
-
-/* Animated accent rail down the left edge — the "live" signature */
 .rl-banner::before {
-  content: "";
+  content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: linear-gradient(180deg, var(--racing), var(--racing-hot));
-  box-shadow: 0 0 18px var(--racing);
-  animation: rlRail 2.4s ease-in-out infinite;
-  z-index: 3;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--racing-hot), var(--racing) 45%, transparent 85%);
 }
 
-.rl-phase-underway::before {
-  background: linear-gradient(180deg, var(--rl-live), #ff8a63);
-  box-shadow: 0 0 22px var(--rl-live-glow);
-  animation: rlRailLive 1.4s ease-in-out infinite;
-}
-
-.rl-phase-finished::before {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12));
-  box-shadow: none;
-  animation: none;
-}
-
-/* Carbon weave texture, matching the dark race blocks */
 .rl-banner::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.018) 0 2px,
-    transparent 2px 16px
-  );
+  z-index: -1;
   pointer-events: none;
-  z-index: 0;
+  background: repeating-linear-gradient(125deg, transparent 0 90px, #ffffff02 90px 91px);
+  mask-image: linear-gradient(90deg, transparent 20%, #000);
 }
 
-/* Slow diagonal light sweep across the whole banner */
-.rl-sheen {
+.rl-round-watermark {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    115deg,
-    transparent 35%,
-    rgba(255, 255, 255, 0.07) 48%,
-    transparent 62%
-  );
-  transform: translateX(-100%);
-  animation: rlSheen 6.5s ease-in-out infinite;
+  top: 38px;
+  left: 34%;
+  z-index: -1;
+  font: 900 clamp(180px, 25vw, 340px)/1 var(--font-display);
+  letter-spacing: -0.1em;
+  color: transparent;
+  -webkit-text-stroke: 1px #ffffff09;
+  transform: skewX(-8deg);
   pointer-events: none;
 }
 
-/* Live phase: the sweep itself carries a red-hot edge instead of plain white */
-.rl-phase-underway .rl-sheen {
-  background: linear-gradient(
-    115deg,
-    transparent 32%,
-    color-mix(in srgb, var(--rl-live) 38%, rgba(255, 255, 255, 0.12)) 48%,
-    transparent 64%
-  );
-  animation-duration: 4.2s;
-}
-
-.rl-grid {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 34px;
+.rl-topline, .rl-status, .rl-console-header, .rl-console-footer,
+.rl-weekend-heading, .rl-session-meta {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
-.rl-left {
-  min-width: 0;
+.rl-topline {
+  gap: 16px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #ffffff10;
 }
 
-/* --- Status line --- */
-.rl-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 8px 8px 14px;
-  margin-bottom: 20px;
-  border-radius: 999px;
-  background: rgba(8, 6, 8, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px) saturate(1.4);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-}
-
-.rl-pulse {
-  position: relative;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--racing-hot);
+.rl-status { justify-content: flex-start; gap: 10px; }
+.rl-pulse, .rl-live-dot, .rl-cta-dot {
   flex-shrink: 0;
-}
-
-.rl-pulse::before,
-.rl-pulse::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--racing-hot);
-  animation: rlPulseRing 1.8s ease-out infinite;
+  background: var(--rl-accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--racing-hot) 50%, transparent);
 }
 
-.rl-pulse::after {
-  animation-delay: 0.6s;
-}
-
-.rl-phase-underway .rl-pulse,
-.rl-phase-underway .rl-pulse::before,
-.rl-phase-underway .rl-pulse::after {
-  background: var(--rl-live);
-}
-
-.rl-phase-finished .rl-pulse {
-  background: rgba(255, 255, 255, 0.55);
-}
-
-.rl-phase-finished .rl-pulse::before,
-.rl-phase-finished .rl-pulse::after {
-  display: none;
-}
-
-.rl-status-text {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.rl-phase-underway .rl-status-text {
-  color: var(--rl-live);
-  text-shadow: 0 0 16px var(--rl-live-glow);
-}
-
-.rl-status-tag {
+.rl-status-text, .rl-status-tag, .rl-edition, .rl-stat-label,
+.rl-console-header, .rl-timer-label, .rl-cell-unit, .rl-lights-caption,
+.rl-console-footer, .rl-weekend-heading, .rl-session-meta, .rl-session-time {
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--racing-hot-ticker);
-  padding: 5px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
 }
 
-/* --- Headline --- */
-.rl-headline {
-  display: flex;
+.rl-status-text { color: var(--rl-accent); font-weight: 700; }
+.rl-status-tag {
+  margin-left: 6px;
+  padding-left: 16px;
+  border-left: 1px solid #ffffff26;
+  color: #a8b0bd;
+  letter-spacing: 0.06em;
+}
+.rl-edition { color: #a8b0bd; font-size: 9px; text-align: right; }
+.rl-edition span { color: #7e8898; margin-left: 8px; }
+
+.rl-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr);
   align-items: center;
-  gap: 18px;
-  margin-bottom: 14px;
+  gap: clamp(24px, 4vw, 64px);
+  padding: 34px 0;
 }
-
+.rl-left { min-width: 0; }
+.rl-headline { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
 .rl-flag-frame {
   flex-shrink: 0;
-  padding: 3px;
-  border-radius: 11px;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08));
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 0 1px color-mix(in srgb, var(--racing-hot) 35%, transparent);
-}
-
-.rl-flag-frame .rl-flag {
-  display: block;
-  width: 46px;
-  height: 32px;
-  object-fit: cover;
+  padding: 5px;
+  background: #ffffff08;
+  border: 1px solid #ffffff21;
   border-radius: 8px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
-
-.rl-flag-fallback {
-  font-size: 32px;
-}
-
+.rl-flag-frame .rl-flag { display: block; width: 42px; height: 29px; object-fit: cover; border-radius: 3px; }
+.rl-flag-fallback { font-size: 28px; }
 .rl-race-name {
-  font-family: var(--font-display);
-  font-size: clamp(26px, 4vw, 42px);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.01em;
   margin: 0;
-  background: linear-gradient(180deg, #fff, rgba(244, 241, 234, 0.82));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 3px 14px rgba(0, 0, 0, 0.45));
+  font: 800 clamp(30px, 4.2vw, 58px)/1.08 var(--font-display);
+  letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  color: #f5f7fa;
 }
-
 .rl-race-name span {
   display: block;
-  font-size: 0.42em;
-  font-weight: 600;
+  margin-top: 11px;
+  font-size: 0.28em;
+  font-weight: 500;
   letter-spacing: 0.34em;
   text-transform: uppercase;
-  color: var(--racing-hot-ticker);
-  -webkit-text-fill-color: var(--racing-hot-ticker);
-  margin-top: 9px;
+  color: var(--rl-accent);
 }
+.rl-circuit { color: #919cac; font-size: 12px; line-height: 1.8; margin-bottom: 25px; }
+.rl-circuit strong { font-weight: 500; color: #cbd1db; }
+.rl-dot { color: var(--rl-accent); margin: 0 8px; }
 
-.rl-circuit {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  letter-spacing: 0.05em;
-  color: rgba(244, 241, 234, 0.72);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
-  margin-bottom: 24px;
-}
+.rl-stats { display: flex; flex-wrap: wrap; gap: 20px 0; margin-bottom: 28px; }
+.rl-stat { display: flex; flex-direction: column; gap: 9px; padding: 0 20px; border-left: 1px solid #ffffff1a; min-width: 0; }
+.rl-stat:first-child { padding-left: 0; border-left: 0; }
+.rl-stat-label { display: inline-flex; align-items: center; gap: 6px; color: #9da8b8; font-size: 9px; letter-spacing: 0.08em; }
+.rl-stat-icon { flex-shrink: 0; }
+.rl-stat-val { color: #ecf0f5; font: 600 18px/1.3 var(--font-display); font-variant-numeric: tabular-nums; }
+.rl-stat-val em { margin-left: 5px; color: #9da8b8; font: normal 10px var(--font-mono); }
+.rl-stat-bar { display: block; height: 2px; background: #ffffff14; border-radius: 2px; overflow: hidden; }
+.rl-stat-bar-fill { display: block; height: 100%; background: var(--rl-accent); }
 
-.rl-circuit strong {
-  color: #fff;
-  font-weight: 600;
-}
-
-.rl-dot {
-  margin: 0 8px;
-  color: var(--racing-hot);
-}
-
-/* --- Stat chips --- */
-.rl-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 26px;
-}
-
-.rl-stat {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 13px 18px;
-  border-radius: 12px;
-  background: linear-gradient(160deg, rgba(10, 8, 10, 0.4), rgba(6, 4, 6, 0.5));
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px) saturate(1.3);
-  -webkit-backdrop-filter: blur(10px) saturate(1.3);
-  min-width: 100px;
-}
-
-.rl-stat-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.62);
-}
-
-.rl-stat-icon {
-  flex-shrink: 0;
-  opacity: 0.8;
-}
-
-.rl-stat-val {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.rl-stat-val em {
-  font-family: var(--font-mono);
-  font-style: normal;
-  font-size: 11px;
-  font-weight: 500;
-  color: rgba(244, 241, 234, 0.5);
-  margin-left: 4px;
-}
-
-.rl-stat-bar {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 3px;
-  margin-top: 2px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-}
-
-.rl-stat-bar-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  height: 100%;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--racing-deep), var(--racing));
-}
-
-/* --- CTA --- */
-.rl-cta-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
+.rl-cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .rl-cta {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 13px 22px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  min-height: 45px;
+  padding: 13px 19px;
+  border: 1px solid transparent;
+  border-radius: 7px;
   color: #fff;
-  background: linear-gradient(135deg, var(--racing), var(--racing-deep));
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
+  cursor: pointer;
+  font: 600 10px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
+.rl-cta:hover { transform: translateY(-2px); }
+.rl-cta:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.rl-cta-timing { background: #e92843; box-shadow: 0 5px 20px #e9284322; }
+.rl-cta-timing:hover { background: #fa3651; }
+.rl-cta-dot { width: 6px; height: 6px; background: #fff; box-shadow: none; }
+.rl-cta-ghost { background: #ffffff05; border-color: #ffffff26; color: #dce2eb; }
+.rl-cta-ghost:hover { border-color: #ffffff55; background: #ffffff0c; }
 
-.rl-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
-}
-
-.rl-cta svg {
-  transition: transform 0.25s var(--ease);
-}
-
-.rl-cta:hover svg {
-  transform: translateX(4px);
-}
-
-.rl-cta-timing {
-  background: linear-gradient(135deg, #ff3b52, #b3122b);
-  box-shadow: 0 8px 24px rgba(255, 59, 82, 0.35);
-}
-
-.rl-cta-timing:hover {
-  box-shadow: 0 12px 32px rgba(255, 59, 82, 0.45);
-}
-
-.rl-cta-timing .rl-cta-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fff;
-  animation: rlBlink 1.4s steps(1) infinite;
-}
-
-.rl-cta-ghost {
-  background: rgba(8, 6, 8, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(10px) saturate(1.3);
-  -webkit-backdrop-filter: blur(10px) saturate(1.3);
-}
-
-.rl-cta-ghost:hover {
-  background: rgba(14, 11, 14, 0.62);
-  border-color: rgba(255, 255, 255, 0.36);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
-}
-
-/* --- Right side: live timer --- */
 .rl-right {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 26px 30px;
-  border-radius: 16px;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.55));
-  border: 1px solid color-mix(in srgb, var(--racing-hot) 30%, rgba(255, 255, 255, 0.16));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -20px 40px rgba(0, 0, 0, 0.4),
-    0 20px 44px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(6px) saturate(1.2);
-  -webkit-backdrop-filter: blur(6px) saturate(1.2);
-  min-width: 300px;
-}
-
-.rl-timer-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.55);
-}
-
-.rl-timer {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-}
-
-.rl-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  min-width: 64px;
-  padding: 10px 6px 9px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.28));
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 -8px 16px rgba(0, 0, 0, 0.3);
-}
-
-.rl-cell-num {
-  font-family: var(--font-display);
-  font-size: 46px;
-  font-weight: 800;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  color: #fff;
-  text-shadow: 0 0 24px rgba(255, 255, 255, 0.12);
-}
-
-.rl-timer-pre .rl-cell-num,
-.rl-timer-pre .rl-colon {
-  color: #eef4ff;
-  text-shadow: 0 0 22px rgba(150, 190, 255, 0.35);
-}
-
-.rl-timer-live .rl-cell-num,
-.rl-timer-live .rl-colon {
-  color: var(--rl-live);
-  text-shadow: 0 0 28px var(--rl-live-glow);
-}
-
-.rl-timer-done .rl-cell-num,
-.rl-timer-done .rl-colon {
-  color: #f4d58d;
-  text-shadow: 0 0 18px rgba(244, 213, 141, 0.3);
-}
-
-.rl-cell-unit {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.45);
-}
-
-.rl-colon {
-  font-family: var(--font-display);
-  font-size: 38px;
-  font-weight: 700;
-  line-height: 1.05;
-  color: rgba(255, 255, 255, 0.35);
-  animation: rlBlink 1.5s steps(1) infinite;
-  align-self: center;
-  margin-top: 6px;
-}
-
-/* --- Race-completion progress bar inside the timer console --- */
-.rl-progress-track {
-  position: relative;
-  width: 100%;
-  height: 4px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.09);
-  overflow: hidden;
-}
-
-.rl-progress-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  display: block;
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--racing), var(--rl-live));
-  box-shadow: 0 0 10px var(--rl-live-glow);
-  transition: width 1s linear;
-}
-
-/* --- F1 start-lights gantry --- */
-.rl-lights {
-  display: flex;
-  gap: 10px;
-  padding: 11px 17px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.35));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.rl-light {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #2a0c0c;
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.rl-light::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 5px;
-  width: 5px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  filter: blur(0.5px);
-}
-
-/* Pre-race: lights armed, glowing red in an F1 illumination sweep */
-.rl-lights-pre .rl-light {
-  background: radial-gradient(circle at 50% 35%, #ff5a4d, #c4140a 70%);
-  box-shadow: 0 0 12px rgba(220, 0, 0, 0.7), inset 0 0 0 2px rgba(0, 0, 0, 0.4);
-  animation: rlLightSweep 2.4s ease-in-out infinite;
-}
-
-/* Race underway: lights out — go */
-.rl-lights-underway .rl-light {
-  background: radial-gradient(circle at 50% 35%, #6dffa8, #14a85a 75%);
-  box-shadow: 0 0 16px rgba(40, 220, 120, 0.7), inset 0 0 0 2px rgba(0, 0, 0, 0.4);
-  animation: rlLightsLiveGlow 2.6s ease-in-out infinite;
-}
-
-.rl-lights-finished .rl-light:nth-child(odd) {
-  background: #f4f1ea;
-}
-.rl-lights-finished .rl-light:nth-child(even) {
-  background: #1a1a1a;
-}
-
-.rl-lights-caption {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--racing-hot-ticker);
-}
-
-.rl-phase-underway .rl-lights-caption {
-  color: var(--rl-live);
-}
-
-.rl-live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--rl-live);
-  box-shadow: 0 0 8px var(--rl-live-glow);
-  animation: rlBlink 1.2s steps(1) infinite;
-}
-
-/* --- Weekend session timeline --- */
-.rl-sessions {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
-  margin-top: 30px;
-  padding-top: 26px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.rl-session {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  padding: 14px 16px 13px;
-  border-radius: 12px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(0, 0, 0, 0.5));
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 6px 18px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(8px) saturate(1.2);
-  -webkit-backdrop-filter: blur(8px) saturate(1.2);
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
-}
-
-/* Thin colored accent bar along the top edge, distinct per state */
-.rl-session::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.16);
-  transition: background 0.3s var(--ease), box-shadow 0.3s var(--ease);
-}
-
-.rl-session-done {
-  opacity: 0.55;
-}
-
-.rl-session-done .rl-session-label .rl-stat-icon {
-  opacity: 0.5;
-}
-
-.rl-session-next {
-  border-color: color-mix(in srgb, var(--racing-hot) 55%, rgba(255, 255, 255, 0.25));
-  background: linear-gradient(160deg, color-mix(in srgb, var(--racing-hot) 18%, transparent), rgba(8, 6, 8, 0.58));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 12px 28px color-mix(in srgb, var(--racing-hot) 28%, rgba(0, 0, 0, 0.3));
-  transform: translateY(-3px);
-}
-
-.rl-session-next::before {
-  background: linear-gradient(90deg, var(--racing-hot), var(--racing));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--racing-hot) 65%, transparent);
-}
-
-.rl-session.rl-session-live {
-  border-color: var(--rl-live);
-  background: linear-gradient(160deg, color-mix(in srgb, var(--rl-live) 24%, transparent), rgba(22, 4, 8, 0.6));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 0 0 1px var(--rl-live),
-    0 16px 36px var(--rl-live-glow);
-  transform: translateY(-3px);
-}
-
-.rl-session.rl-session-live::before {
-  background: var(--rl-live);
-  box-shadow: 0 0 14px var(--rl-live-glow);
-}
-
-.rl-session.rl-session-race {
-  border-color: rgba(255, 255, 255, 0.14);
-}
-.rl-session.rl-session-race.rl-session-next {
-  border-color: var(--racing-hot);
-}
-.rl-session.rl-session-race.rl-session-live {
-  border-color: var(--rl-live);
-}
-
-.rl-session-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.rl-session-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
   min-width: 0;
-}
-
-.rl-session-label .rl-stat-icon {
-  flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.5);
-  opacity: 1;
-}
-
-.rl-session-next .rl-session-label .rl-stat-icon,
-.rl-session-live .rl-session-label .rl-stat-icon {
-  color: #fff;
-}
-
-.rl-session-name {
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #fff;
-  white-space: nowrap;
+  padding: 0 24px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  border: 1px solid #ffffff1c;
+  border-radius: 12px;
+  background: linear-gradient(150deg, #20272ee6, #0b1018f2);
+  box-shadow: 0 16px 32px #00000020, inset 0 1px 0 #ffffff05;
 }
+.rl-console-header { align-self: stretch; padding: 14px 0; color: #a1aebf; border-bottom: 1px solid #ffffff12; font-size: 9px; }
+.rl-console-code { color: var(--rl-accent); letter-spacing: 0.04em; }
+.rl-lights { display: flex; gap: 13px; margin-top: 25px; padding: 10px 15px; border: 1px solid #ffffff0d; border-radius: 6px; background: #070b10; }
+.rl-light { width: 13px; height: 13px; border-radius: 50%; background: #262c35; border: 2px solid #00000045; }
+.rl-lights-pre .rl-light { background: #ff4454; box-shadow: 0 0 10px #ff33444d, inset 0 2px 2px #ffffff35; }
+.rl-lights-finished .rl-light:nth-child(odd) { background: #d6dce5; }
+.rl-lights-caption { display: inline-flex; align-items: center; gap: 7px; color: #a1aebf; font-size: 8px; margin-top: 10px; }
+.rl-timer-label { margin-top: 24px; color: var(--rl-accent); font-size: 10px; letter-spacing: 0.2em; }
+.rl-timer { display: flex; justify-content: center; align-items: flex-start; width: 100%; gap: 5px; padding: 16px 0 24px; }
+.rl-cell { display: flex; flex: 1; min-width: 0; flex-direction: column; align-items: center; gap: 10px; }
+.rl-cell-num { font: 700 clamp(36px, 4.3vw, 60px)/1 var(--font-display); font-variant-numeric: tabular-nums; letter-spacing: -0.055em; color: #f6f8fc; }
+.rl-cell-unit { color: #9ba6b7; font-size: 8px; }
+.rl-colon { color: #647083; font: 400 32px/1.4 var(--font-mono); }
+.rl-console-footer { align-self: stretch; justify-content: flex-start; gap: 8px; padding: 14px 0; border-top: 1px solid #ffffff14; font-size: 9px; letter-spacing: 0; color: #b4bfce; }
+.rl-console-footer > span:last-child { margin-left: auto; }
+.rl-console-footer em { font-style: normal; text-transform: none; color: #939fb0; }
+.rl-console-footer .rl-stat-icon { color: var(--rl-accent); }
+.rl-progress-track { position: absolute; inset: auto 0 0; height: 2px; background: #ffffff10; }
+.rl-progress-fill, .rl-progress-rail-fill { display: block; height: 100%; background: var(--rl-live); transition: width 1s linear; }
+.rl-progress-rail { position: absolute; inset: 0 0 auto; height: 3px; z-index: 2; }
+.rl-phase-underway .rl-status-text, .rl-timer-live .rl-cell-num { color: #ff7180; }
+.rl-phase-underway .rl-pulse, .rl-live-dot { background: var(--rl-live); box-shadow: 0 0 12px #ff465b55; }
+.rl-phase-finished .rl-pulse { background: #c1ccd9; box-shadow: none; }
 
-.rl-session-time {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: rgba(244, 241, 234, 0.58);
+/* Weekend schedule: colored session tickets with a featured next session. */
+.rl-weekend-heading { position: relative; gap: 12px; padding: 24px 0 19px; border-top: 1px solid #ffffff18; color: #a5b1c3; font-size: 10px; letter-spacing: 0.04em; }
+.rl-weekend-heading h3 { display: flex; align-items: center; gap: 10px; font: 600 11px var(--font-mono); letter-spacing: 0.14em; color: #eef3fa; }
+.rl-weekend-heading h3::before { content: ''; width: 4px; height: 15px; border-radius: 2px; background: var(--rl-accent); box-shadow: 0 0 14px color-mix(in srgb, var(--rl-accent) 35%, transparent); }
+.rl-weekend-heading > span { text-transform: none; }
+.rl-sessions { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; }
+.rl-session {
+  --session-accent: #85baff;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 20px;
+  padding: 17px 16px 19px;
+  border: 1px solid color-mix(in srgb, var(--session-accent) 25%, #242c39);
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--session-accent) 22%, transparent), transparent 80%),
+    linear-gradient(145deg, #202b3b, #111924);
+  box-shadow: inset 0 1px 0 #ffffff0a, 0 8px 20px #00000018;
+  overflow: hidden;
 }
-
-.rl-session-progress {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: block;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.1);
+.rl-session-kind-qualifying { --session-accent: #c2a0ff; }
+.rl-session-kind-sprint { --session-accent: #ffc379; }
+.rl-session-kind-race { --session-accent: var(--rl-accent); }
+.rl-session::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: linear-gradient(var(--session-accent), color-mix(in srgb, var(--session-accent) 12%, transparent)); }
+.rl-session::after { content: ''; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: repeating-linear-gradient(125deg, transparent 0 24px, #ffffff03 24px 25px); }
+.rl-session-watermark { position: absolute; z-index: -1; right: -5px; bottom: 27px; color: transparent; -webkit-text-stroke: 1px color-mix(in srgb, var(--session-accent) 16%, transparent); font: 800 82px/1 var(--font-display); letter-spacing: -0.09em; pointer-events: none; }
+.rl-session-meta { gap: 6px; min-height: 20px; font-size: 9px; color: var(--session-accent); letter-spacing: 0.08em; }
+.rl-session-index { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-weight: 600; }
+.rl-session-index > span { color: #b0bccd; font-size: 8px; font-weight: 400; letter-spacing: 0.02em; }
+.rl-session-top { display: flex; align-items: center; }
+.rl-session-label { display: inline-flex; align-items: center; gap: 9px; min-width: 0; }
+.rl-session-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 29px; height: 29px; border: 1px solid color-mix(in srgb, var(--session-accent) 25%, transparent); border-radius: 8px; background: color-mix(in srgb, var(--session-accent) 12%, transparent); box-shadow: inset 0 1px 0 #ffffff0a; }
+.rl-session-icon .rl-stat-icon { color: var(--session-accent); width: 14px; height: 14px; }
+.rl-session-name { font: 600 11px/1.5 var(--font-display); color: #f1f5fc; }
+.rl-session-time { display: flex; align-items: baseline; gap: 6px; padding-top: 13px; border-top: 1px solid color-mix(in srgb, var(--session-accent) 18%, transparent); color: #f4f7fc; font: 600 clamp(19px, 1.8vw, 25px)/1 var(--font-display); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; }
+.rl-session-period { color: var(--session-accent); font: 500 10px var(--font-mono); letter-spacing: 0.04em; }
+.rl-session-next {
+  border-color: color-mix(in srgb, var(--session-accent) 65%, transparent);
+  background:
+    radial-gradient(ellipse at 90% 0%, color-mix(in srgb, var(--session-accent) 35%, transparent), transparent 85%),
+    linear-gradient(145deg, color-mix(in srgb, var(--racing) 20%, #1a2932), #14222a);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--session-accent) 10%, transparent), inset 0 1px 0 color-mix(in srgb, var(--session-accent) 45%, transparent);
 }
+.rl-session-next::before, .rl-session-live::before { inset: 0 0 auto; width: auto; height: 3px; background: var(--session-accent); }
+.rl-session-live { --session-accent: #ff8997; border-color: #ff465b90; background: radial-gradient(ellipse at 100% 0%, #ff465b30, transparent 90%), linear-gradient(145deg, #35212c, #1a1621); }
+.rl-badge-next, .rl-badge-live { padding: 4px 6px; border-radius: 4px; font-size: 8px; letter-spacing: 0.03em; font-weight: 700; white-space: nowrap; }
+.rl-badge-next { color: #0b191c; background: var(--session-accent); box-shadow: 0 2px 12px color-mix(in srgb, var(--session-accent) 25%, transparent); }
+.rl-badge-live { color: #fff; background: #d92240; }
+.rl-badge-check { display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; width: 19px; height: 19px; border: 1px solid color-mix(in srgb, var(--session-accent) 25%, transparent); border-radius: 50%; background: color-mix(in srgb, var(--session-accent) 12%, transparent); color: var(--session-accent); font-size: 10px; }
+.rl-session-progress { position: absolute; inset: auto 0 0; height: 2px; background: #ffffff10; }
+.rl-session-progress-fill { display: block; height: 100%; background: var(--rl-live); transition: width 1s linear; }
 
-.rl-session-progress-fill {
-  display: block;
-  height: 100%;
-  background: var(--rl-live);
-  box-shadow: 0 0 8px var(--rl-live-glow);
-  transition: width 1s linear;
-}
-
-.rl-badge-live,
-.rl-badge-next,
-.rl-badge-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 3px 7px;
-  border-radius: 5px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.rl-badge-live {
-  color: #fff;
-  background: var(--rl-live);
-  box-shadow: 0 2px 10px var(--rl-live-glow);
-  animation: rlBlink 1.4s steps(1) infinite;
-}
-
-.rl-badge-next {
-  color: #17120c;
-  background: linear-gradient(135deg, var(--racing-hot), var(--racing));
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--racing-hot) 45%, transparent);
-}
-
-.rl-badge-check {
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  padding: 0;
-  border-radius: 50%;
-  color: #6dffa8;
-  background: color-mix(in srgb, #2ee88a 20%, transparent);
-  font-size: 9px;
-}
-
-@keyframes rlLightSweep {
-  0%, 100% {
-    filter: brightness(0.65);
-  }
-  50% {
-    filter: brightness(1.15);
-  }
-}
-
-@keyframes rlLightsLiveGlow {
-  0%, 100% {
-    filter: brightness(0.9);
-  }
-  50% {
-    filter: brightness(1.2);
-  }
-}
-
-@keyframes rlReveal {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.99);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes rlRail {
-  0%, 100% {
-    opacity: 0.7;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes rlLiveThrob {
-  0%, 100% {
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.22) inset,
-      0 0 0 1px rgba(0, 0, 0, 0.4),
-      0 0 70px var(--rl-live-glow),
-      0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
-      0 8px 26px rgba(0, 0, 0, 0.4);
-  }
-  50% {
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.22) inset,
-      0 0 0 1px rgba(0, 0, 0, 0.4),
-      0 0 120px var(--rl-live-glow),
-      0 32px 90px color-mix(in srgb, var(--racing) 40%, rgba(0, 0, 0, 0.55)),
-      0 8px 26px rgba(0, 0, 0, 0.4);
-  }
-}
-
-@keyframes rlRailLive {
-  0%, 100% {
-    opacity: 0.85;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes rlSheen {
-  0%, 70% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes rlPulseRing {
-  0% {
-    opacity: 0.55;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(3.2);
-  }
-}
-
-@keyframes rlBlink {
-  0%, 50% {
-    opacity: 1;
-  }
-  51%, 100% {
-    opacity: 0.2;
-  }
+@media (max-width: 1050px) {
+  .rl-banner { padding: 24px; }
+  .rl-grid { gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr); }
+  .rl-edition span { display: none; }
+  .rl-stat { padding: 0 12px; }
+  .rl-stat-val { font-size: 15px; }
+  .rl-right { padding: 0 18px; }
 }
 
 @media (max-width: 760px) {
-  .rl-banner {
-    padding: 26px 22px;
-  }
-  .rl-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  .rl-right {
-    min-width: 0;
-    width: 100%;
-  }
-  .rl-cell {
-    min-width: 0;
-    flex: 1;
-  }
-  .rl-cell-num {
-    font-size: 38px;
-  }
+  .rl-banner { padding: 20px; border-radius: 14px; }
+  .rl-topline { padding-bottom: 18px; }
+  .rl-edition { display: none; }
+  .rl-grid { grid-template-columns: minmax(0, 1fr); padding: 26px 0; gap: 26px; }
+  .rl-race-name { font-size: clamp(32px, 7vw, 48px); }
+  .rl-right { width: 100%; }
+  .rl-cell-num { font-size: clamp(40px, 9vw, 60px); }
+  .rl-timer { max-width: 360px; }
+  .rl-round-watermark { left: 35%; top: 65px; }
+  .rl-sessions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rl-session { padding: 15px 12px; gap: 17px; }
+  .rl-session-label { gap: 7px; }
+  .rl-session-name { font-size: 10px; }
+  .rl-session:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .rl-weekend-heading { align-items: flex-start; }
+}
+
+@media (max-width: 400px) {
+  .rl-banner { padding: 16px; }
+  .rl-status { gap: 7px; }
+  .rl-status-tag { padding-left: 10px; margin-left: 2px; font-size: 9px; }
+  .rl-headline { gap: 12px; }
+  .rl-flag-frame .rl-flag { width: 32px; height: 23px; }
+  .rl-stat { padding: 0 9px; }
+  .rl-stat-label { font-size: 8px; gap: 4px; letter-spacing: 0; }
+  .rl-stat-val { font-size: 13px; }
+  .rl-stat-val em { font-size: 9px; }
+  .rl-cta { flex: 1 1 100%; }
+  .rl-weekend-heading { flex-direction: column; gap: 7px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rl-banner,
-  .rl-banner::before,
-  .rl-sheen,
-  .rl-pulse::before,
-  .rl-pulse::after,
-  .rl-colon,
-  .rl-light,
-  .rl-live-dot,
-  .rl-badge-live {
-    animation: none;
-  }
+  .rl-cta, .rl-progress-fill, .rl-progress-rail-fill, .rl-session-progress-fill { transition: none; }
+  .rl-cta:hover { transform: none; }
 }
 
 .race-hero {
@@ -15808,4 +15161,182 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .ddp-loading span { animation: none; }
+}
+
+/* ==========================================================================
+   Season statistics — historical race-outcome data lab
+   ========================================================================== */
+.season-stats-teaser { position: relative; display: grid; grid-template-columns: minmax(0,1.25fr) minmax(300px,.75fr); min-height: 390px; margin: var(--section-gap) var(--gutter) 0; overflow: hidden; color: #f4f7fb; border: 1px solid rgba(255,255,255,.1); border-radius: 22px; background: radial-gradient(circle at 88% 20%, color-mix(in srgb,var(--racing) 34%,transparent), transparent 34%), linear-gradient(125deg,#09111d 0%,#0c1724 54%,#080d16 100%); box-shadow: 0 32px 90px rgba(0,0,0,.32); }
+.sst-grid { position: absolute; inset: 0; opacity: .12; background-image: linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px); background-size: 46px 46px; mask-image: linear-gradient(90deg,#000,transparent 75%); }
+.sst-copy { position: relative; z-index: 1; display: flex; align-items: flex-start; flex-direction: column; justify-content: center; padding: clamp(38px,5vw,72px); }
+.sst-kicker { display: flex; align-items: center; gap: 9px; color: #8392a7; font: 750 9px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; }
+.sst-kicker i { width: 24px; height: 2px; background: var(--racing); box-shadow: 0 0 10px var(--racing); }
+.sst-copy h2 { max-width: 760px; margin: 21px 0 15px; color: #f4f7fb; font: 750 clamp(38px,5.4vw,74px)/.97 var(--font-display-cond); letter-spacing: -.055em; }
+.sst-copy h2 em { color: var(--racing-hot); font-style: normal; }
+.sst-copy p { max-width: 610px; color: #93a0b2; font: 450 15px/1.65 var(--font-body); }
+.sst-copy button { display: inline-flex; align-items: center; gap: 18px; margin-top: 28px; padding: 14px 19px; color: #07101a; border: 0; border-radius: 8px; background: var(--racing-hot); box-shadow: 0 12px 28px color-mix(in srgb,var(--racing) 22%,transparent); font: 800 10px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: transform .25s var(--ease-out),box-shadow .25s ease; }
+.sst-copy button:hover { transform: translateY(-3px); box-shadow: 0 18px 38px color-mix(in srgb,var(--racing) 34%,transparent); }
+.sst-copy button span { font-size: 16px; }
+.sst-visual { position: relative; display: grid; place-items: center; min-width: 0; }
+.sst-orbit { display: grid; position: relative; z-index: 2; place-items: center; width: min(23vw,220px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at center,#0b1320 56%,transparent 57%),conic-gradient(var(--racing-hot) 0 87%,rgba(255,255,255,.09) 87%); box-shadow: 0 0 70px color-mix(in srgb,var(--racing) 25%,transparent),inset 0 0 25px rgba(255,255,255,.03); }
+.sst-orbit::before,.sst-orbit::after { content:""; position:absolute; border:1px solid rgba(255,255,255,.09); border-radius:50%; inset:-26px; }
+.sst-orbit::after { inset:-54px; border-style:dashed; animation: sst-spin 28s linear infinite; }
+.sst-orbit span { margin-top: 54px; color:#fff; font:800 clamp(31px,4vw,52px)/1 var(--font-mono); letter-spacing:-.06em; }
+.sst-orbit small { margin-bottom: 54px; color:#7f8da1; font:750 8px/1 var(--font-mono); letter-spacing:.14em; text-transform:uppercase; }
+.sst-bars { position:absolute; right:5%; bottom:34px; display:flex; align-items:flex-end; gap:7px; height:80px; opacity:.46; }
+.sst-bars i { width:10px; height:var(--bar); border-radius:2px 2px 0 0; background:var(--racing-hot); box-shadow:0 0 12px color-mix(in srgb,var(--racing) 40%,transparent); }
+@keyframes sst-spin { to { transform:rotate(360deg); } }
+
+.season-stats-page { position:relative; z-index:10; min-height:100vh; color:#ecf2f9; background:#07101b; }
+.season-stats-page::before { content:""; position:fixed; z-index:-1; inset:0; pointer-events:none; background:radial-gradient(circle at 77% 11%,color-mix(in srgb,var(--racing) 16%,transparent),transparent 28%),linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px); background-size:auto,52px 52px,52px 52px; }
+.season-stats-header { position:relative; z-index:30; padding:18px var(--gutter) 0; }
+.season-stats-header .hero-top { align-items:center; max-width:1480px; margin-inline:auto; }
+.season-stats-page .profile-menu-card { color:#edf2f8; border-color:rgba(255,255,255,.14); background:linear-gradient(120deg,rgba(255,255,255,.085),rgba(255,255,255,.035) 42%,color-mix(in srgb,var(--racing) 18%,rgba(255,255,255,.045)) 72%,rgba(255,255,255,.07)); box-shadow:0 12px 32px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.09); }
+.season-stats-page .profile-menu-card:hover { border-color:color-mix(in srgb,var(--racing) 50%,rgba(255,255,255,.2)); box-shadow:0 18px 42px color-mix(in srgb,var(--racing) 22%,rgba(0,0,0,.55)),inset 0 1px rgba(255,255,255,.14); }
+.season-stats-page .greeting-main,.season-stats-page .guest-signin { color:#edf2f8; background:linear-gradient(118deg,#f7f3ea 28%,color-mix(in srgb,#fff 45%,var(--racing)) 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.season-stats-page .greeting-text .dateline { color:color-mix(in srgb,rgba(255,255,255,.62) 82%,var(--racing) 18%); }
+.season-stats-page .pmc-divider { background:linear-gradient(to bottom,transparent,rgba(255,255,255,.28) 50%,transparent); }
+.season-stats-page .hamburger-lines span { background:#edf2f8; }
+.season-stats-back { color:#dfe7f1; border-color:#26354a; background:#0d1827; }
+.season-stats-main { width:min(1480px,100%); margin-inline:auto; padding:58px var(--gutter) 90px; }
+.season-stats-hero { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; min-height:390px; padding:clamp(36px,5vw,76px); overflow:hidden; border:1px solid #1c2a3c; border-radius:22px; background:linear-gradient(125deg,rgba(13,25,41,.96),rgba(6,14,25,.98)); box-shadow:0 35px 90px rgba(0,0,0,.28); }
+.season-stats-hero::before { content:""; position:absolute; top:-55%; right:-4%; width:54%; aspect-ratio:1; border:1px solid color-mix(in srgb,var(--racing) 40%,transparent); border-radius:50%; box-shadow:0 0 0 70px color-mix(in srgb,var(--racing) 4%,transparent),0 0 0 140px color-mix(in srgb,var(--racing) 3%,transparent); }
+.season-stats-hero-copy { position:relative; z-index:2; }
+.season-stats-kicker { display:flex; align-items:center; gap:10px; color:#8493a8; font:750 9px/1 var(--font-mono); letter-spacing:.17em; text-transform:uppercase; }
+.season-stats-kicker i { width:26px; height:2px; background:var(--racing-hot); box-shadow:0 0 12px var(--racing); }
+.season-stats-hero h1 { max-width:850px; margin:25px 0 18px; color:#f4f7fb; font:750 clamp(48px,7vw,98px)/.91 var(--font-display-cond); letter-spacing:-.065em; }
+.season-stats-hero h1 em { color:var(--racing-hot); font-style:normal; }
+.season-stats-hero p { max-width:650px; color:#91a0b3; font:450 16px/1.7 var(--font-body); }
+.season-stats-select { position:relative; z-index:3; display:block; min-width:210px; padding:13px 15px 11px; border:1px solid #2b3a50; border-radius:9px; background:#08121f; box-shadow:0 16px 40px rgba(0,0,0,.24); }
+.season-stats-select span { display:block; margin-bottom:7px; color:#65748a; font:750 7px/1 var(--font-mono); letter-spacing:.14em; text-transform:uppercase; }
+.season-stats-select select { width:100%; color:#f2f5f9; border:0; outline:0; appearance:none; background:transparent; font:800 25px/1 var(--font-mono); cursor:pointer; }
+.season-stats-select i { position:absolute; right:16px; bottom:15px; color:var(--racing-hot); font-style:normal; pointer-events:none; }
+.season-stats-era { position:relative; z-index:3; min-width:230px; padding:17px 18px; border:1px solid #2b3a50; border-radius:9px; background:#08121f; box-shadow:0 16px 40px rgba(0,0,0,.24); }
+.season-stats-era span,.season-stats-era small { display:block; color:#65748a; font:750 7px/1 var(--font-mono); letter-spacing:.14em; text-transform:uppercase; }
+.season-stats-era strong { display:block; margin:9px 0 8px; color:#f2f5f9; font:800 20px/1 var(--font-mono); letter-spacing:-.04em; }
+.season-stats-era small { color:var(--racing-hot); letter-spacing:.08em; }
+.season-stats-hero-year { position:absolute; right:2%; bottom:-.17em; color:transparent; opacity:.11; -webkit-text-stroke:1px #8290a4; font:850 clamp(105px,18vw,270px)/1 var(--font-display); letter-spacing:-.09em; pointer-events:none; }
+.season-stats-loading { display:flex; align-items:center; justify-content:center; gap:14px; min-height:390px; color:#8492a6; font:750 10px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }
+.season-stats-loading i { width:22px; aspect-ratio:1; border:2px solid #29384d; border-top-color:var(--racing-hot); border-radius:50%; animation:sst-spin .8s linear infinite; }
+.season-stats-error { display:flex; align-items:center; gap:18px; margin-top:22px; padding:22px 24px; border:1px solid rgba(255,83,108,.32); border-radius:12px; background:rgba(98,19,35,.18); }
+.season-stats-error>span { display:grid; place-items:center; width:40px; aspect-ratio:1; color:#ff8395; border:1px solid rgba(255,83,108,.4); border-radius:50%; font:800 18px/1 var(--font-mono); }
+.season-stats-error div { flex:1; }.season-stats-error strong { font:750 14px/1 var(--font-body); }.season-stats-error p { margin-top:6px; color:#a999a1; font:450 13px/1.4 var(--font-body); }
+.season-stats-error button { padding:11px 14px; color:#ffb2bd; border:1px solid rgba(255,83,108,.35); border-radius:7px; background:transparent; font:750 9px/1 var(--font-mono); text-transform:uppercase; cursor:pointer; }
+.season-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
+.season-kpi-grid article { min-height:165px; padding:25px 27px; border:1px solid #1c2a3b; border-radius:12px; background:linear-gradient(145deg,#0d1928,#09131f); }
+.season-kpi-grid article>span { display:block; color:#66768b; font:750 8px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }
+.season-kpi-grid strong { display:block; margin:25px 0 8px; color:#f2f6fb; font:800 clamp(32px,3vw,48px)/1 var(--font-mono); letter-spacing:-.055em; }
+.season-kpi-grid strong small { color:var(--racing-hot); font-size:.53em; }
+.season-kpi-grid p { color:#7e8ca0; font:500 11px/1.4 var(--font-body); }
+.season-stats-dashboard { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,.65fr); gap:14px; margin-top:14px; }
+.season-outcome-panel,.season-insight-panel,.season-status-panel { border:1px solid #1c2a3b; border-radius:15px; background:linear-gradient(145deg,#0c1827,#08121e); box-shadow:0 25px 70px rgba(0,0,0,.2); }
+.season-outcome-panel>header,.season-insight-panel>header { display:flex; align-items:flex-start; justify-content:space-between; padding:28px 30px; border-bottom:1px solid #1b293a; }
+.season-outcome-panel header span,.season-insight-panel header span,.season-status-head>div>span { color:#63738a; font:750 8px/1 var(--font-mono); letter-spacing:.14em; text-transform:uppercase; }
+.season-outcome-panel h2,.season-insight-panel h2,.season-status-head h2 { margin-top:9px; color:#e8eef6; font:750 clamp(21px,2vw,29px)/1.05 var(--font-display-cond); letter-spacing:-.035em; }
+.season-outcome-panel header small { padding:7px 9px; color:#75dcb8; border:1px solid rgba(116,247,197,.2); border-radius:30px; background:rgba(116,247,197,.07); font:700 7px/1 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; }
+.season-outcome-body { display:grid; grid-template-columns:minmax(230px,.72fr) 1.28fr; align-items:center; gap:35px; padding:35px 30px 38px; }
+.season-donut { display:grid; place-items:center; width:min(100%,270px); aspect-ratio:1; margin:auto; border-radius:50%; background:var(--donut); box-shadow:0 0 50px rgba(0,0,0,.28); }
+.season-donut::before { content:""; grid-area:1/1; width:71%; aspect-ratio:1; border-radius:50%; background:#0a1522; box-shadow:inset 0 0 28px rgba(0,0,0,.35); }
+.season-donut>div { z-index:1; grid-area:1/1; text-align:center; }.season-donut strong { display:block; color:#f3f6fa; font:800 clamp(29px,3vw,43px)/1 var(--font-mono); letter-spacing:-.06em; }.season-donut span { display:block; margin-top:8px; color:#76869a; font:750 8px/1 var(--font-mono); letter-spacing:.13em; text-transform:uppercase; }
+.season-category-list { display:grid; gap:6px; }
+.season-category-list button { display:grid; grid-template-columns:7px minmax(0,1fr) auto; align-items:center; gap:14px; width:100%; padding:12px; color:inherit; border:1px solid transparent; border-radius:9px; background:transparent; text-align:left; cursor:pointer; transition:.2s ease; }
+.season-category-list button:hover,.season-category-list button.active { border-color:#26364b; background:#0d1b2b; transform:translateX(3px); }.season-category-list button>i { width:7px; height:36px; border-radius:5px; box-shadow:0 0 12px currentColor; }.season-category-list button span strong { display:block; color:#dce4ee; font:700 12px/1 var(--font-body); }.season-category-list button span small { display:block; margin-top:6px; color:#68778b; font:450 10px/1.3 var(--font-body); }.season-category-list button>b { color:#e7edf5; font:750 13px/1 var(--font-mono); }
+.season-insight-panel>header { display:block; }.season-insight-primary { padding:31px 30px; border-bottom:1px solid #1b293a; }.season-insight-primary>span { color:#65758a; font:750 8px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }.season-insight-primary>strong { display:block; margin:16px 0 12px; color:var(--racing-hot); font:800 clamp(42px,5vw,64px)/1 var(--font-mono); letter-spacing:-.07em; }.season-insight-primary>strong small { font-size:.34em; letter-spacing:0; }.season-insight-primary p { color:#8795a8; font:450 12px/1.55 var(--font-body); }
+.season-insight-row { padding:21px 30px; border-bottom:1px solid #172536; }.season-insight-row:last-child { border-bottom:0; }.season-insight-row>span { display:block; margin-bottom:10px; color:#65758a; font:750 7px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }.season-insight-row>strong { display:flex; align-items:center; justify-content:space-between; gap:15px; color:#dfe6ef; font:700 13px/1.25 var(--font-body); }.season-insight-row>strong b { color:#8796aa; font:700 11px/1 var(--font-mono); }
+.season-status-panel { margin-top:14px; overflow:hidden; }
+.season-status-head { display:flex; align-items:flex-end; justify-content:space-between; gap:28px; padding:31px 34px; border-bottom:1px solid #1b293a; }.season-status-head p { margin-top:9px; color:#758499; font:450 11px/1.5 var(--font-body); }
+.season-status-actions { display:flex; align-items:center; gap:12px; }.season-filter-tabs { display:flex; padding:4px; overflow-x:auto; border:1px solid #223147; border-radius:8px; background:#07101b; }.season-filter-tabs button { padding:9px 11px; white-space:nowrap; color:#718096; border:0; border-radius:5px; background:transparent; font:700 8px/1 var(--font-mono); letter-spacing:.05em; cursor:pointer; }.season-filter-tabs button.active { color:#08111c; background:var(--racing-hot); }
+.season-download { display:flex; align-items:center; gap:7px; padding:11px 12px; color:#aeb9c8; border:1px solid #26364b; border-radius:7px; background:#0b1725; font:750 8px/1 var(--font-mono); cursor:pointer; }.season-download svg { width:14px; fill:none; stroke:currentColor; stroke-width:1.8; }
+.season-status-table { padding:8px 25px 20px; }.season-status-table-head,.season-status-row { display:grid; grid-template-columns:minmax(220px,1.1fr) minmax(250px,1.7fr) 90px 70px; align-items:center; gap:24px; }.season-status-table-head { padding:16px 13px; color:#536278; font:750 7px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }.season-status-table-head span:nth-last-child(-n+2) { text-align:right; }
+.season-status-row { min-height:68px; padding:8px 13px; border-top:1px solid #152335; transition:background .2s ease; }.season-status-row:hover { background:#0d1a29; }.season-status-name { display:grid; grid-template-columns:25px 5px minmax(0,1fr); align-items:center; gap:12px; }.season-status-name>b { color:#526177; font:700 9px/1 var(--font-mono); }.season-status-name>i { width:5px; height:29px; border-radius:3px; }.season-status-name strong { display:block; overflow:hidden; color:#dce4ee; font:650 12px/1.1 var(--font-body); text-overflow:ellipsis; white-space:nowrap; }.season-status-name small { display:block; margin-top:5px; color:#617086; font:650 7px/1 var(--font-mono); letter-spacing:.07em; text-transform:uppercase; }.season-status-track { height:7px; overflow:hidden; border-radius:8px; background:#131f2e; }.season-status-track i { display:block; height:100%; border-radius:inherit; box-shadow:0 0 12px currentColor; transform-origin:left; animation:season-bar-in .7s var(--ease-out) both; }.season-status-row>strong,.season-status-row>b { color:#dfe6ef; font:700 11px/1 var(--font-mono); text-align:right; }.season-status-row>b { color:#758499; }
+@keyframes season-bar-in { from { transform:scaleX(0); } }
+.season-stats-source { display:flex; justify-content:space-between; gap:20px; padding:18px 6px 0; color:#536277; font:650 8px/1.4 var(--font-mono); letter-spacing:.06em; text-transform:uppercase; }.season-stats-source span:first-child { display:flex; align-items:center; gap:8px; }.season-stats-source i { width:6px; height:6px; border-radius:50%; background:#73f5c3; box-shadow:0 0 8px #73f5c3; }
+
+/* Jolpica-powered performance analytics */
+.analytics-suite { margin-top:14px; color:#eaf0f7; }
+.analytics-suite-head { display:flex; align-items:flex-end; justify-content:space-between; gap:32px; padding:31px 34px; border:1px solid #1c2a3b; border-radius:15px 15px 0 0; background:linear-gradient(145deg,#0d1928,#09131f); }
+.analytics-suite-head>div>span,.analytics-toolbar span { color:#63738a; font:750 8px/1 var(--font-mono); letter-spacing:.14em; text-transform:uppercase; }
+.analytics-suite-head h2 { margin:9px 0 7px; font:750 clamp(24px,3vw,34px)/1 var(--font-display-cond); letter-spacing:-.04em; }
+.analytics-suite-head p { color:#78879b; font:450 12px/1.5 var(--font-body); }
+.analytics-suite-head nav,.analytics-toggle { display:flex; padding:4px; overflow-x:auto; border:1px solid #25354a; border-radius:9px; background:#07101b; }
+.analytics-suite-head button,.analytics-toggle button { padding:10px 13px; white-space:nowrap; color:#718096; border:0; border-radius:6px; background:transparent; font:750 8px/1 var(--font-mono); letter-spacing:.05em; text-transform:uppercase; cursor:pointer; }
+.analytics-suite-head button.active,.analytics-toggle button.active { color:#07101b; background:var(--racing-hot); }
+.analytics-panel { min-height:440px; border:1px solid #1c2a3b; border-top:0; border-radius:0 0 15px 15px; background:linear-gradient(145deg,#0b1725,#07111d); box-shadow:0 25px 70px rgba(0,0,0,.2); }
+.analytics-panel-body { padding:32px 34px 38px; }
+.analytics-toolbar { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:28px; }
+.analytics-toolbar h3 { margin-top:8px; font:750 23px/1 var(--font-display-cond); letter-spacing:-.03em; }
+.analytics-loading,.analytics-empty { display:flex; align-items:center; justify-content:center; gap:12px; min-height:440px; padding:40px; color:#78879b; font:700 10px/1.5 var(--font-mono); letter-spacing:.08em; text-align:center; text-transform:uppercase; }
+.analytics-loading i { width:20px; aspect-ratio:1; border:2px solid #2a394d; border-top-color:var(--racing-hot); border-radius:50%; animation:sst-spin .8s linear infinite; }
+.analytics-line-chart { overflow-x:auto; border:1px solid #18283a; border-radius:11px; background:#08131f; }
+.analytics-line-chart svg { display:block; width:100%; min-width:720px; height:390px; }.analytics-line-chart line { stroke:#263548; stroke-width:1; stroke-dasharray:4 8; }.analytics-line-chart polyline { vector-effect:non-scaling-stroke; filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+.analytics-axis { display:flex; justify-content:space-between; min-width:720px; padding:0 20px 14px 45px; color:#59697e; font:700 8px/1 var(--font-mono); text-transform:uppercase; }
+.analytics-legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; }.analytics-legend>div { display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid #203046; border-radius:7px; background:#0b1826; }.analytics-legend i { width:8px; height:8px; border-radius:50%; }.analytics-legend span,.analytics-legend strong { font:750 9px/1 var(--font-mono); }.analytics-legend strong { color:#75859a; }
+.analytics-select { display:block; min-width:230px; padding:10px 12px; border:1px solid #27384e; border-radius:8px; background:#07111d; }.analytics-select span { display:block; margin-bottom:6px; color:#607086; font:700 7px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }.analytics-select select { width:100%; color:#e8eef5; border:0; outline:0; background:#07111d; font:700 11px/1.3 var(--font-body); }
+.analytics-circuit-title { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:15px; padding:24px; border:1px solid #1d2d40; border-radius:11px; background:radial-gradient(circle at 85% 10%,color-mix(in srgb,var(--racing) 18%,transparent),transparent 42%),#0b1826; }.analytics-circuit-title strong { display:block; font:750 27px/1 var(--font-display-cond); }.analytics-circuit-title span { display:block; margin-top:8px; color:#7b8a9e; font:500 11px/1 var(--font-body); }.analytics-circuit-title small { color:var(--racing-hot); font:750 12px/1 var(--font-mono); }
+.analytics-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:15px; }.analytics-kpis article { padding:20px; border:1px solid #1d2d40; border-radius:9px; background:#0a1623; }.analytics-kpis span { color:#617187; font:700 7px/1 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; }.analytics-kpis strong { display:block; margin-top:14px; font:800 27px/1 var(--font-mono); }.analytics-kpis small { color:var(--racing-hot); font-size:.55em; }
+.analytics-split { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.analytics-split>article,.analytics-history { overflow:hidden; border:1px solid #1d2d40; border-radius:10px; background:#091522; }.analytics-split header,.analytics-history>header { padding:16px 18px; color:#718197; border-bottom:1px solid #1b2a3c; font:750 8px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }
+.analytics-ranking { display:grid; grid-template-columns:24px 1fr auto; gap:11px; padding:12px 18px; border-bottom:1px solid #172638; }.analytics-ranking:last-child { border-bottom:0; }.analytics-ranking b,.analytics-ranking strong { color:#6f7f94; font:700 9px/1 var(--font-mono); }.analytics-ranking span { font:650 11px/1 var(--font-body); }
+.analytics-history { margin-top:10px; }.analytics-history>div { display:grid; grid-template-columns:repeat(4,1fr); }.analytics-history span { padding:15px 18px; border-right:1px solid #172638; border-bottom:1px solid #172638; font:650 10px/1.25 var(--font-body); }.analytics-history b,.analytics-history small { display:block; margin-bottom:7px; color:var(--racing-hot); font:700 8px/1 var(--font-mono); }.analytics-history small { margin:7px 0 0; color:#617187; }
+.analytics-heatmap { min-width:720px; overflow:hidden; border:1px solid #1d2d40; border-radius:10px; }.analytics-panel-body:has(.analytics-heatmap) { overflow-x:auto; }.analytics-heat-head,.analytics-heat-row { display:grid; grid-template-columns:minmax(180px,1.2fr) repeat(3,1fr); gap:1px; background:#172638; }.analytics-heat-head span { padding:13px; color:#68788e; background:#091522; font:750 8px/1 var(--font-mono); text-transform:uppercase; }.analytics-heat-row>div,.analytics-heat-row>span { min-height:55px; padding:10px 13px; background:#0b1826; }.analytics-heat-row>div { display:flex; align-items:center; gap:12px; }.analytics-heat-row>div>b { color:#607087; font:750 10px/1 var(--font-mono); }.analytics-heat-row strong,.analytics-heat-row small,.analytics-heat-row>span b { display:block; font:750 10px/1 var(--font-mono); }.analytics-heat-row small { margin-top:5px; color:#637289; font-size:7px; }.analytics-heat-row>span.empty { color:#536176; background:#0a1521; }
+.analytics-note { color:#63738a; font:700 8px/1 var(--font-mono); letter-spacing:.08em; text-transform:uppercase; }.analytics-speed-list { display:grid; gap:6px; }.analytics-speed-list>div { display:grid; grid-template-columns:42px minmax(220px,1fr) auto; align-items:center; gap:16px; padding:14px 16px; border:1px solid #1c2c3f; border-radius:8px; background:#0a1623; }.analytics-speed-list>div>span { color:#718197; font:750 9px/1 var(--font-mono); }.analytics-speed-list>div>div { position:relative; padding-bottom:10px; }.analytics-speed-list strong,.analytics-speed-list small { display:block; font:650 11px/1 var(--font-body); }.analytics-speed-list small { margin-top:5px; color:#617187; font:650 8px/1 var(--font-mono); }.analytics-speed-list i { position:absolute; bottom:0; left:0; height:3px; border-radius:4px; }.analytics-speed-list>div>b { color:var(--racing-hot); font:750 11px/1 var(--font-mono); }
+
+/* Per-session qualifying delta heatmap */
+.qr-delta-panel { margin-top:32px; overflow:hidden; border:1px solid rgba(0,0,0,.08); border-radius:18px; background:#fff; box-shadow:0 22px 55px rgba(0,0,0,.06); }.qr-delta-panel>header { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; padding:23px 25px; border-bottom:1px solid rgba(0,0,0,.07); }.qr-delta-panel header span,.qr-delta-panel header small { color:var(--ink-3); font:750 8px/1 var(--font-mono); letter-spacing:.13em; }.qr-delta-panel h3 { margin-top:8px; color:var(--carbon); font:850 22px/1 var(--font-display); text-transform:uppercase; }.qr-delta-scroll { overflow-x:auto; }.qr-delta-grid { min-width:690px; }.qr-delta-head,.qr-delta-row { display:grid; grid-template-columns:minmax(220px,1.25fr) repeat(3,1fr); gap:1px; background:rgba(0,0,0,.06); }.qr-delta-head span { padding:13px 18px; color:var(--ink-3); background:#f7f8fa; font:750 9px/1 var(--font-mono); text-transform:uppercase; }.qr-delta-row>div,.qr-delta-row>span { min-height:62px; padding:12px 18px; background:#fff; }.qr-delta-row>div { display:flex; align-items:center; gap:14px; }.qr-delta-row>div>b { color:var(--ink-3); font:750 10px/1 var(--font-mono); }.qr-delta-row strong,.qr-delta-row small,.qr-delta-row>span b { display:block; color:var(--carbon); font:750 10px/1 var(--font-mono); }.qr-delta-row small { margin-top:6px; color:var(--ink-3); font-size:7px; }.qr-delta-row>span { background:color-mix(in srgb,var(--racing) calc(var(--heat) * 36%),#fff); }.qr-delta-row>span.empty { background:#fafafa; }
+
+@media (max-width:1000px) {
+  .season-stats-teaser { grid-template-columns:1fr .75fr; }.sst-orbit { width:min(26vw,190px); }
+  .season-kpi-grid { grid-template-columns:repeat(2,1fr); }.season-stats-dashboard { grid-template-columns:1fr; }.season-insight-panel { display:grid; grid-template-columns:1fr 1fr; }.season-insight-panel>header { grid-column:1/-1; }.season-insight-primary { grid-row:2/4; border-right:1px solid #1b293a; border-bottom:0; }.season-status-head { align-items:flex-start; flex-direction:column; }.season-status-actions { width:100%; }.season-filter-tabs { flex:1; }.season-status-table-head,.season-status-row { grid-template-columns:minmax(210px,1fr) minmax(200px,1.3fr) 70px 60px; gap:15px; }
+  .analytics-suite-head { align-items:flex-start; flex-direction:column; }.analytics-suite-head nav { width:100%; }.analytics-suite-head nav button { flex:1; }.analytics-history>div { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:700px) {
+  .season-stats-teaser { grid-template-columns:1fr; min-height:0; border-right:0; border-left:0; border-radius:0; }.sst-copy { padding:44px var(--gutter); }.sst-copy h2 { font-size:clamp(36px,12vw,57px); }.sst-visual { min-height:240px; padding-bottom:35px; }.sst-orbit { width:160px; }.sst-orbit span { margin-top:40px; }.sst-orbit small { margin-bottom:40px; }
+  .season-stats-header { padding:12px var(--gutter) 0; }.season-stats-header .hero-top { flex-wrap:nowrap; gap:10px; }.season-stats-header .brand-right { width:auto; margin-left:auto; }.season-stats-page .profile-menu-card { width:auto; gap:10px; padding:6px 12px; }.season-stats-page .profile-menu-card .greeting-text,.season-stats-page .profile-menu-card .pmc-divider-logo { display:none; }.season-stats-page .profile-menu-card .pmc-logo { width:28px; height:28px; }.season-stats-page .user-avatar { width:36px; height:36px; }
+  .season-stats-main { padding:38px 0 70px; }.season-stats-hero { grid-template-columns:1fr; gap:34px; min-height:450px; padding:40px var(--gutter); border-right:0; border-left:0; border-radius:0; }.season-stats-hero h1 { font-size:clamp(45px,15vw,72px); }.season-stats-select,.season-stats-era { width:100%; }.season-stats-error { align-items:flex-start; margin-inline:var(--gutter); flex-wrap:wrap; }.season-stats-error button { margin-left:58px; }.season-kpi-grid { grid-template-columns:1fr 1fr; gap:7px; padding-inline:var(--gutter); }.season-kpi-grid article { min-height:145px; padding:20px 17px; }.season-kpi-grid strong { font-size:31px; }.season-stats-dashboard { gap:8px; }.season-outcome-panel,.season-insight-panel,.season-status-panel { border-right:0; border-left:0; border-radius:0; }.season-outcome-body { grid-template-columns:1fr; }.season-donut { width:220px; }.season-insight-panel { display:block; }.season-insight-primary { border-right:0; border-bottom:1px solid #1b293a; }.season-status-head { padding:26px var(--gutter); }.season-status-actions { align-items:stretch; flex-direction:column; }.season-filter-tabs { width:100%; }.season-download { justify-content:center; }.season-status-table { padding:8px 0 16px; overflow:hidden; }.season-status-table-head { display:none; }.season-status-row { grid-template-columns:minmax(180px,1fr) 75px 54px; gap:10px; padding:10px var(--gutter); }.season-status-track { grid-column:1/-1; grid-row:2; }.season-status-row>strong { grid-column:2; grid-row:1; }.season-status-row>b { grid-column:3; grid-row:1; }.season-stats-source { align-items:flex-start; flex-direction:column; padding:18px var(--gutter) 0; }
+  .analytics-suite { margin-top:9px; }.analytics-suite-head,.analytics-panel-body { padding:24px var(--gutter); }.analytics-suite-head,.analytics-panel { border-right:0; border-left:0; border-radius:0; }.analytics-suite-head nav { width:100%; }.analytics-suite-head nav button { flex:0 0 auto; }.analytics-toolbar { align-items:stretch; flex-direction:column; }.analytics-select { width:100%; }.analytics-kpis { grid-template-columns:1fr 1fr; }.analytics-split { grid-template-columns:1fr; }.analytics-history>div { grid-template-columns:1fr 1fr; }.analytics-speed-list>div { grid-template-columns:34px minmax(170px,1fr); }.analytics-speed-list>div>b { grid-column:2; }.qr-delta-panel>header { align-items:flex-start; flex-direction:column; }
+}
+@media (prefers-reduced-motion:reduce) { .sst-orbit::after,.season-stats-loading i,.season-status-track i { animation:none; } }
+
+/* Compact archive explorer */
+.season-outcome-categories { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; padding:24px 28px; }
+.season-outcome-card { --category-color:#74f7c5; min-width:0; padding:16px 14px; border:1px solid #243348; border-radius:10px; background:#091421; color:#e8eef6; text-align:left; cursor:pointer; transition:background .2s,border-color .2s; }
+.season-outcome-card:hover { background:#122236; border-color:#64758c; }
+.season-outcome-card.active { border-color:var(--category-color); background:color-mix(in srgb,var(--category-color) 8%,#091421); }
+.season-outcome-card>span { display:flex; align-items:center; gap:7px; font:650 11px/1.3 var(--font-body); }
+.season-outcome-card>span i { width:6px; height:6px; flex-shrink:0; border-radius:50%; background:var(--category-color); }
+.season-outcome-card>strong { display:block; margin:14px 0 6px; font:750 clamp(19px,2vw,26px)/1 var(--font-mono); letter-spacing:-.05em; }
+.season-outcome-card>small { color:#9aa9bb; font:450 10px/1.4 var(--font-body); }
+.season-outcome-meter { display:flex; height:4px; margin-top:15px; overflow:hidden; border-radius:4px; background:#1e2d40; }
+.season-outcome-meter i { height:100%; background:var(--category-color); }
+.season-outcome-toolbar { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:0 28px 18px; }
+.season-outcome-toolbar h3 { color:#e8eef6; font:700 17px/1.3 var(--font-body); }
+.season-outcome-toolbar p { margin-top:5px; color:#91a1b5; font:450 11px/1.5 var(--font-body); }
+.season-outcome-search { display:grid; gap:6px; width:240px; flex-shrink:0; color:#9aa9bb; font:550 10px/1.3 var(--font-body); }
+.season-outcome-search input { width:100%; min-height:40px; padding:10px 12px; border:1px solid #304158; border-radius:7px; background:#07111d; color:#edf3fa; font:450 12px/1.4 var(--font-body); }
+.season-outcome-search input::placeholder { color:#8b9bb0; }
+.season-outcome-explorer :is(button,input):focus-visible { outline:2px solid #bdebdc; outline-offset:3px; }
+.season-outcome-explorer .season-status-table { padding-top:0; padding-bottom:0; }
+.season-outcome-explorer .season-status-row { min-height:54px; }
+.season-outcome-explorer .season-status-table-head { color:#93a3b8; }
+.season-outcome-pagination { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 28px; border-top:1px solid #243348; color:#a6b4c6; font:550 11px/1.5 var(--font-body); }
+.season-outcome-pagination small { display:block; margin-top:4px; color:#8394ab; font-size:10px; }
+.season-outcome-pagination nav { display:flex; align-items:center; gap:14px; white-space:nowrap; }
+.season-outcome-pagination button,.season-outcome-empty button { min-height:38px; padding:8px 12px; border:1px solid #304158; border-radius:7px; color:#e3ecf7; background:#102034; cursor:pointer; font:600 11px/1.4 var(--font-body); }
+.season-outcome-pagination button:disabled { opacity:.35; cursor:default; }
+.season-outcome-empty { padding:36px 16px; text-align:center; color:#acbacd; font:450 13px/1.6 var(--font-body); }
+.season-outcome-empty button { margin-top:14px; }
+@media (max-width:1100px) {
+  .season-outcome-categories { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .season-outcome-explorer .season-status-table-head,.season-outcome-explorer .season-status-row { grid-template-columns:minmax(170px,1fr) minmax(80px,1fr) 70px 70px; gap:14px; }
+}
+@media (max-width:700px) {
+  .season-outcome-categories { grid-template-columns:repeat(2,minmax(0,1fr)); padding:20px var(--gutter); gap:8px; }
+  .season-outcome-card { padding:12px; }
+  .season-outcome-card>strong { margin-top:10px; }
+  .season-outcome-toolbar { align-items:stretch; flex-direction:column; padding:0 var(--gutter) 16px; gap:14px; }
+  .season-outcome-search { width:100%; }
+  .season-outcome-explorer .season-status-row { grid-template-columns:minmax(0,1fr) 60px 48px; gap:8px; padding:12px var(--gutter); }
+  .season-outcome-explorer .season-status-name { grid-template-columns:18px 3px minmax(0,1fr); gap:8px; }
+  .season-outcome-explorer .season-status-name strong { white-space:normal; overflow-wrap:anywhere; }
+  .season-outcome-pagination { align-items:flex-start; flex-direction:column; padding:18px var(--gutter); }
+  .season-outcome-pagination nav { justify-content:space-between; width:100%; }
 }

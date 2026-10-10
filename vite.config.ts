@@ -31,6 +31,7 @@ export default defineConfig({
         results: resolve(__dirname, 'results.html'),
         standings: resolve(__dirname, 'standings.html'),
         constructorStandings: resolve(__dirname, 'constructor-standings.html'),
+        statistics: resolve(__dirname, 'statistics.html'),
         privacy: resolve(__dirname, 'privacy.html'),
       },
     },

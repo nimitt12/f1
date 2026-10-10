@@ -142,7 +142,7 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
 
   const phaseCopy =
     phase === 'pre'
-      ? { status: 'Race Day', headline: 'Lights Out In', lights: 'Formation Lap', timerClass: 'rl-timer-pre' }
+      ? { status: 'Race Day', headline: 'Lights Out In', lights: 'Awaiting lights out', timerClass: 'rl-timer-pre' }
       : phase === 'underway'
         ? { status: 'Race Is Live', headline: 'Race Time Elapsed', lights: 'Lights Out — Go!', timerClass: 'rl-timer-live' }
         : { status: 'Race Complete', headline: 'Time Since Lights Out', lights: 'Chequered Flag', timerClass: 'rl-timer-done' };
@@ -155,16 +155,18 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
             <div className="rl-progress-rail-fill" style={{ width: `${raceProgress * 100}%` }} />
           </div>
         )}
-        <div className="rl-sheen" aria-hidden="true" />
+        <div className="rl-round-watermark" aria-hidden="true">{String(race.round).padStart(2, '0')}</div>
+        <div className="rl-topline">
+          <div className="rl-status">
+            <span className="rl-pulse" aria-hidden="true" />
+            <span className="rl-status-text">{phaseCopy.status}</span>
+            <span className="rl-status-tag">Round {String(race.round).padStart(2, '0')} / {total}</span>
+          </div>
+          <span className="rl-edition">{race.season} Formula 1 <span>World Championship</span></span>
+        </div>
 
         <div className="rl-grid">
           <div className="rl-left">
-            <div className="rl-status">
-              <span className="rl-pulse" aria-hidden="true" />
-              <span className="rl-status-text">{phaseCopy.status}</span>
-              <span className="rl-status-tag">Round {String(race.round).padStart(2, '0')} / {total}</span>
-            </div>
-
             <div className="rl-headline">
               <div className="rl-flag-frame">
                 <Flag code={code} />
@@ -185,18 +187,18 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
               <div className="rl-stat">
                 <span className="rl-stat-label">
                   <StatIcon kind="clock" />
-                  Lights Out
+                  Your Start Time
                 </span>
                 <span className="rl-stat-val">{localStart}</span>
               </div>
               <div className="rl-stat">
                 <span className="rl-stat-label">
                   <StatIcon kind="stopwatch" />
-                  Circuit Time
+                  UTC Start
                 </span>
                 <span className="rl-stat-val">
-                  {race.time ? race.time.replace(':00Z', '') : 'TBC'}
-                  <em>local</em>
+                  {race.time ? new Date(start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) : 'TBC'}
+                  <em>UTC</em>
                 </span>
               </div>
               <div className="rl-stat">
@@ -209,7 +211,7 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
                   <em>/ {total} done</em>
                 </span>
                 <span className="rl-stat-bar" aria-hidden="true">
-                  <span className="rl-stat-bar-fill" style={{ width: `${(completed / total) * 100}%` }} />
+                  <span className="rl-stat-bar-fill" style={{ width: `${(total ? completed / total : 0) * 100}%` }} />
                 </span>
               </div>
             </div>
@@ -234,6 +236,10 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
           </div>
 
           <div className="rl-right">
+            <div className="rl-console-header">
+              <span>{phase === 'pre' ? 'Race countdown' : 'Race clock'}</span>
+              <span className="rl-console-code">R{String(race.round).padStart(2, '0')}</span>
+            </div>
             {/* F1 start-lights gantry */}
             <div className={`rl-lights rl-lights-${phase}`} aria-hidden="true">
               {[0, 1, 2, 3, 4].map((i) => (
@@ -263,6 +269,11 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
               </div>
             </div>
 
+            <div className="rl-console-footer">
+              <StatIcon kind="flag" />
+              <span>{new Date(start).toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short' })}</span>
+              <span>{localStart} <em>your time</em></span>
+            </div>
             {phase !== 'pre' && (
               <div className="rl-progress-track" aria-hidden="true">
                 <span className="rl-progress-fill" style={{ width: `${raceProgress * 100}%` }} />
@@ -272,20 +283,29 @@ const RaceLive: React.FC<RaceLiveProps> = ({ race, races, onRaceSelect, onOpenLi
         </div>
 
         {/* Weekend session timeline */}
+        <div className="rl-weekend-heading">
+          <h3>Weekend schedule</h3>
+          <span>All times in your timezone</span>
+        </div>
         <div className="rl-sessions" role="list" aria-label="Race weekend schedule">
-          {sessions.map((s) => (
-            <div key={s.label} className={`rl-session rl-session-${s.status} ${s.isRace ? 'rl-session-race' : ''}`} role="listitem">
-              <div className="rl-session-top">
-                <span className="rl-session-label">
-                  <StatIcon kind={s.icon} />
-                  <span className="rl-session-name">{s.label}</span>
-                </span>
+          {sessions.map((s, index) => (
+            <div key={s.label} className={`rl-session rl-session-${s.status} rl-session-kind-${s.isRace ? 'race' : s.label.includes('Quali') ? 'qualifying' : s.label === 'Sprint' ? 'sprint' : 'practice'}`} role="listitem">
+              <span className="rl-session-watermark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <div className="rl-session-meta">
+                <span className="rl-session-index">{fmtDay(s.ts)} <span>{new Date(s.ts).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}</span></span>
                 {s.status === 'live' && <span className="rl-badge-live">● Live</span>}
                 {s.status === 'next' && <span className="rl-badge-next">Up Next</span>}
-                {s.status === 'done' && <span className="rl-badge-check">✓</span>}
+                {s.status === 'done' && <span className="rl-badge-check" aria-label="Completed">✓</span>}
+              </div>
+              <div className="rl-session-top">
+                <span className="rl-session-label">
+                  <span className="rl-session-icon"><StatIcon kind={s.icon} /></span>
+                  <span className="rl-session-name">{s.label}</span>
+                </span>
               </div>
               <div className="rl-session-time">
-                {fmtDay(s.ts)} · {fmtTime(s.ts)}
+                <span>{fmtTime(s.ts).split(' ')[0]}</span>
+                <span className="rl-session-period">{fmtTime(s.ts).split(' ')[1]}</span>
               </div>
               {s.status === 'live' && (
                 <span className="rl-session-progress" aria-hidden="true">

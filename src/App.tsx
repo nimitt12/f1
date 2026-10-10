@@ -33,7 +33,9 @@ const DriverDetailPage = lazy(() => import('./components/DriverDetailPage'));
 const ConstructorStandingsPage = lazy(() => import('./components/ConstructorStandingsPage'));
 const ConstructorDetailPage = lazy(() => import('./components/ConstructorDetailPage'));
 const ClashPage = lazy(() => import('./components/ClashPage'));
+const SeasonStatisticsPage = lazy(() => import('./components/SeasonStatisticsPage'));
 const AdminGate = lazy(() => import('./admin/AdminGate'));
+const SeasonStatisticsTeaser = lazy(() => import('./components/SeasonStatisticsTeaser'));
 
 const themes = [
   { id: 'default', label: 'Default' },
@@ -168,6 +170,7 @@ const App: React.FC = () => {
   const initialStandingsPath = window.location.pathname === '/standings' || window.location.pathname === '/standings/';
   const initialConstructorStandingsPath = window.location.pathname === '/constructor-standings' || window.location.pathname === '/constructor-standings/';
   const initialClashPath = window.location.pathname === '/clash' || window.location.pathname === '/clash/';
+  const initialStatisticsPath = window.location.pathname === '/statistics' || window.location.pathname === '/statistics/';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
     localStorage.removeItem('f1_user');
     if (!getToken()) return null;
@@ -192,7 +195,7 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'driver_details' | 'constructor_details' | 'live' | 'schedule' | 'results' | 'standings' | 'constructor_standings' | 'clash' | 'privacy' | 'account_deletion'>(() => {
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'driver_details' | 'constructor_details' | 'live' | 'schedule' | 'results' | 'standings' | 'constructor_standings' | 'statistics' | 'clash' | 'privacy' | 'account_deletion'>(() => {
     // The URL is the source of truth for race details, live timing and the
     // privacy policy; only fall back to the persisted view (account/dashboard)
     // otherwise.
@@ -205,6 +208,7 @@ const App: React.FC = () => {
     if (initialStandingsPath) return 'standings';
     if (initialConstructorStandingsPath) return 'constructor_standings';
     if (initialClashPath) return 'clash';
+    if (initialStatisticsPath) return 'statistics';
     if (initialPrivacyPath) return 'privacy';
     if (initialDeletionPath) return 'account_deletion';
     const saved = localStorage.getItem('f1_view') as any;
@@ -289,6 +293,12 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  const openStatistics = () => {
+    setView('statistics');
+    window.history.pushState({}, '', '/statistics');
+    window.scrollTo(0, 0);
+  };
+
   const openDriverProfile = (season: string, driverId: string) => {
     setView('driver_details');
     window.history.pushState({}, '', `/driver/${season}/${encodeURIComponent(driverId)}`);
@@ -368,6 +378,8 @@ const App: React.FC = () => {
         setView('constructor_standings');
       } else if (window.location.pathname === '/clash' || window.location.pathname === '/clash/') {
         setView('clash');
+      } else if (window.location.pathname === '/statistics' || window.location.pathname === '/statistics/') {
+        setView('statistics');
       } else if (window.location.pathname === '/privacy') {
         setView('privacy');
       } else if (window.location.pathname === '/account-deletion') {
@@ -505,6 +517,9 @@ const App: React.FC = () => {
             <Parallax speed={0.04} delay={40}>
               <ChampionshipLeaders />
             </Parallax>
+            <Parallax speed={0.038} delay={50}>
+              <SeasonStatisticsTeaser onOpen={openStatistics} />
+            </Parallax>
             <Parallax speed={0.035} delay={60}>
               <Calendar onRaceSelect={openRaceDetails} />
             </Parallax>
@@ -606,6 +621,20 @@ const App: React.FC = () => {
           <>
             <ThemeSwitcher />
             <ConstructorStandingsPage
+              user={user as any}
+              setUser={setUser as any}
+              onBack={goToDashboard}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                goToDashboard();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'statistics' ? (
+          <>
+            <ThemeSwitcher />
+            <SeasonStatisticsPage
               user={user as any}
               setUser={setUser as any}
               onBack={goToDashboard}

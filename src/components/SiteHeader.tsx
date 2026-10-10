@@ -90,6 +90,14 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
     window.scrollTo(0, 0);
   };
 
+  const openStatistics = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    window.history.pushState({}, '', '/statistics');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
+  };
+
   return (
     <>
       <div className="hero-top">
@@ -98,7 +106,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
             <span className="live-badge">Season 2026</span>
             <span
               className="season-soon"
-              title="Data for previous seasons is on its way"
+              title="All-time Formula 1 statistics are now available"
             >
               <svg
                 className="season-soon-icon"
@@ -114,7 +122,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                 <path d="M12 7v5l3 2" />
               </svg>
               <span className="season-soon-text">
-                Past seasons <em>coming soon</em>
+                F1 history <em>explore now</em>
               </span>
             </span>
           </div>
@@ -199,6 +207,14 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                 </span>
                 <span className="menu-link-arrow" aria-hidden="true">→</span>
               </a>
+              <a href="/statistics" onClick={openStatistics} style={{ '--menu-i': 3 } as React.CSSProperties}>
+                <span className="menu-link-index">04</span>
+                <span className="menu-link-body">
+                  <span className="menu-link-label">All-Time Statistics</span>
+                  <span className="menu-link-desc">Every race outcome from 1950 to today</span>
+                </span>
+                <span className="menu-link-arrow" aria-hidden="true">→</span>
+              </a>
               {[
                 { hash: 'paddock', label: 'Paddock Intel', desc: 'Latest F1 news & analysis' },
               ].map((item, i) => (
@@ -206,9 +222,9 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                   key={item.hash}
                   href={`#${item.hash}`}
                   onClick={(e) => handleSectionLink(e, item.hash)}
-                  style={{ '--menu-i': i + 3 } as React.CSSProperties}
+                  style={{ '--menu-i': i + 4 } as React.CSSProperties}
                 >
-                  <span className="menu-link-index">{String(i + 4).padStart(2, '0')}</span>
+                  <span className="menu-link-index">{String(i + 5).padStart(2, '0')}</span>
                   <span className="menu-link-body">
                     <span className="menu-link-label">{item.label}</span>
                     <span className="menu-link-desc">{item.desc}</span>
