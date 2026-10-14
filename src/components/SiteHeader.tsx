@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import type { AuthUser } from './Hero';
 import LogoMark from './LogoMark';
+import { COMMUNITY_URL } from '../lib/links';
 
 interface SiteHeaderProps {
   user: AuthUser | null;
@@ -140,12 +141,15 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
         {leftSlot ?? (
           <div className="brand-eyebrow">
             <span className="live-badge">Season 2026</span>
-            <span
-              className="season-soon"
-              title="All-time Formula 1 statistics are now available"
+            <a
+              className="feedback-chip"
+              href={COMMUNITY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Shape Pitwall: share feedback (opens in a new tab)"
             >
               <svg
-                className="season-soon-icon"
+                className="feedback-chip-icon"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -154,13 +158,11 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                 strokeLinejoin="round"
                 aria-hidden="true"
               >
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
+                <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z" />
               </svg>
-              <span className="season-soon-text">
-                F1 history <em>explore now</em>
-              </span>
-            </span>
+              <span className="feedback-chip-label">Shape MyPitWall</span>
+              <span className="feedback-chip-action">Feedback <span aria-hidden="true">↗</span></span>
+            </a>
           </div>
         )}
 
@@ -269,6 +271,21 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                   <span className="menu-link-arrow" aria-hidden="true">→</span>
                 </a>
               ))}
+              <a
+                href={COMMUNITY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMenuOpen(false)}
+                style={{ '--menu-i': 5 } as React.CSSProperties}
+                aria-label="Feedback & Community (opens in a new tab)"
+              >
+                <span className="menu-link-index">06</span>
+                <span className="menu-link-body">
+                  <span className="menu-link-label">Feedback & Community</span>
+                  <span className="menu-link-desc">Share ideas, report bugs and join the conversation</span>
+                </span>
+                <span className="menu-link-arrow" aria-hidden="true">↗</span>
+              </a>
             </nav>
 
             <div className="menu-divider"></div>

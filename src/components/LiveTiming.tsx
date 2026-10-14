@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SiteHeader from './SiteHeader';
+import { COMMUNITY_URL } from '../lib/links';
 import type { AuthUser } from './Hero';
 import { useLiveTiming, replayControl, fetchArchiveIndex } from '../hooks/useLiveTiming';
 
@@ -835,6 +836,8 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
         <footer className="lt-footnote">
           Timing data courtesy of the Formula 1 live timing feed · Pitwall is an unofficial fan project
           {delay > 0 && <span className="lt-footnote-delay"> · displaying with +{delay}s broadcast sync</span>}
+          {' · '}
+          <a className="community-link" href={COMMUNITY_URL} target="_blank" rel="noopener noreferrer" aria-label="Share feedback (opens in a new tab)">Share feedback <span aria-hidden="true">↗</span></a>
         </footer>
       </section>
     </div>

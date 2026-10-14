@@ -1,5 +1,6 @@
 import React from 'react';
 import LogoMark from './LogoMark';
+import { COMMUNITY_URL } from '../lib/links';
 
 const Footer: React.FC = () => {
   // SPA-navigate to the privacy policy: push the URL and fire a synthetic
@@ -71,6 +72,7 @@ const Footer: React.FC = () => {
               <li><a href="#constructors">Constructors</a></li>
               <li><a href="/schedule" onClick={openSchedule}>Schedule</a></li>
               <li><a href="#paddock">Paddock Intel</a></li>
+              <li><a href={COMMUNITY_URL} target="_blank" rel="noopener noreferrer" aria-label="Feedback & Community (opens in a new tab)">Feedback & Community <span aria-hidden="true">↗</span></a></li>
               <li><a href="/privacy" onClick={openPrivacy}>Privacy Policy</a></li>
               <li><a href="/account-deletion" onClick={openAccountDeletion}>Delete My Account</a></li>
             </ul>

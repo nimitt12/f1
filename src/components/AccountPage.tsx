@@ -1,4 +1,5 @@
 import { authFetch } from '../lib/auth';
+import { COMMUNITY_URL } from '../lib/links';
 import React, { useState, useEffect } from 'react';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -238,6 +239,13 @@ const AccountPage: React.FC<AccountSettingsProps> = ({ onClose, user }) => {
             <div className="info-card">
               <h4 className="info-title">PITWALL NOTIFICATIONS</h4>
               <p className="info-text">Favorite drivers and constructors will be highlighted in your live standings and race calendar.</p>
+            </div>
+            <div className="info-card">
+              <h4 className="info-title">HELP SHAPE PITWALL</h4>
+              <p className="info-text">Have an idea or spotted a bug? Share your feedback and join the community.</p>
+              <a className="community-link" href={COMMUNITY_URL} target="_blank" rel="noopener noreferrer" aria-label="Feedback & Community (opens in a new tab)">
+                Feedback & Community <span aria-hidden="true">↗</span>
+              </a>
             </div>
           </div>
         </div>

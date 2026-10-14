@@ -10760,53 +10760,64 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
-/* Quiet glass companion to the season pill: signals that earlier seasons'
-   data is on the way without competing with the bright "Season 2026" badge. */
-.season-soon {
+/* Community invitation alongside the season badge. */
+.feedback-chip {
+  display: inline-flex;
+  font-family: var(--font-body);
+  letter-spacing: normal;
+  text-transform: none;
+  align-items: center;
+  gap: 9px;
+  min-height: 36px;
+  padding: 4px 5px 4px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--racing-hot) 35%, transparent);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)), #211b2c;
+  color: #f2ece0;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feedback-chip:hover {
+  border-color: var(--racing-hot);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--racing) 18%, transparent);
+}
+
+.feedback-chip:focus-visible {
+  outline: 2px solid var(--racing-hot);
+  outline-offset: 4px;
+}
+
+.feedback-chip-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--racing-hot);
+}
+
+.feedback-chip-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.feedback-chip-action {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 13px 6px 10px;
+  padding: 6px 10px;
   border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: color-mix(in srgb, var(--racing) 30%, var(--ink-muted, #8a8a8a));
-  background: color-mix(in srgb, var(--racing) 7%, transparent);
-  border: 1px dashed color-mix(in srgb, var(--racing) 34%, transparent);
-  cursor: default;
-  transition: color 0.35s var(--ease), border-color 0.35s var(--ease),
-    background 0.35s var(--ease), transform 0.35s var(--ease);
-  animation: checkerFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.26s;
+  background: color-mix(in srgb, var(--racing-hot) 18%, transparent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
 }
 
-.season-soon:hover {
-  transform: translateY(-1px);
-  color: color-mix(in srgb, var(--racing) 70%, var(--ink, #111));
-  border-color: color-mix(in srgb, var(--racing) 55%, transparent);
-  background: color-mix(in srgb, var(--racing) 12%, transparent);
-}
-
-.season-soon-icon {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-  color: var(--racing);
-  opacity: 0.85;
-}
-
-.season-soon-text em {
-  font-style: normal;
-  color: var(--racing);
-  opacity: 0.95;
-}
-
-/* Keep the header uncluttered on small screens — drop the companion pill. */
+/* The menu retains the community link on compact headers. */
 @media (max-width: 600px) {
-  .season-soon {
+  .feedback-chip {
     display: none;
   }
 }
@@ -13521,6 +13532,18 @@ body {
 }
 
 .lt-footnote-delay { color: var(--racing-hot); }
+
+.community-link {
+  display: inline-block;
+  padding-block: 8px;
+  color: var(--racing-hot);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.community-link:hover { color: inherit; }
+.community-link:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 
 /* ---------- responsive ---------- */
 
