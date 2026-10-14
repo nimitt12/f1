@@ -7338,7 +7338,7 @@ body {
 .glass-menu-panel {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 460px;
   height: 100%;
   background:
     radial-gradient(120% 60% at 100% 0%, color-mix(in srgb, var(--racing) 16%, transparent), transparent 60%),
@@ -7346,10 +7346,13 @@ body {
   backdrop-filter: blur(30px) saturate(150%);
   border-left: 1px solid color-mix(in srgb, var(--racing) 22%, rgba(255, 255, 255, 0.06));
   box-shadow: -20px 0 60px rgba(0, 0, 0, 0.55);
-  padding: 40px;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #41414a transparent;
   animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -7379,20 +7382,25 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 52px;
+  margin-bottom: 30px;
+  flex-shrink: 0;
 }
 
 .menu-kicker {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.92);
 }
+
+.menu-kicker > span { display: grid; gap: 5px; color: #9999a7; font-size: 9px; }
+.menu-kicker b { color: #f5f5fa; font-size: 16px; letter-spacing: .22em; }
+.menu-nav-label { padding: 0 12px 8px; color: #9999a7; font: 600 10px/1.4 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; }
 
 .menu-kicker-dot {
   width: 7px;
@@ -7404,8 +7412,8 @@ body {
 }
 
 .menu-kicker-mark {
-  width: 22px;
-  height: 22px;
+  width: 34px;
+  height: 34px;
   color: var(--racing);
   filter: drop-shadow(0 0 8px color-mix(in srgb, var(--racing) 55%, transparent));
   transition: color 0.3s ease;
@@ -7420,11 +7428,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 50%;
+  border-radius: 12px;
   color: rgba(255, 255, 255, 0.6);
   font-size: 28px;
   cursor: pointer;
@@ -7444,19 +7453,22 @@ body {
 .menu-nav-links {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: auto;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .menu-nav-links a {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 16px 14px 16px 4px;
+  gap: 12px;
+  min-height: 78px;
+  padding: 16px 14px;
   color: #fff;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   opacity: 0;
   transform: translateX(16px);
@@ -7481,9 +7493,8 @@ body {
 }
 
 .menu-nav-links a:hover {
-  transform: translateX(8px);
-  padding-left: 14px;
-  border-bottom-color: color-mix(in srgb, var(--racing) 30%, transparent);
+  background: color-mix(in srgb, var(--racing) 9%, #141419);
+  border-color: color-mix(in srgb, var(--racing) 45%, transparent);
 }
 
 .menu-nav-links a:hover::before {
@@ -7495,7 +7506,7 @@ body {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.3);
+  color: #9999a7;
   transition: color 0.35s ease;
   min-width: 22px;
 }
@@ -7507,16 +7518,17 @@ body {
 .menu-link-body {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 6px;
+  min-width: 0;
   flex: 1;
 }
 
 .menu-link-label {
-  font-family: var(--font-display);
-  font-size: 27px;
+  font-family: var(--font-body);
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.25;
   transition: color 0.35s ease;
 }
 
@@ -7525,23 +7537,23 @@ body {
 }
 
 .menu-link-desc {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.45;
+  color: #a4a4b1;
 }
 
 .menu-link-arrow {
   font-family: var(--font-alt);
   font-size: 20px;
-  color: var(--racing);
-  opacity: 0;
-  transform: translateX(-8px);
+  color: #9999a7;
+  opacity: 1;
+  flex-shrink: 0;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .menu-nav-links a:hover .menu-link-arrow {
+  color: var(--racing-hot);
   opacity: 1;
   transform: translateX(0);
 }
@@ -7549,20 +7561,23 @@ body {
 .menu-divider {
   height: 1px;
   background: linear-gradient(90deg, color-mix(in srgb, var(--racing) 35%, transparent), rgba(255, 255, 255, 0.06) 60%, transparent);
-  margin: 32px 0;
+  margin: 24px 0;
+  flex-shrink: 0;
 }
 
 .menu-user-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 /* Guest sign-in block — matches the LoginModal's premium treatment */
 .menu-login-wrap {
   position: relative;
   text-align: center;
-  padding: 26px 22px 22px;
+  padding: 20px 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   overflow: hidden;
@@ -7589,7 +7604,7 @@ body {
   gap: 10px;
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 800;
   color: var(--racing);
@@ -7611,9 +7626,27 @@ body {
   font-family: var(--font-body);
   font-size: 12px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 auto 20px;
+  color: #a4a4b1;
+  margin: 0 auto 16px;
   max-width: 260px;
+}
+
+.glass-menu-panel :is(a, button):focus-visible {
+  outline: 2px solid var(--racing-hot);
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .glass-menu-panel { max-width: 100%; padding-inline: 18px; }
+  .menu-header { margin-bottom: 22px; }
+  .menu-link-label { font-size: 17px; }
+  .menu-nav-links a { padding: 14px 12px; gap: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-menu-overlay, .glass-menu-panel, .menu-nav-links a { animation: none; }
+  .menu-nav-links a { opacity: 1; transform: none; }
+  .glass-menu-panel *, .glass-menu-panel *::before { transition: none; }
 }
 
 .menu-action-btn {

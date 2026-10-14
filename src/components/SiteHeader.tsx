@@ -1,5 +1,5 @@
 import { signInWithGoogle, clearSession } from '../lib/auth';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import type { AuthUser } from './Hero';
@@ -23,6 +23,42 @@ interface SiteHeaderProps {
 // same header chrome.
 const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, onHomeNavigate, leftSlot }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // A drawer should be just as easy to leave from a keyboard as it is with a
+  // pointer. Locking the document also prevents the dashboard scrolling behind
+  // the translucent overlay.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const previousFocus = document.activeElement as HTMLElement | null;
+    menuRef.current?.querySelector<HTMLButtonElement>('.close-menu-btn')?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsMenuOpen(false);
+      if (event.key !== 'Tab') return;
+      const controls = Array.from(menuRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), iframe, [tabindex="0"]'
+      ) ?? []).filter(element => element.getClientRects().length > 0);
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, [isMenuOpen]);
 
   const { greeting, dateline } = useMemo(() => {
     const now = new Date();
@@ -173,16 +209,17 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
 
       {isMenuOpen && createPortal(
         <div className="glass-menu-overlay" onClick={() => setIsMenuOpen(false)}>
-          <div className="glass-menu-panel" onClick={e => e.stopPropagation()}>
+          <div ref={menuRef} className="glass-menu-panel" role="dialog" aria-modal="true" aria-label="MyPitWall navigation" onClick={e => e.stopPropagation()}>
             <div className="menu-header">
               <span className="menu-kicker">
                 <LogoMark className="menu-kicker-mark" aria-hidden="true" />
-                Pitwall Menu
+                <span><b>MyPitWall</b> Navigation</span>
               </span>
               <button className="close-menu-btn" onClick={() => setIsMenuOpen(false)} aria-label="Close menu">×</button>
             </div>
 
-            <nav className="menu-nav-links">
+            <nav className="menu-nav-links" aria-label="Primary navigation">
+              <span className="menu-nav-label">Race control</span>
               <a href="/schedule" onClick={openSchedule} style={{ '--menu-i': 0 } as React.CSSProperties}>
                 <span className="menu-link-index">01</span>
                 <span className="menu-link-body">
@@ -257,7 +294,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
               ) : (
                 <div className="menu-login-wrap">
                   <div className="menu-login-label">Sign in to Pitwall</div>
-                  <p className="menu-login-sub">Unlock favorite driver tracking, personalized race times, and exclusive paddock insights.</p>
+                  <p className="menu-login-sub">Your favorite drivers. Your local race times. Your Pitwall.</p>
                   <div className="modal-action">
                     <GoogleLogin
                       onSuccess={handleLoginSuccess}
