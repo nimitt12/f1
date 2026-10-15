@@ -1,6 +1,6 @@
+import { fetchStandings } from '../lib/standings';
 import React, { useEffect, useState } from 'react';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Interfaces for Ergast API
 interface Driver {
@@ -168,9 +168,9 @@ const DriversStandings: React.FC<DriversStandingsProps> = ({ onDriverSelect }) =
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchStandings = async () => {
+    const loadStandings = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/drivers/get-all-drivers-season-rankings`);
+        const response = await fetchStandings('drivers');
         const data: ApiDriverRanking[] = await response.json();
         
         const mappedStandings: DriverStanding[] = data.map((item) => {
@@ -206,7 +206,7 @@ const DriversStandings: React.FC<DriversStandingsProps> = ({ onDriverSelect }) =
       }
     };
     
-    fetchStandings();
+    loadStandings();
   }, []);
 
   const leaderPoints = standings.length > 0 ? parseFloat(standings[0].points) : 0;

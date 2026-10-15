@@ -1,3 +1,4 @@
+import { fetchStandings } from '../lib/standings';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Loader from './Loader';
@@ -151,7 +152,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
     const fetchDrivers = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${BACKEND_URL}/drivers/get-all-drivers-season-rankings`);
+        const response = await fetchStandings('drivers');
         const data: ApiDriverRanking[] = await response.json();
         setAllDrivers(data);
         if (data.length >= 2) {

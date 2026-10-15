@@ -1,3 +1,4 @@
+import { fetchStandings } from './standings';
 // Auto-generated F1 trivia derived from recent activity (last completed race +
 // current standings). Used as the ticker's fallback when no trivia has been set
 // in the admin portal, and to seed "suggested" lines in the admin Trivia editor.
@@ -122,10 +123,10 @@ export const generateTriviaFacts = async (): Promise<string[]> => {
       fetch(`${BACKEND_URL}/results/get-all-results/${prevRace.season}/${prevRace.round}`)
         .then((r) => r.json())
         .catch(() => []),
-      fetch(`${BACKEND_URL}/drivers/get-all-drivers-season-rankings`)
+      fetchStandings('drivers')
         .then((r) => r.json())
         .catch(() => []),
-      fetch(`${BACKEND_URL}/constructors/get-all-constructors-season-rankings`)
+      fetchStandings('constructors')
         .then((r) => r.json())
         .catch(() => []),
     ]);

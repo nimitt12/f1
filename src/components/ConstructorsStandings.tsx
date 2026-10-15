@@ -1,6 +1,6 @@
+import { fetchStandings } from '../lib/standings';
 import React, { useEffect, useState } from 'react';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Interfaces for Ergast API
 interface Constructor {
@@ -132,9 +132,9 @@ const ConstructorsStandings: React.FC<ConstructorsStandingsProps> = ({ onConstru
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchStandings = async () => {
+    const loadStandings = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/constructors/get-all-constructors-season-rankings`);
+        const response = await fetchStandings('constructors');
         const data: ApiConstructorRanking[] = await response.json();
         
         // Map the flat API response to the nested structure the component expects
@@ -163,7 +163,7 @@ const ConstructorsStandings: React.FC<ConstructorsStandingsProps> = ({ onConstru
       }
     };
     
-    fetchStandings();
+    loadStandings();
   }, []);
 
   const maxPoints = standings.length > 0 ? parseFloat(standings[0].points) : 1;
