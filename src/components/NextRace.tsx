@@ -317,13 +317,13 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults, onT
           </div>
         </div>
       </div>
-      <div className="race-block previous">
+      <div className="race-block previous latest-showcase">
         <TrackSilhouette circuitId={prevRace.Circuit.circuitId} label={prevRace.Circuit.circuitName} onOpen={onTrackSelect ? () => onTrackSelect(prevRace) : undefined} />
         <div className="prev-inner">
           <div className="prev-header">
             <div className="prev-id">
               <div className="race-meta-row">
-                <span className="race-round">◆ Round {prevRace.round.padStart(2, '0')} · Completed</span>
+                <span className="race-round">Round {prevRace.round.padStart(2, '0')} · Race complete</span>
                 <span className="race-flag-big"><Flag code={COUNTRY_FLAGS[prevRace.Circuit.Location.country] || '🏁'} /></span>
               </div>
               <h2 className="race-name-previous">
@@ -375,12 +375,11 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults, onT
                     className={`rostrum-card pos-${pos}`}
                     style={{ '--team-color': getTeamColor(r.team_name) } as React.CSSProperties}
                   >
-                    <span className="rc-aura" aria-hidden="true" />
-                    {isWinner && <span className="rc-winner-tag">◆ Race Winner</span>}
-
-                    <div className={`rc-medal metal-${pos}`}>
-                      <span className="rc-medal-num">{pos}</span>
-                      <span className="rc-medal-ring" aria-hidden="true" />
+                    <span className="rc-position-art" aria-hidden="true">0{pos}</span>
+                    <div className="rc-classification">
+                      <span className="rc-place">P{pos}</span>
+                      <span className="rc-finish-label">{isWinner ? 'Race winner' : pos === 2 ? 'Second place' : 'Third place'}</span>
+                      {isWinner && <svg className="rc-trophy" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3h8v6a4 4 0 0 1-8 0V3ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 2v5m-4 3h8m-6-3h4v3" /></svg>}
                     </div>
 
                     <div className="rc-body">

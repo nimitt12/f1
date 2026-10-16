@@ -225,7 +225,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
   };
 
   return (
-    <div className="race-details-page">
+    <div className="race-details-page rd-premium">
       <div className="rd-site-header">
         <SiteHeader
           user={user}
@@ -250,7 +250,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
       <div className="rd-hero-section">
         <div className="rd-hero-content">
           <div className="rd-hero-main">
-            <div className="rd-hero-tag">Round {race.round} // 2026 Season</div>
+            <div className="rd-hero-tag">Round {race.round} // {race.season} Season</div>
             <h1 className="rd-hero-title">
               {race.raceName.split(' ').map((word, i) => (
                 <span key={i} className="rd-title-word">{word}</span>
@@ -296,6 +296,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
           <div className="rd-section-line"></div>
         </div>
         
+        <p className="rd-schedule-note">Your weekend, session by session. All times shown in your local timezone.</p>
         <div className="rd-schedule-section">
           {sessions.map((session, i) => {
             const { date, time } = formatDateTime(session.data?.date, session.data?.time);
@@ -319,6 +320,9 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
               <div 
                 key={i} 
                 className={`rd-session-card ${session.isMain ? 'main-event' : ''} ${canViewDetails ? 'clickable' : ''}`}
+                role={canViewDetails ? 'button' : undefined}
+                tabIndex={canViewDetails ? 0 : undefined}
+                onKeyDown={(e) => { if (canViewDetails && session.tab && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); scrollToResults(session.tab); } }}
                 onClick={() => canViewDetails && session.tab && scrollToResults(session.tab)}
               >
                 <div className="rd-card-accent"></div>

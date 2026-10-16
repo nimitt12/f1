@@ -728,17 +728,32 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
           <LiveSkeleton />
         ) : !showBoard ? (
           <div className="lt-empty">
-            <div className="lt-empty-flag">🏁</div>
-            <h2>No live session right now</h2>
-            <p>
-              Timing goes live when cars are on track during a Grand Prix weekend —
-              practice, qualifying, sprint and race. Meanwhile, dive into the archive
-              and replay any session since 2018.
-            </p>
-            <div className="lt-empty-actions">
-              <button className="lt-demo-btn lt-demo-cta" onClick={() => setArchiveOpen(true)}>
-                Watch a Past Race
-              </button>
+            <div className="lt-standby-copy">
+              <span className="lt-standby-kicker">The pit wall · Between sessions</span>
+              <h2>The track is quiet.<br /><em>The racing isn't over.</em></h2>
+              <p>No live session right now. Timing appears when cars are on track during a Grand Prix weekend. Until then, revisit a race from the archive.</p>
+              <div className="lt-empty-actions">
+                <button className="lt-demo-btn lt-demo-cta" onClick={() => setArchiveOpen(true)}>
+                  Explore session archive <span aria-hidden="true">↗</span>
+                </button>
+              </div>
+              <div className="lt-standby-features"><span>Sessions from 2018</span><i /><span>Playback at your pace</span></div>
+            </div>
+            <div className="lt-standby-art" aria-hidden="true">
+              <div className="lt-standby-art-head"><span>Session archive</span><span>2018 — present</span></div>
+              <div className="lt-standby-circuit">
+                <svg viewBox="0 0 480 300" fill="none">
+                  <path className="lt-standby-guides" d="M20 150H460M240 20V280" />
+                  <path className="lt-standby-track-shadow" d="M95 210 55 148Q48 137 61 130L175 58Q188 49 201 58L237 81Q248 89 260 77L289 43Q299 31 314 44L418 123Q431 133 419 145L389 177Q378 189 363 180L329 160Q314 151 302 168L257 230Q247 243 232 237L199 225Q186 221 174 234L154 258Q143 271 131 255Z" />
+                  <path className="lt-standby-track" d="M95 210 55 148Q48 137 61 130L175 58Q188 49 201 58L237 81Q248 89 260 77L289 43Q299 31 314 44L418 123Q431 133 419 145L389 177Q378 189 363 180L329 160Q314 151 302 168L257 230Q247 243 232 237L199 225Q186 221 174 234L154 258Q143 271 131 255Z" />
+                  <circle cx="314" cy="44" r="5" className="lt-standby-node" />
+                  <path className="lt-standby-guides" d="M314 44H420V65" />
+                  <text x="362" y="83">REPLAY READY</text>
+                </svg>
+                <div className="lt-standby-play">▶<span>Rewind the weekend</span></div>
+              </div>
+              <div className="lt-standby-timeline"><span>START</span><i /><b /><i /><span>FINISH</span></div>
+              <div className="lt-standby-art-foot"><span>Timing tower</span><span>Track map</span><span>Team radio</span></div>
             </div>
           </div>
         ) : (

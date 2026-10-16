@@ -18,6 +18,7 @@ interface SessionResult {
 }
 
 interface Winner {
+  number?: string;
   name: string;
   fullName: string;
   team: string;
@@ -68,6 +69,7 @@ const winnerFrom = (data: unknown): Winner | undefined => {
   const givenName = result.given_name?.trim();
   if (!familyName && !givenName) return undefined;
   return {
+    number: result.driver_number != null ? String(result.driver_number).trim() || undefined : undefined,
     name: familyName || givenName || 'Winner',
     fullName: [givenName, familyName].filter(Boolean).join(' '),
     team: result.team_name || result.constructor_name || 'Formula 1',
@@ -124,7 +126,7 @@ const WinnerCell: React.FC<{ winner?: Winner; loading: boolean; unavailable?: bo
   const key = teamKey(winner.team);
   return (
     <div className={`results-winner team-${key}`} title={`${winner.fullName} · ${winner.team}`}>
-      <span className="results-team-mark" aria-hidden="true">{teamCode(winner.team)}</span>
+      <span className="results-driver-number" aria-label={winner.number ? `Driver number ${winner.number}` : 'Driver number unavailable'}>{winner.number || '—'}</span>
       <span className="results-winner-name">{winner.name}</span>
       <span className="results-team-name">{winner.team}</span>
     </div>
@@ -259,7 +261,7 @@ const SeasonStatCards: React.FC<{
   return (
     <section className="season-stats-section" aria-labelledby="season-insights-title">
       <div className="season-stats-heading">
-        <div><span className="results-board-index">Live championship pulse</span><h2 id="season-insights-title">Season at a glance</h2></div>
+        <div><span className="results-board-index">Championship snapshot</span><h2 id="season-insights-title">Season at a glance</h2></div>
         <span>Updated from official classifications</span>
       </div>
       <div className="season-stats-grid">
@@ -540,14 +542,14 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
   return (
     <div className="results-page">
-      <div className="results-page-header">
+      <div className="rd-site-header results-page-header">
         <SiteHeader
           user={user}
           setUser={setUser}
           onOpenSettings={onOpenSettings}
           onHomeNavigate={onHomeNavigate}
           leftSlot={
-            <button className="rd-back-btn results-back" onClick={onBack}>
+            <button className="rd-back-btn" onClick={onBack}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
               Dashboard
             </button>
@@ -559,13 +561,15 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         <section className="results-hero">
           <div className="results-hero-copy">
             <div className="results-kicker"><span /> Season intelligence · {season}</div>
-            <h1>Grand Prix <em>Results</em></h1>
-            <p>Every pole sitter and winner across the championship, from sprint shootout to Sunday’s chequered flag.</p>
+            <h1>Every race.<br /><em>Every result.</em></h1>
+            <p>From the first flying lap to the chequered flag. Explore every pole sitter, race winner, and championship turning point.</p>
+            <div className="results-hero-links"><a href="#results-board-title">Explore results <span aria-hidden="true">↓</span></a><a href="#driver-matrix-title">Driver progression <span aria-hidden="true">↗</span></a></div>
           </div>
-          <div className="results-summary" aria-label={`${season} results summary`}>
-            <div><strong>{String(completed).padStart(2, '0')}</strong><span>Rounds complete</span></div>
-            <i />
-            <div><strong>{String(races.length).padStart(2, '0')}</strong><span>Season total</span></div>
+          <div className="results-season-panel" aria-label={`${season} results summary`}>
+            <div className="results-season-top"><span>Championship ledger</span><strong>{season}</strong></div>
+            <div className="results-season-count"><strong>{String(completed).padStart(2, '0')}</strong><div><span>Rounds complete</span><small>of {races.length || '—'} this season</small></div></div>
+            <div className="results-round-ledger" aria-hidden="true">{races.map((race, index) => <i key={race.round} className={index < completed ? 'complete' : ''} />)}</div>
+            <div className="results-season-foot"><span>Lights out</span><span>Chequered flag</span></div>
           </div>
         </section>
 
