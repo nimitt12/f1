@@ -1353,6 +1353,71 @@ body {
   z-index: 50;
 }
 
+.home-sticky-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 72px;
+  padding: 10px max(var(--gutter), calc((100% - 1440px) / 2 + var(--gutter)));
+  background: color-mix(in srgb, var(--carbon) 92%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--racing) 40%, transparent);
+  box-shadow: 0 8px 30px #0004;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: homeHeaderReveal 180ms ease-out both;
+}
+
+.home-sticky-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font: 800 24px/1 var(--font-display);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.home-sticky-brand svg { width: 32px; height: 32px; }
+.home-sticky-brand > span > span { color: var(--racing-hot); }
+.home-sticky-links { display: flex; align-items: center; gap: 28px; }
+.home-sticky-links a {
+  color: var(--ink);
+  font: 600 13px/1.4 var(--font-body);
+  text-decoration: none;
+}
+.home-sticky-links a:hover { color: var(--racing-hot); }
+.home-sticky-menu {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 14px;
+  min-height: 44px;
+  border: 1px solid color-mix(in srgb, var(--racing) 35%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--racing) 12%, transparent);
+  color: var(--ink);
+  font: 600 13px/1 var(--font-body);
+  cursor: pointer;
+}
+.home-sticky-menu img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.home-sticky-header :focus-visible { outline: 2px solid var(--racing-hot); outline-offset: 4px; }
+@keyframes homeHeaderReveal {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@media (max-width: 700px) {
+  .home-sticky-header { min-height: 64px; gap: 12px; }
+  .home-sticky-brand { font-size: 20px; }
+  .home-sticky-links { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-sticky-header { animation: none; }
+}
+
 .brand-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -1451,16 +1516,21 @@ body {
 }
 
 .hero-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.18em;
   font-family: var(--font-display);
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.03em;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 .hero-title .line1 {
-  display: block;
-  font-size: clamp(56px, 9vw, 60px);
+  display: inline-block;
+  flex-shrink: 0;
+  font-size: clamp(28px, 8vw, 60px);
   line-height: 1.2;
   overflow: hidden;
   padding-bottom: 0.05em;
@@ -1472,16 +1542,14 @@ body {
 }
 
 .hero-title .line2 {
-  display: block;
-  font-size: clamp(56px, 9vw, 85px);
-  font-style: italic;
+  display: inline-flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  font-size: clamp(40px, 11.3vw, 85px);
+  /* font-style: italic; */
   color: var(--racing);
   line-height: 1.1;
-  overflow: hidden;
-  /* Extra top room lets the BETA tag sit above the wordmark without being
-     clipped by overflow:hidden; the negative margin keeps the word in place. */
-  margin-top: -0.55em;
-  padding-top: 0.5em;
+  overflow: visible;
   padding-bottom: 0.05em;
 }
 
@@ -2066,6 +2134,26 @@ body {
   animation: trackReveal 1.1s var(--ease, ease) both 0.4s;
 }
 
+/* The dashboard silhouette is a real deep-link to the circuit explorer. */
+.race-track-link {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: 3%;
+  width: 540px;
+  height: 540px;
+  padding: 0;
+  border: 0;
+  color: var(--racing-hot);
+  background: transparent;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.race-track-link .race-track-bg { inset: 0; width: 100%; height: 100%; transform: none; }
+.race-track-link:focus-visible { outline: 2px solid var(--racing-hot); outline-offset: -28px; border-radius: 50%; }
+.race-track-link + .race-grid { pointer-events: none; }
+.race-track-link + .race-grid :is(a,button) { pointer-events: auto; }
+
 .race-track-bg path {
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -2122,6 +2210,7 @@ body {
     height: 320px;
     right: 1%;
   }
+  .race-track-link { width: 320px; height: 320px; right: 1%; }
 }
 
 @media (max-width: 760px) {
@@ -2131,6 +2220,7 @@ body {
     right: 50%;
     transform: translate(50%, -50%);
   }
+  .race-track-link { right: 50%; width: 260px; height: 260px; transform: translate(50%,-50%); }
 }
 
 /* Respect users who prefer less motion: drop the racing comet, keep outline */
@@ -2343,6 +2433,36 @@ body {
   color: #fff;
   font-weight: 500;
 }
+
+.race-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+.race-explore-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 20px;
+  border: 1px solid color-mix(in srgb, var(--racing-hot) 62%, transparent);
+  border-radius: 999px;
+  color: #f4f0fa;
+  background: rgba(10, 8, 16, .62);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--racing) 7%, transparent);
+  text-decoration: none;
+  font: 700 10px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.race-explore-track:hover {
+  border-color: var(--racing-hot);
+  background: color-mix(in srgb, var(--racing) 15%, rgba(10, 8, 16, .75));
+  transform: translateY(-2px);
+}
+.race-explore-track:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 .race-stats {
   display: flex;
@@ -15350,6 +15470,46 @@ body {
   .season-stats-main { padding:38px 0 70px; }.season-stats-hero { grid-template-columns:1fr; gap:34px; min-height:450px; padding:40px var(--gutter); border-right:0; border-left:0; border-radius:0; }.season-stats-hero h1 { font-size:clamp(45px,15vw,72px); }.season-stats-select,.season-stats-era { width:100%; }.season-stats-error { align-items:flex-start; margin-inline:var(--gutter); flex-wrap:wrap; }.season-stats-error button { margin-left:58px; }.season-kpi-grid { grid-template-columns:1fr 1fr; gap:7px; padding-inline:var(--gutter); }.season-kpi-grid article { min-height:145px; padding:20px 17px; }.season-kpi-grid strong { font-size:31px; }.season-stats-dashboard { gap:8px; }.season-outcome-panel,.season-insight-panel,.season-status-panel { border-right:0; border-left:0; border-radius:0; }.season-outcome-body { grid-template-columns:1fr; }.season-donut { width:220px; }.season-insight-panel { display:block; }.season-insight-primary { border-right:0; border-bottom:1px solid #1b293a; }.season-status-head { padding:26px var(--gutter); }.season-status-actions { align-items:stretch; flex-direction:column; }.season-filter-tabs { width:100%; }.season-download { justify-content:center; }.season-status-table { padding:8px 0 16px; overflow:hidden; }.season-status-table-head { display:none; }.season-status-row { grid-template-columns:minmax(180px,1fr) 75px 54px; gap:10px; padding:10px var(--gutter); }.season-status-track { grid-column:1/-1; grid-row:2; }.season-status-row>strong { grid-column:2; grid-row:1; }.season-status-row>b { grid-column:3; grid-row:1; }.season-stats-source { align-items:flex-start; flex-direction:column; padding:18px var(--gutter) 0; }
   .analytics-suite { margin-top:9px; }.analytics-suite-head,.analytics-panel-body { padding:24px var(--gutter); }.analytics-suite-head,.analytics-panel { border-right:0; border-left:0; border-radius:0; }.analytics-suite-head nav { width:100%; }.analytics-suite-head nav button { flex:0 0 auto; }.analytics-toolbar { align-items:stretch; flex-direction:column; }.analytics-select { width:100%; }.analytics-kpis { grid-template-columns:1fr 1fr; }.analytics-split { grid-template-columns:1fr; }.analytics-history>div { grid-template-columns:1fr 1fr; }.analytics-speed-list>div { grid-template-columns:34px minmax(170px,1fr); }.analytics-speed-list>div>b { grid-column:2; }.qr-delta-panel>header { align-items:flex-start; flex-direction:column; }
 }
+
+/* ── Circuit explorer ───────────────────────────────────────────────────── */
+.track-page { min-height:100vh; color:#eef2f7; background:#070b12; }
+.track-site-header { position:relative; z-index:20; padding:18px var(--gutter) 0; }
+.track-back { min-height:38px; padding:0 15px; border:1px solid #263140; border-radius:6px; color:#d9e0e9; background:#0e1520; cursor:pointer; font:700 9px/1 var(--font-mono); letter-spacing:.08em; text-transform:uppercase; }
+.track-page main { max-width:1440px; margin:0 auto; padding:22px var(--gutter) 76px; }
+.track-hero { display:grid; grid-template-columns:minmax(330px,.82fr) minmax(500px,1.18fr); min-height:650px; overflow:hidden; border:1px solid #202b39; border-radius:20px; background:radial-gradient(circle at 75% 30%,color-mix(in srgb,var(--racing) 16%,transparent),transparent 38%),linear-gradient(135deg,#0e151f,#070b11 62%); box-shadow:0 40px 100px rgba(0,0,0,.35); }
+.track-hero-copy { display:flex; flex-direction:column; justify-content:center; padding:60px clamp(32px,5vw,76px); border-right:1px solid #1d2835; }
+.track-kicker,.track-info-card header span { color:var(--racing-hot); font:750 9px/1 var(--font-mono); letter-spacing:.16em; text-transform:uppercase; }
+.track-hero h1 { max-width:680px; margin:22px 0 13px; font:800 clamp(47px,6.1vw,92px)/.91 var(--font-display-cond); letter-spacing:-.06em; text-transform:uppercase; }
+.track-location { color:#b6c0ce; font:650 15px/1.4 var(--font-body); }
+.track-intro { max-width:570px; margin:29px 0 0; color:#8491a2; font:450 14px/1.8 var(--font-body); }
+.track-hero-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:35px; }
+.track-hero-actions :is(button,a) { display:inline-flex; align-items:center; justify-content:center; min-height:45px; padding:0 17px; border:1px solid #2a3747; border-radius:6px; color:#dfe6ef; background:#101925; cursor:pointer; text-decoration:none; font:750 9px/1 var(--font-mono); letter-spacing:.07em; text-transform:uppercase; transition:.2s ease; }
+.track-hero-actions button { border-color:var(--racing); color:#090c12; background:var(--racing-hot); }
+.track-hero-actions :is(button,a):hover { transform:translateY(-2px); filter:brightness(1.08); }
+.track-model-panel { display:grid; grid-template-rows:auto 1fr auto; min-width:0; background:linear-gradient(180deg,rgba(255,255,255,.015),transparent); }
+.track-model-toolbar { display:flex; justify-content:space-between; padding:24px 27px; border-bottom:1px solid #1c2734; color:#aeb8c6; font:700 9px/1 var(--font-mono); letter-spacing:.08em; text-transform:uppercase; }
+.track-model-toolbar span { display:flex; align-items:center; gap:9px; }.track-model-toolbar i { width:7px; height:7px; border-radius:50%; background:var(--racing-hot); box-shadow:0 0 13px var(--racing-hot); }.track-model-toolbar small { color:#5e6a79; }
+.track-model-stage { position:relative; min-height:480px; overflow:hidden; cursor:grab; touch-action:none; user-select:none; }.track-model-stage:active { cursor:grabbing; }
+.track-grid-floor { position:absolute; inset:8% -15% -28%; background-image:linear-gradient(rgba(137,151,169,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(137,151,169,.1) 1px,transparent 1px); background-size:32px 32px; transform:perspective(500px) rotateX(62deg); mask-image:linear-gradient(to bottom,transparent 2%,#000 40%,transparent 90%); }
+.track-model { position:absolute; top:48%; left:50%; width:min(78%,590px); height:min(78%,590px); overflow:visible; transform-origin:center; transition:transform .12s ease-out; }
+.track-model path { fill:none; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+.track-model-depth { stroke:#161e29; stroke-width:13; }
+.track-model-edge { stroke:color-mix(in srgb,var(--racing) 65%,#fff); stroke-width:13; filter:drop-shadow(0 20px 16px rgba(0,0,0,.65)); }
+.track-model-road { stroke:#252e3a; stroke-width:9; }
+.track-model-racing-line { stroke:var(--racing-hot); stroke-width:1.25; stroke-dasharray:7 93; animation:trackLap 4.2s linear infinite; filter:url(#track-glow); }
+.track-axis { position:absolute; left:24px; color:#506074; font:750 8px/1 var(--font-mono); }.track-axis-n { top:24px; color:var(--racing-hot); }.track-axis-s { bottom:24px; }
+.track-model-controls { display:flex; align-items:center; gap:17px; padding:17px 24px; border-top:1px solid #1c2734; background:#0a111a; }
+.track-model-controls label { display:grid; gap:6px; flex:1; color:#718094; font:700 7px/1 var(--font-mono); letter-spacing:.08em; text-transform:uppercase; }.track-model-controls input { width:100%; accent-color:var(--racing-hot); }
+.track-model-controls>div { display:flex; align-items:center; gap:8px; color:#8391a3; font:700 8px/1 var(--font-mono); }.track-model-controls button { min-width:31px; height:31px; border:1px solid #2a3747; border-radius:5px; color:#e2e8f0; background:#111c29; cursor:pointer; font:700 11px/1 var(--font-mono); }.track-model-controls>button:last-child { padding:0 11px; color:#8d9bad; font-size:7px; text-transform:uppercase; }
+.track-facts { display:grid; grid-template-columns:repeat(6,1fr); gap:1px; margin-top:10px; overflow:hidden; border:1px solid #202c3a; border-radius:12px; background:#202c3a; }
+.track-facts article { min-height:145px; padding:20px; background:#0c141e; }.track-facts small { color:#445266; font:700 8px/1 var(--font-mono); }.track-facts span { display:block; margin-top:28px; color:#718094; font:700 7px/1 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; }.track-facts strong { display:block; margin-top:10px; color:#edf2f8; font:750 clamp(17px,1.65vw,25px)/1.1 var(--font-mono); letter-spacing:-.04em; }
+.track-dashboard { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+.track-info-card { overflow:hidden; border:1px solid #202c3a; border-radius:12px; background:#0b131d; }.track-info-card header { padding:27px 29px 22px; border-bottom:1px solid #1e2937; }.track-info-card h2 { margin-top:10px; font:750 clamp(23px,2.5vw,34px)/1 var(--font-display-cond); letter-spacing:-.04em; }.track-chip-row { display:flex; flex-wrap:wrap; gap:7px; padding:22px 28px 5px; }.track-chip-row span { padding:8px 10px; border:1px solid color-mix(in srgb,var(--racing) 32%,#253142); border-radius:999px; color:#bac4d0; background:color-mix(in srgb,var(--racing) 7%,#0c151f); font:650 8px/1 var(--font-mono); }
+.track-info-card dl { padding:12px 28px 25px; }.track-info-card dl>div { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:57px; border-bottom:1px solid #1c2734; }.track-info-card dt { color:#718095; font:650 9px/1.3 var(--font-mono); }.track-info-card dd { color:#e3e9f1; font:700 11px/1.3 var(--font-mono); text-align:right; }.track-info-card dd small { display:block; margin-top:5px; color:#6e7d91; font-size:7px; }
+.track-weekend-card>div>div { display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:12px; min-height:60px; padding:0 28px; border-bottom:1px solid #1b2633; }.track-weekend-card>div>div.main { background:color-mix(in srgb,var(--racing) 9%,transparent); }.track-weekend-card b { color:#4e5c6e; font:700 8px/1 var(--font-mono); }.track-weekend-card span { font:650 11px/1 var(--font-body); }.track-weekend-card time { color:#8290a2; font:650 9px/1 var(--font-mono); }
+@media(max-width:1050px){.track-hero{grid-template-columns:1fr;}.track-hero-copy{border-right:0;border-bottom:1px solid #1d2835;}.track-model-stage{min-height:520px}.track-facts{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.track-site-header{padding-inline:var(--gutter)}.track-page main{padding:12px 0 50px}.track-hero{border-right:0;border-left:0;border-radius:0}.track-hero-copy{padding:46px var(--gutter)}.track-hero h1{font-size:clamp(39px,13vw,64px)}.track-model-toolbar{padding-inline:var(--gutter)}.track-model-stage{min-height:380px}.track-model{width:92%;height:92%}.track-model-controls{flex-wrap:wrap;padding-inline:var(--gutter)}.track-model-controls label{flex-basis:40%}.track-facts{grid-template-columns:1fr 1fr;margin-top:7px;border-right:0;border-left:0;border-radius:0}.track-facts article{min-height:125px;padding:17px var(--gutter)}.track-facts span{margin-top:20px}.track-dashboard{grid-template-columns:1fr;gap:7px}.track-info-card{border-right:0;border-left:0;border-radius:0}.track-info-card header,.track-chip-row,.track-info-card dl{padding-inline:var(--gutter)}.track-weekend-card>div>div{grid-template-columns:24px 1fr;padding-inline:var(--gutter)}.track-weekend-card time{grid-column:2}}
+@media(prefers-reduced-motion:reduce){.track-model-racing-line{animation:none}.track-model{transition:none}}
 @media (prefers-reduced-motion:reduce) { .sst-orbit::after,.season-stats-loading i,.season-status-track i { animation:none; } }
 
 /* Compact archive explorer */

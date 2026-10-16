@@ -41,10 +41,10 @@ const COMET_TAIL = [
 ];
 const COMET_BASE_DELAY = -2.4; // pre-advance so the comet is mid-lap on mount
 
-const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean }> = ({ circuitId, live }) => {
+const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean; onOpen?: () => void; label?: string }> = ({ circuitId, live, onOpen, label }) => {
   const path = TRACK_PATHS[circuitId || ''];
   if (!path) return null;
-  return (
+  const model = (
     <svg
       className={`race-track-bg ${live ? 'is-live' : ''}`}
       viewBox={TRACK_VIEWBOX}
@@ -76,6 +76,8 @@ const TrackSilhouette: React.FC<{ circuitId?: string; live?: boolean }> = ({ cir
         ))}
     </svg>
   );
+  if (!onOpen) return model;
+  return <button className="race-track-link" type="button" onClick={onOpen} aria-label={`Explore ${label || 'circuit'} in 3D`}>{model}</button>;
 };
 
 const Flag: React.FC<{ code: string }> = ({ code }) => {
@@ -107,9 +109,10 @@ interface RaceResult {
 interface NextRaceProps {
   onRaceSelect?: (race: Race) => void;
   onViewAllResults?: () => void;
+  onTrackSelect?: (race: Race) => void;
 }
 
-const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults }) => {
+const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults, onTrackSelect }) => {
   // Seed with the bundled calendar so the first paint has data, then refresh
   // from the admin-managed backend calendar.
   const [races, setRaces] = useState<Race[]>(RACES_FALLBACK);
@@ -204,7 +207,7 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults }) =
   return (
     <section className="race-hero">
       <div className="race-block upcoming">
-        <TrackSilhouette circuitId={nextRace.Circuit.circuitId} live />
+        <TrackSilhouette circuitId={nextRace.Circuit.circuitId} live label={nextRace.Circuit.circuitName} onOpen={onTrackSelect ? () => onTrackSelect(nextRace) : undefined} />
         <div className="race-grid">
           <div className="race-left">
             <div className="race-meta-row">
@@ -218,6 +221,34 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults }) =
               <strong>{nextRace.Circuit.circuitName}</strong> · {nextRace.Circuit.Location.locality}
             </div>
             <div className="race-circuit">Round {nextRace.round} of {totalGPs} · 2026 Season</div>
+            {(onTrackSelect || onRaceSelect) && (
+              <div className="race-primary-actions">
+                {onTrackSelect && (
+                  <a
+                    className="race-explore-track"
+                    href={`/track/${encodeURIComponent(nextRace.Circuit.circuitId || raceSlug(nextRace))}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onTrackSelect(nextRace);
+                    }}
+                  >
+                    Explore Track <span aria-hidden="true">↗</span>
+                  </a>
+                )}
+                {onRaceSelect && (
+                  <a
+                    className="race-explore-track race-open-details"
+                    href={`/race/${nextRace.season}/${raceSlug(nextRace)}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onRaceSelect(nextRace);
+                    }}
+                  >
+                    Race Details <span aria-hidden="true">→</span>
+                  </a>
+                )}
+              </div>
+            )}
 
             <div className="race-stats">
               <div className="race-stat">
@@ -285,7 +316,7 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults }) =
         </div>
       </div>
       <div className="race-block previous">
-        <TrackSilhouette circuitId={prevRace.Circuit.circuitId} />
+        <TrackSilhouette circuitId={prevRace.Circuit.circuitId} label={prevRace.Circuit.circuitName} onOpen={onTrackSelect ? () => onTrackSelect(prevRace) : undefined} />
         <div className="prev-inner">
           <div className="prev-header">
             <div className="prev-id">

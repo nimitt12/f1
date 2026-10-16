@@ -22,7 +22,7 @@ import BootLoader from './components/BootLoader';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AccountDeletionRequest from './components/AccountDeletionRequest';
 import ScrollProgress from './components/ScrollProgress';
-import { raceSlug, type Race } from './data/races';
+import { RACES, raceSlug, type Race } from './data/races';
 
 const RaceDetails = lazy(() => import('./components/RaceDetails'));
 const LiveTiming = lazy(() => import('./components/LiveTiming'));
@@ -34,6 +34,7 @@ const ConstructorStandingsPage = lazy(() => import('./components/ConstructorStan
 const ConstructorDetailPage = lazy(() => import('./components/ConstructorDetailPage'));
 const ClashPage = lazy(() => import('./components/ClashPage'));
 const SeasonStatisticsPage = lazy(() => import('./components/SeasonStatisticsPage'));
+const TrackDetailsPage = lazy(() => import('./components/TrackDetailsPage'));
 const AdminGate = lazy(() => import('./admin/AdminGate'));
 const SeasonStatisticsTeaser = lazy(() => import('./components/SeasonStatisticsTeaser'));
 
@@ -157,11 +158,17 @@ const parseConstructorPath = (path: string): { season: string; constructorId: st
   } catch { return null; }
 };
 
+const parseTrackPath = (path: string): string | null => {
+  const match = path.match(/^\/track\/([^/]+)\/?$/);
+  try { return match ? decodeURIComponent(match[1]) : null; } catch { return null; }
+};
+
 const App: React.FC = () => {
   const isAdminPortal = window.location.pathname === '/admin-portal';
   const initialRacePath = parseRacePath(window.location.pathname);
   const initialDriverPath = parseDriverPath(window.location.pathname);
   const initialConstructorPath = parseConstructorPath(window.location.pathname);
+  const initialTrackPath = parseTrackPath(window.location.pathname);
   const initialLivePath = window.location.pathname === '/live';
   const initialPrivacyPath = window.location.pathname === '/privacy';
   const initialDeletionPath = window.location.pathname === '/account-deletion';
@@ -195,13 +202,14 @@ const App: React.FC = () => {
       return null;
     }
   });
-  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'driver_details' | 'constructor_details' | 'live' | 'schedule' | 'results' | 'standings' | 'constructor_standings' | 'statistics' | 'clash' | 'privacy' | 'account_deletion'>(() => {
+  const [view, setView] = useState<'dashboard' | 'account' | 'race_details' | 'track_details' | 'driver_details' | 'constructor_details' | 'live' | 'schedule' | 'results' | 'standings' | 'constructor_standings' | 'statistics' | 'clash' | 'privacy' | 'account_deletion'>(() => {
     // The URL is the source of truth for race details, live timing and the
     // privacy policy; only fall back to the persisted view (account/dashboard)
     // otherwise.
     if (initialRacePath) return 'race_details';
     if (initialDriverPath) return 'driver_details';
     if (initialConstructorPath) return 'constructor_details';
+    if (initialTrackPath) return 'track_details';
     if (initialLivePath) return 'live';
     if (initialSchedulePath) return 'schedule';
     if (initialResultsPath) return 'results';
@@ -227,6 +235,9 @@ const App: React.FC = () => {
     return parsed;
   });
   const [raceReturnView, setRaceReturnView] = useState<'dashboard' | 'schedule' | 'results'>('dashboard');
+  const [trackRace, setTrackRace] = useState<Race | null>(() =>
+    initialTrackPath ? RACES.find((race) => race.Circuit.circuitId === initialTrackPath) ?? null : null
+  );
   const [showGlobalLogin, setShowGlobalLogin] = useState(!user);
   const [showBoot, setShowBoot] = useState(true);
 
@@ -258,6 +269,20 @@ const App: React.FC = () => {
     setView(raceReturnView);
     setSelectedRace(null);
     window.history.pushState({}, '', raceReturnView === 'schedule' ? '/schedule' : raceReturnView === 'results' ? '/results' : '/');
+    window.scrollTo(0, 0);
+  };
+
+  const openTrackDetails = (race: Race) => {
+    setTrackRace(race);
+    setView('track_details');
+    window.history.pushState({}, '', `/track/${encodeURIComponent(race.Circuit.circuitId || raceSlug(race))}`);
+    window.scrollTo(0, 0);
+  };
+
+  const closeTrackDetails = () => {
+    setView('dashboard');
+    setTrackRace(null);
+    window.history.pushState({}, '', '/');
     window.scrollTo(0, 0);
   };
 
@@ -352,12 +377,21 @@ const App: React.FC = () => {
     }
   }, [races, view, selectedRace]);
 
+  useEffect(() => {
+    if (view !== 'track_details' || trackRace || races.length === 0) return;
+    const circuitId = parseTrackPath(window.location.pathname);
+    const found = circuitId ? races.find((race) => race.Circuit.circuitId === circuitId) : undefined;
+    if (found) setTrackRace(found);
+    else { setView('dashboard'); window.history.replaceState({}, '', '/'); }
+  }, [races, view, trackRace]);
+
   // Keep the view in sync with browser back/forward navigation.
   useEffect(() => {
     const onPopState = () => {
       const target = parseRacePath(window.location.pathname);
       const driverTarget = parseDriverPath(window.location.pathname);
       const constructorTarget = parseConstructorPath(window.location.pathname);
+      const trackTarget = parseTrackPath(window.location.pathname);
       if (target) {
         setView('race_details');
         const found = races.find((r) => matchesRacePath(r, target));
@@ -366,6 +400,9 @@ const App: React.FC = () => {
         setView('driver_details');
       } else if (constructorTarget) {
         setView('constructor_details');
+      } else if (trackTarget) {
+        setView('track_details');
+        setTrackRace(races.find((race) => race.Circuit.circuitId === trackTarget) ?? null);
       } else if (window.location.pathname === '/live') {
         setView('live');
       } else if (window.location.pathname === '/schedule' || window.location.pathname === '/schedule/') {
@@ -508,7 +545,7 @@ const App: React.FC = () => {
                   onOpenLiveTiming={openLiveTiming}
                 />
               ) : (
-                <NextRace onRaceSelect={openRaceDetails} onViewAllResults={openResults} />
+                <NextRace onRaceSelect={openRaceDetails} onViewAllResults={openResults} onTrackSelect={openTrackDetails} />
               )}
             </Parallax>
             <Parallax speed={0.045} delay={20}>
@@ -688,6 +725,22 @@ const App: React.FC = () => {
               user={user as any}
               setUser={setUser as any}
               onBack={closeConstructorProfile}
+              onOpenSettings={() => setView('account')}
+              onHomeNavigate={(hash) => {
+                goToDashboard();
+                setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+              }}
+            />
+          </>
+        ) : view === 'track_details' && trackRace ? (
+          <>
+            <ThemeSwitcher />
+            <TrackDetailsPage
+              race={trackRace}
+              user={user as any}
+              setUser={setUser as any}
+              onBack={closeTrackDetails}
+              onOpenRace={openRaceDetails}
               onOpenSettings={() => setView('account')}
               onHomeNavigate={(hash) => {
                 goToDashboard();

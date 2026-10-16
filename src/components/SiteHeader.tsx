@@ -17,14 +17,26 @@ interface SiteHeaderProps {
   // Replaces the default "Season 2026" badge on the left (e.g. the race details
   // page puts its Back button here so it doesn't need a redundant season tag).
   leftSlot?: React.ReactNode;
+  stickyOnScroll?: boolean;
 }
 
 // The shared top bar used across the site (dashboard hero + race details).
 // Renders the season badge and the profile/menu card so every view has the
 // same header chrome.
-const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, onHomeNavigate, leftSlot }) => {
+const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, onHomeNavigate, leftSlot, stickyOnScroll = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!stickyOnScroll || !headerRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setShowStickyHeader(!entry.isIntersecting && entry.boundingClientRect.bottom <= 0);
+    });
+    observer.observe(headerRef.current);
+    return () => observer.disconnect();
+  }, [stickyOnScroll]);
 
   // A drawer should be just as easy to leave from a keyboard as it is with a
   // pointer. Locking the document also prevents the dashboard scrolling behind
@@ -137,7 +149,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
 
   return (
     <>
-      <div className="hero-top">
+      <div className="hero-top" ref={headerRef}>
         {leftSlot ?? (
           <div className="brand-eyebrow">
             <span className="live-badge">Season 2026</span>
@@ -208,6 +220,28 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
           </button>
         </div>
       </div>
+
+      {stickyOnScroll && showStickyHeader && createPortal(
+        <header className="home-sticky-header">
+          <a className="home-sticky-brand" href="/" aria-label="MyPitWall — back to top" onClick={event => {
+            event.preventDefault();
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+          }}>
+            <LogoMark aria-hidden="true" />
+            <span>My<span>PitWall.</span></span>
+          </a>
+          <nav className="home-sticky-links" aria-label="Home navigation">
+            <a href="/schedule" onClick={openSchedule}>Schedule</a>
+            <a href="/standings" onClick={openStandings}>Standings</a>
+            <a href="/live">Live Timing</a>
+          </nav>
+          <button className="home-sticky-menu" onClick={() => setIsMenuOpen(true)} aria-label="Open menu" aria-expanded={isMenuOpen}>
+            {user ? <img src={user.picture} alt="" /> : <span>Sign In</span>}
+            <span className="hamburger-lines" aria-hidden="true"><span /><span /><span /></span>
+          </button>
+        </header>,
+        document.body
+      )}
 
       {isMenuOpen && createPortal(
         <div className="glass-menu-overlay" onClick={() => setIsMenuOpen(false)}>

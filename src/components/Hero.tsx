@@ -18,7 +18,7 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
   return (
     <section className="hero">
-      <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} />
+      <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} stickyOnScroll />
 
       <div className="title-wrap">
         <h1 className="hero-title">
