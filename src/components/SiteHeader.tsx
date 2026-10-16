@@ -5,6 +5,7 @@ import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import type { AuthUser } from './Hero';
 import LogoMark from './LogoMark';
 import { COMMUNITY_URL } from '../lib/links';
+import { raceSlug, type Race } from '../data/races';
 
 interface SiteHeaderProps {
   user: AuthUser | null;
@@ -18,12 +19,13 @@ interface SiteHeaderProps {
   // page puts its Back button here so it doesn't need a redundant season tag).
   leftSlot?: React.ReactNode;
   stickyOnScroll?: boolean;
+  upcomingRace?: Race | null;
 }
 
 // The shared top bar used across the site (dashboard hero + race details).
 // Renders the season badge and the profile/menu card so every view has the
 // same header chrome.
-const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, onHomeNavigate, leftSlot, stickyOnScroll = false }) => {
+const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, onHomeNavigate, leftSlot, stickyOnScroll = false, upcomingRace }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -230,11 +232,26 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
             <LogoMark aria-hidden="true" />
             <span>My<span>PitWall.</span></span>
           </a>
-          <nav className="home-sticky-links" aria-label="Home navigation">
-            <a href="/schedule" onClick={openSchedule}>Schedule</a>
-            <a href="/standings" onClick={openStandings}>Standings</a>
-            <a href="/live">Live Timing</a>
-          </nav>
+          {upcomingRace ? (
+            <a className="home-sticky-race" href={`/race/${upcomingRace.season}/${raceSlug(upcomingRace)}`} onClick={event => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+              event.preventDefault();
+              window.history.pushState({}, '', event.currentTarget.href);
+              window.dispatchEvent(new PopStateEvent('popstate'));
+              window.scrollTo(0, 0);
+            }}>
+              <span className="home-sticky-race-label">Up next · Round {upcomingRace.round}</span>
+              <strong>{upcomingRace.raceName}</strong>
+              <span className="home-sticky-race-details">
+                <span>{upcomingRace.Circuit.Location.locality} · </span>
+                <time dateTime={upcomingRace.time ? `${upcomingRace.date}T${upcomingRace.time}` : upcomingRace.date}>
+                  {upcomingRace.time
+                    ? new Date(`${upcomingRace.date}T${upcomingRace.time}`).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })
+                    : `${new Date(`${upcomingRace.date}T12:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · Time TBC`}
+                </time>
+              </span>
+            </a>
+          ) : <span className="home-sticky-race-details">Next race to be announced</span>}
           <button className="home-sticky-menu" onClick={() => setIsMenuOpen(true)} aria-label="Open menu" aria-expanded={isMenuOpen}>
             {user ? <img src={user.picture} alt="" /> : <span>Sign In</span>}
             <span className="hamburger-lines" aria-hidden="true"><span /><span /><span /></span>

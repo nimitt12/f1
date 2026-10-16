@@ -89,7 +89,7 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
       if (strip && !loading) {
         const next = strip.querySelector('.cal-round.next') as HTMLElement;
         if (next) {
-          strip.scrollTo({ left: next.offsetLeft - 60, behavior: 'smooth' });
+          strip.scrollTo({ left: next.offsetLeft - strip.offsetLeft, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
         }
       }
     }, 100);
@@ -99,13 +99,13 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
 
   const scrollLeft = () => {
     if (stripRef.current) {
-      stripRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      stripRef.current.scrollBy({ left: -300, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (stripRef.current) {
-      stripRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      stripRef.current.scrollBy({ left: 300, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     }
   };
 
@@ -124,13 +124,15 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
   };
 
   return (
-    <section id="calendar" className="cal-section">
+    <section id="calendar" className="cal-section cal-premium">
       <div className="cal-head">
-        <div className="cal-title">
-          Season <em>Calendar</em>
+        <div className="cal-heading">
+          <span className="cal-eyebrow">The championship journey</span>
+          <h2 className="cal-title">Season <em>Calendar</em></h2>
+          <p className="cal-intro">Every circuit. Every weekend. The road to the title.</p>
         </div>
         <div className="cal-head-right">
-          <div className="cal-meta">22 Rounds · Mar → Dec 2026</div>
+          <div className="cal-meta">{loading ? 'Loading calendar…' : `${races.length} rounds · ${races[0]?.season ?? 'Season calendar'}`}</div>
           <a className="cal-full-schedule cal-view-results" href="/results" onClick={openResults}>View all results ↗</a>
           <a className="cal-full-schedule" href="/schedule" onClick={openSchedule}>Full schedule ↗</a>
           <div className="cal-nav">
@@ -140,6 +142,7 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
         </div>
       </div>
 
+      <div className="cal-season-line"><span>Lights out</span><span>{races.filter((race) => new Date(race.date) < new Date()).length} / {races.length} rounds completed</span><span>Chequered flag</span></div>
       <div className="cal-strip-wrap">
         <div className="cal-progress-track">
           <div
@@ -169,6 +172,15 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
 
               return (
                 <div key={race.round} data-round={displayRound} className={`cal-round ${isDone && !isNext ? 'done' : ''} ${isNext ? 'next' : ''}`}>
+                  <div className="cal-rnum">
+                    <span className="cal-rnum-id">
+                      ROUND {displayRound}
+                    </span>
+                    <span className="cal-race-status">{isNext ? 'Up next' : isDone ? 'Completed' : 'Upcoming'}</span>
+                  </div>
+                  <div className="cal-destination"><span className="cal-flag-emoji">{countryEmoji}</span><span className="cal-country">{countryName}</span></div>
+                  <h3 className="cal-city">{race.Circuit.Location.locality}</h3>
+                  <div className="cal-track-stage">
                   {trackPath && (
                     <svg
                       className="cal-track"
@@ -180,15 +192,9 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
                       <path d={trackPath} vectorEffect="non-scaling-stroke" />
                     </svg>
                   )}
-                  <div className="cal-rnum">
-                    <span className="cal-rnum-id">
-                      R#{displayRound}
-                      {isNext && <span className="cal-next-pill">Up Next</span>}
-                    </span>
-                    <span className="cal-status-dot"></span>
+                    {!trackPath && <span className="cal-track-pending">Circuit outline unavailable</span>}
+                    <span className="cal-track-caption">Circuit / {displayRound}</span>
                   </div>
-                  <div className="cal-flag-emoji">{countryEmoji}</div>
-                  <div className="cal-country">{`${race.Circuit.Location.locality}, ${race.Circuit.Location.country}`}</div>
                   <div className="cal-flag-name">{race.Circuit.circuitName}</div>
                   <div className="cal-date">{formatDateRange(race.date, race.FirstPractice?.date)}</div>
                   {onRaceSelect && (
@@ -201,7 +207,7 @@ const Calendar: React.FC<CalendarProps> = ({ onRaceSelect }) => {
                         onRaceSelect(race);
                       }}
                     >
-                      View Details
+                      <span>{isDone ? 'Race results' : 'Race weekend'}</span><span aria-hidden="true">↗</span>
                     </a>
                   )}
                 </div>

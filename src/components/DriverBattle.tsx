@@ -233,11 +233,12 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
 
   if (loading || comparisonLoading || !comparison) {
     return (
-      <section className="driver-battle-section">
+      <section className="driver-battle-section battle-premium">
         <div className="battle-header">
           <div>
             <span className="battle-eyebrow">Head to Head{season ? ` · ${season}` : ''}</span>
             <h2 className="battle-title">Driver's <em>Clash</em></h2>
+            <p className="battle-intro">Two drivers. Every point. See how they compare.</p>
           </div>
         </div>
         <div className="battle-container" style={{ opacity: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -256,11 +257,12 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
   const gapLeader = pts1 === pts2 ? null : pts1 > pts2 ? 0 : 1;
 
   return (
-    <section className="driver-battle-section">
+    <section className="driver-battle-section battle-premium">
       <div className="battle-header">
         <div>
           <span className="battle-eyebrow">Head to Head · {comparison.season}</span>
           <h2 className="battle-title">Driver's <em>Clash</em></h2>
+            <p className="battle-intro">Two drivers. Every point. See how they compare.</p>
         </div>
 
         <div className="battle-header-actions">
@@ -278,7 +280,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
 
       <div className="battle-container">
         {/* Driver 1 */}
-        <div className="battle-card p1" style={{ '--team-color': color1 } as React.CSSProperties}>
+        <div className="battle-card p1" data-number={d1.number} style={{ '--team-color': color1 } as React.CSSProperties}>
           <div className="battle-card-top">
             <button className="battle-rank" onClick={openPicker} aria-label="Change driver 1">
               <span className="battle-rank-label">Position</span>
@@ -288,7 +290,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
               <div className="battle-tags">
                 <span className="battle-meta">#{d1.number} · {nationalityCode(d1.nationality)}</span>
               </div>
-              <h3 className="battle-name">{d1.given_name} {d1.family_name}</h3>
+              <h3 className="battle-name"><span>{d1.given_name}</span><strong>{d1.family_name}</strong></h3>
               <span className="battle-team">{d1.constructor_name}</span>
             </div>
           </div>
@@ -313,21 +315,22 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
           <div className="vs-circle">VS</div>
           {gapLeader !== null && (
             <div className="vs-gap">
-              <span>Gap</span>
+              <span>Points gap</span>
               <strong style={{ color: gapLeader === 0 ? color1 : color2 }}>+{gap}</strong>
-              <span>Pts</span>
+              <span className="vs-leader">{gapLeader === 0 ? d1.family_name : d2.family_name} leads</span>
             </div>
           )}
+          {gapLeader === null && <span className="vs-tied">Level on points</span>}
         </div>
 
         {/* Driver 2 */}
-        <div className="battle-card p2" style={{ '--team-color': color2 } as React.CSSProperties}>
+        <div className="battle-card p2" data-number={d2.number} style={{ '--team-color': color2 } as React.CSSProperties}>
           <div className="battle-card-top">
             <div className="battle-card-info">
               <div className="battle-tags">
                 <span className="battle-meta">{nationalityCode(d2.nationality)} · #{d2.number}</span>
               </div>
-              <h3 className="battle-name">{d2.given_name} {d2.family_name}</h3>
+              <h3 className="battle-name"><span>{d2.given_name}</span><strong>{d2.family_name}</strong></h3>
               <span className="battle-team">{d2.constructor_name}</span>
             </div>
             <button className="battle-rank" onClick={openPicker} aria-label="Change driver 2">
@@ -355,13 +358,14 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
       {/* Season comparison panel */}
       <div className="battle-compare" style={{ '--p1-color': color1, '--p2-color': color2 } as React.CSSProperties}>
         <div className="compare-head">
-          <h3 className="compare-title">Season Comparison</h3>
+          <div><span className="compare-kicker">The season, side by side</span><h3 className="compare-title">Performance breakdown</h3></div>
           <div className="compare-badges">
             <span className="compare-badge">Quali H2H <strong>{comparison.h2h.quali.driver1}-{comparison.h2h.quali.driver2}</strong></span>
             <span className="compare-badge">Race H2H <strong>{comparison.h2h.race.driver1}-{comparison.h2h.race.driver2}</strong></span>
           </div>
         </div>
 
+        <div className="compare-driver-key"><span>{d1.family_name}<small>#{d1.number}</small></span><span>{d2.family_name}<small>#{d2.number}</small></span></div>
         <div className="compare-rows">
           {COMPARE_ROWS.map((row) => {
             const v1 = parseInt(d1[row.key] as string, 10) || 0;
@@ -371,7 +375,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
             const w2 = (v2 / max) * 100;
             return (
               <div key={row.label} className="compare-row">
-                <span className="compare-val left">{v1}</span>
+                <span className={`compare-val left ${v1 > v2 ? 'leading' : ''}`}>{v1}</span>
                 <div className="compare-bar left">
                   <div className="compare-fill p1" style={{ width: `${w1}%` }} />
                 </div>
@@ -379,7 +383,7 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
                 <div className="compare-bar right">
                   <div className="compare-fill p2" style={{ width: `${w2}%` }} />
                 </div>
-                <span className="compare-val right">{v2}</span>
+                <span className={`compare-val right ${v2 > v1 ? 'leading' : ''}`}>{v2}</span>
               </div>
             );
           })}

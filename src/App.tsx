@@ -243,7 +243,7 @@ const App: React.FC = () => {
 
   // When a calendar race falls on today's date we switch the dashboard into a
   // focused "race day" takeover (just the live section) instead of the full grid.
-  const { races, liveRace } = useLiveRace();
+  const { races, liveRace, upcomingRace } = useLiveRace();
 
   // Persist view and selected race
   useEffect(() => {
@@ -531,6 +531,7 @@ const App: React.FC = () => {
             <ThemeSwitcher />
             <Ticker />
             <Hero
+              upcomingRace={upcomingRace}
               user={user}
               setUser={setUser}
               onOpenSettings={() => setView('account')}

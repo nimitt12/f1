@@ -225,26 +225,28 @@ const NextRace: React.FC<NextRaceProps> = ({ onRaceSelect, onViewAllResults, onT
               <div className="race-primary-actions">
                 {onTrackSelect && (
                   <a
-                    className="race-explore-track"
+                    className="nr-view-results-btn nr-latest-results-btn"
                     href={`/track/${encodeURIComponent(nextRace.Circuit.circuitId || raceSlug(nextRace))}`}
                     onClick={(event) => {
                       event.preventDefault();
                       onTrackSelect(nextRace);
                     }}
                   >
-                    Explore Track <span aria-hidden="true">↗</span>
+                    <span>Explore Track</span>
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   </a>
                 )}
                 {onRaceSelect && (
                   <a
-                    className="race-explore-track race-open-details"
+                    className="nr-view-results-btn nr-all-results-btn"
                     href={`/race/${nextRace.season}/${raceSlug(nextRace)}`}
                     onClick={(event) => {
                       event.preventDefault();
                       onRaceSelect(nextRace);
                     }}
                   >
-                    Race Details <span aria-hidden="true">→</span>
+                    <span>Race Details</span>
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   </a>
                 )}
               </div>

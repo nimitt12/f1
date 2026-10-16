@@ -1,5 +1,6 @@
 import React from 'react';
 import SiteHeader from './SiteHeader';
+import type { Race } from '../data/races';
 
 export interface AuthUser {
   id: string;
@@ -10,15 +11,16 @@ export interface AuthUser {
 }
 
 interface HeroProps {
+  upcomingRace: Race | null;
   user: AuthUser | null;
   setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
   onOpenSettings: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings }) => {
+const Hero: React.FC<HeroProps> = ({ user, setUser, onOpenSettings, upcomingRace }) => {
   return (
     <section className="hero">
-      <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} stickyOnScroll />
+      <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} stickyOnScroll upcomingRace={upcomingRace} />
 
       <div className="title-wrap">
         <h1 className="hero-title">

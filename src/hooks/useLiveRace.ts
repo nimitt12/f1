@@ -6,6 +6,7 @@ export interface LiveRaceState {
   races: Race[];
   /** The race currently inside its weekend window, or null. */
   liveRace: Race | null;
+  upcomingRace: Race | null;
 }
 
 /**
@@ -45,5 +46,12 @@ export const useLiveRace = (): LiveRaceState => {
     [races, now],
   );
 
-  return { races, liveRace };
+  const upcomingRace = useMemo(
+    () => [...races]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .find(race => new Date(`${race.date}T${race.time || '23:59:59Z'}`).getTime() > now) ?? null,
+    [races, now],
+  );
+
+  return { races, liveRace, upcomingRace };
 };
