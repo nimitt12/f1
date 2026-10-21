@@ -163,7 +163,34 @@ const parseTrackPath = (path: string): string | null => {
   try { return match ? decodeURIComponent(match[1]) : null; } catch { return null; }
 };
 
+// Restore only after the dashboard's lazy content has mounted.
+const DashboardScrollRestore: React.FC<{ top: number | null }> = ({ top }) => {
+  React.useLayoutEffect(() => {
+    if (top === null) return;
+    const restore = () => window.scrollTo({ top, behavior: 'instant' });
+    const observer = new ResizeObserver(restore);
+    const stop = () => observer.disconnect();
+    restore();
+    observer.observe(document.body);
+    const timeout = window.setTimeout(stop, 3000);
+    // Stop correcting layout shifts as soon as the user starts navigating.
+    window.addEventListener('wheel', stop, { passive: true });
+    window.addEventListener('touchstart', stop, { passive: true });
+    window.addEventListener('keydown', stop);
+    return () => {
+      stop();
+      window.clearTimeout(timeout);
+      window.removeEventListener('wheel', stop);
+      window.removeEventListener('touchstart', stop);
+      window.removeEventListener('keydown', stop);
+    };
+  }, [top]);
+  return null;
+};
+
 const App: React.FC = () => {
+  const statisticsReturnScroll = React.useRef(0);
+  const [dashboardRestoreTop, setDashboardRestoreTop] = useState<number | null>(null);
   const isAdminPortal = window.location.pathname === '/admin-portal';
   const initialRacePath = parseRacePath(window.location.pathname);
   const initialDriverPath = parseDriverPath(window.location.pathname);
@@ -287,6 +314,7 @@ const App: React.FC = () => {
   };
 
   const goToDashboard = () => {
+    setDashboardRestoreTop(null);
     setView('dashboard');
     setSelectedRace(null);
     window.history.pushState({}, '', '/');
@@ -319,9 +347,18 @@ const App: React.FC = () => {
   };
 
   const openStatistics = () => {
+    statisticsReturnScroll.current = window.scrollY;
+    setDashboardRestoreTop(null);
     setView('statistics');
     window.history.pushState({}, '', '/statistics');
     window.scrollTo(0, 0);
+  };
+
+  const returnFromStatistics = () => {
+    setDashboardRestoreTop(statisticsReturnScroll.current);
+    setView('dashboard');
+    setSelectedRace(null);
+    window.history.pushState({}, '', '/');
   };
 
   const openDriverProfile = (season: string, driverId: string) => {
@@ -528,6 +565,7 @@ const App: React.FC = () => {
       <div className="public-site-shell">
         {view === 'dashboard' ? (
           <>
+            <DashboardScrollRestore top={dashboardRestoreTop} />
             <ThemeSwitcher />
             <Ticker />
             <Hero
@@ -675,7 +713,7 @@ const App: React.FC = () => {
             <SeasonStatisticsPage
               user={user as any}
               setUser={setUser as any}
-              onBack={goToDashboard}
+              onBack={returnFromStatistics}
               onOpenSettings={() => setView('account')}
               onHomeNavigate={(hash) => {
                 goToDashboard();

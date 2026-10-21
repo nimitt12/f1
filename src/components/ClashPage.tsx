@@ -110,6 +110,7 @@ const DriverPointsGapGraph: React.FC<{ driverIds: [string, string] | null }> = (
   const [races, setRaces] = useState<Race[]>([]);
   const [points, setPoints] = useState<GapPoint[]>([]);
   const [qualifying, setQualifying] = useState<QualifyingDelta[]>([]);
+  const [chart, setChart] = useState<'total' | 'cumulativeGap' | 'roundGap'>('total');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -138,7 +139,7 @@ const DriverPointsGapGraph: React.FC<{ driverIds: [string, string] | null }> = (
         const rankingData = await rankingResponse.json();
         if (!Array.isArray(rankingData)) throw new Error('Invalid driver rankings response');
         const rankingDrivers = rankingData as DriverRanking[];
-        const pair = driverIds.map((id) => rankingDrivers.find((driver) => driver.driver_id === id));
+        const pair = driverIds.map((id) => rankingDrivers.find((driver) => String(driver.driver_id) === id));
         if (!pair[0] || !pair[1]) throw new Error('Selected drivers unavailable');
         const selectedSeason = pair[0].season || String(raceList[0]?.season || new Date().getFullYear());
         const seasonRaces = raceList.filter((race) => String(race.season) === String(selectedSeason));
@@ -157,7 +158,7 @@ const DriverPointsGapGraph: React.FC<{ driverIds: [string, string] | null }> = (
         let secondScoreTotal = 0;
         const aliases = pair.map((driver) => `${driver!.given_name}|${driver!.family_name}`.toLowerCase());
         const isDriver = (row: SessionResult, id: string, alias: string) => driverIdentity(row) === id || `${row.given_name || ''}|${row.family_name || ''}`.toLowerCase() === alias;
-        const history = loaded.map(({ race, raceRows, sprintRows }, index) => {
+        const history = loaded.filter(({ raceRows }) => raceRows.length > 0).sort((a, b) => Number(a.race.round) - Number(b.race.round)).map(({ race, raceRows, sprintRows }, index) => {
           const rows = [...raceRows, ...sprintRows];
           const roundPoints = driverIds.map((id, index) => rows
             .filter((row) => isDriver(row, id, aliases[index]))
@@ -189,12 +190,13 @@ const DriverPointsGapGraph: React.FC<{ driverIds: [string, string] | null }> = (
     return () => controller.abort();
   }, [driverIds]);
 
-  if (!driverIds || loading) return <div className="clash-graph-state"><Loader label="Building points gap" /></div>;
+  if (!driverIds) return null;
+  if (loading) return <div className="clash-graph-state"><Loader label="Building points gap" /></div>;
   if (error || drivers.length < 2 || !points.length) return <div className="clash-graph-state clash-state-error">Points history will appear when completed-round data is available.</div>;
 
   const [first, second] = drivers;
   const firstColor = TEAM_COLORS[teamKey(first.constructor_name)] || '#2de2cd';
-  const secondColor = TEAM_COLORS[teamKey(second.constructor_name)] || '#f3f5f8';
+  const secondColor = teamKey(first.constructor_name) === teamKey(second.constructor_name) ? '#e9e5f0' : TEAM_COLORS[teamKey(second.constructor_name)] || '#f3f5f8';
   const width = Math.max(1120, races.length * 48);
   const left = 62;
   const right = 26;
@@ -264,24 +266,29 @@ const DriverPointsGapGraph: React.FC<{ driverIds: [string, string] | null }> = (
   };
 
   return <div className="clash-analytics" style={{ '--gap-first': firstColor, '--gap-second': secondColor } as React.CSSProperties}><section className="clash-gap-panel">
-    <header><div><span>Round-by-round telemetry</span><h2>{first.family_name} vs {second.family_name} points gap</h2></div><button onClick={downloadCsv} title="Download graph data" aria-label="Download points gap data as CSV">{downloadIcon}</button></header>
+    <header><div><span>Championship progression</span><h2>{first.family_name} vs {second.family_name} points gap</h2></div><button onClick={downloadCsv} title="Download graph data" aria-label="Download points gap data as CSV">{downloadIcon}</button></header>
     <div className="clash-gap-legend"><span><i style={{ background: firstColor }} />{first.given_name} {first.family_name}</span><span><i style={{ background: secondColor }} />{second.given_name} {second.family_name}</span></div>
-    <div className="clash-gap-scroll">
-      <section className="clash-gap-line"><svg viewBox={`0 0 ${width} ${lineHeight}`} role="img" aria-label={`${first.family_name} and ${second.family_name} cumulative points`}>
+    <div className="clash-chart-controls" role="group" aria-label="Points chart">
+      {([{ id: 'total', label: 'Total points' }, { id: 'cumulativeGap', label: 'Overall gap' }, { id: 'roundGap', label: 'Round by round' }] as const).map((item) => <button key={item.id} aria-pressed={chart === item.id} onClick={() => setChart(item.id)}>{item.label}</button>)}
+      <span>{points.length} rounds with results</span>
+    </div>
+    <div className="clash-gap-scroll" tabIndex={0} aria-label="Points chart, scroll horizontally to explore rounds">
+      {chart === 'total' && <section className="clash-gap-line"><svg viewBox={`0 0 ${width} ${lineHeight}`} role="img" aria-label={`${first.family_name} and ${second.family_name} cumulative points`}>
         {lineTicks.map((tick) => <g key={tick}><line x1={left} x2={width-right} y1={lineY(tick)} y2={lineY(tick)} className="gap-grid"/><text x={left-14} y={lineY(tick)+4} textAnchor="end" className="gap-axis">{tick}</text></g>)}
         <path d={linePath('firstTotal')} stroke={firstColor} className="gap-line"/><path d={linePath('secondTotal')} stroke={secondColor} className="gap-line"/>
         {points.map((point) => <g key={point.round}><circle cx={x(point.round)} cy={lineY(point.firstTotal)} r="3.6" fill={firstColor}><title>{point.race}: {point.firstTotal}</title></circle><circle cx={x(point.round)} cy={lineY(point.secondTotal)} r="3.6" fill={secondColor}><title>{point.race}: {point.secondTotal}</title></circle></g>)}
-      </svg></section>
-      {renderBars('cumulativeGap', 'Cumulative gap', 290)}
-      {renderBars('roundGap', 'Points gap per round', 300)}
+        {races.map((race) => <text key={race.round} x={x(Number(race.round))} y={lineHeight - 13} textAnchor="middle" className="gap-round">{race.round}</text>)}
+      </svg></section>}
+      {chart === 'cumulativeGap' && renderBars('cumulativeGap', 'Cumulative gap', 390)}
+      {chart === 'roundGap' && renderBars('roundGap', 'Points gap per round', 390)}
       <div className="clash-gap-axis-title">Rounds</div>
     </div>
   </section>
   <section className="clash-score-panel">
-    <header><div><span>Calculated form index</span><h2>{first.family_name} vs {second.family_name} score evolution</h2><p>Season Performance Score combines results and points; Teammate Score shows each driver's share of the selected head-to-head.</p></div><button onClick={downloadCsv} title="Download score data" aria-label="Download score evolution data as CSV">{downloadIcon}</button></header>
-    <div className="clash-score-help"><span>?</span> Scores</div>
+    <header><div><span>Calculated form index</span><h2>{first.family_name} vs {second.family_name} score evolution</h2><p>Season Performance Score combines results and points; Head-to-head Points Share shows each driver's share of the selected head-to-head.</p></div><button onClick={downloadCsv} title="Download score data" aria-label="Download score evolution data as CSV">{downloadIcon}</button></header>
+
     <div className="clash-gap-legend"><span><i style={{ background: firstColor }}/>{first.code || first.family_name.slice(0,3)}</span><span><i style={{ background: secondColor }}/>{second.code || second.family_name.slice(0,3)}</span></div>
-    <div className="clash-score-scroll">{renderScoreChart('firstSps','secondSps','Season Performance Score (SPS)')}{renderScoreChart('firstTms','secondTms','Teammate Score (TMS)')}</div>
+    <div className="clash-score-scroll">{renderScoreChart('firstSps','secondSps','Season Performance Score (SPS)')}{renderScoreChart('firstTms','secondTms','Head-to-head Points Share (%)')}</div>
   </section>
   <section className="clash-quali-panel">
     <header><div><span>Qualifying pace</span><h2>One-lap delta distribution</h2></div><strong>{qualifying.length} comparable sessions</strong></header>
@@ -389,9 +396,14 @@ const ClashPage: React.FC<ClashPageProps> = ({ user, setUser, onBack, onOpenSett
     window.history.replaceState({}, '', `/clash?${params.toString()}`);
   }, []);
   return <div className="dsp-page clash-page">
-    <div className="dsp-page-header"><SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate} leftSlot={<button className="rd-back-btn dsp-back" onClick={onBack}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Dashboard</button>} /></div>
+    <div className="clash-site-header"><SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate} /></div>
     <main className="clash-main">
-      <header className="clash-hero"><div><span>Head-to-head laboratory</span><h1>Clash <em>Center</em></h1><p>Put the grid side by side. Compare championship form, wins, podiums and the numbers separating this season's fiercest rivals.</p></div><div className="clash-mode-switch" role="tablist" aria-label="Comparison type"><button className={mode === 'drivers' ? 'active' : ''} onClick={() => setMode('drivers')} role="tab" aria-selected={mode === 'drivers'}>Drivers</button><button className={mode === 'constructors' ? 'active' : ''} onClick={() => setMode('constructors')} role="tab" aria-selected={mode === 'constructors'}>Constructors</button></div></header>
+      <nav className="clash-breadcrumb" aria-label="Breadcrumb"><a href="/" onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onBack(); }}>Dashboard</a><span aria-hidden="true">/</span><span aria-current="page">Clash Center</span></nav>
+      <header className="clash-hero">
+        <div><span>THE GRID, SIDE BY SIDE</span><h1>Every rivalry.<br /><em>Every detail.</em></h1><p>Go beyond the standings. Explore the points, pace and defining moments that separate two competitors.</p></div>
+        <div className="clash-hero-aside"><span className="clash-edition">PITWALL / CLASH CENTER</span><div className="clash-hero-mark" aria-hidden="true"><span>01</span><i>VS</i><span>02</span></div><p>Two contenders. One clear picture.</p></div>
+      </header>
+      <div className="clash-workspace-bar"><div><span className="clash-section-index">01 /</span><h2>Choose your rivalry</h2></div><div className="clash-mode-switch" role="group" aria-label="Comparison type"><button className={mode === 'drivers' ? 'active' : ''} onClick={() => setMode('drivers')} aria-pressed={mode === 'drivers'}>Drivers</button><button className={mode === 'constructors' ? 'active' : ''} onClick={() => setMode('constructors')} aria-pressed={mode === 'constructors'}>Constructors</button></div></div>
       {mode === 'drivers' ? <><DriverBattle initialDriverIds={initialDriverIds} onSelectionChange={handleDriverSelection} showMoreButton={false} /><DriverPointsGapGraph driverIds={driverIds} /></> : <ConstructorClash />}
     </main>
     <Footer />

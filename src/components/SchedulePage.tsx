@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Map as MapLibreMap, setWorkerUrl } from 'maplibre-gl';
-import mapLibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import CircuitMap from './CircuitMap';
 import { COUNTRY_FLAGS, fetchRaces, raceSlug, type Race } from '../data/races';
 import { TRACK_PATHS, TRACK_VIEWBOX } from '../data/trackPaths';
 import type { AuthUser } from './Hero';
@@ -9,8 +7,6 @@ import SiteHeader from './SiteHeader';
 import Footer from './Footer';
 
 type ScheduleFilter = 'all' | 'upcoming' | 'completed' | 'sprint';
-
-setWorkerUrl(mapLibreWorkerUrl);
 
 interface SchedulePageProps {
   user: AuthUser | null;
@@ -37,44 +33,6 @@ const dateRange = (race: Race) => {
 const localRaceTime = (race: Race) => {
   if (!race.time) return 'Time TBC';
   return raceStart(race).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
-};
-
-const CircuitMap: React.FC<{ race: Race }> = ({ race }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<MapLibreMap | null>(null);
-  const lat = Number(race.Circuit.Location.lat) || 0;
-  const lon = Number(race.Circuit.Location.long) || 0;
-  const initialCenter = useRef<[number, number]>([lon, lat]);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const map = new MapLibreMap({
-      container: containerRef.current,
-      style: 'https://tiles.openfreemap.org/styles/fiord',
-      center: initialCenter.current,
-      zoom: 13,
-      interactive: false,
-      attributionControl: false,
-      fadeDuration: 180,
-    });
-    mapRef.current = map;
-    map.on('error', (event) => {
-      console.error('Schedule map failed to load', event.error);
-    });
-    const observer = new ResizeObserver(() => map.resize());
-    observer.observe(containerRef.current);
-    return () => {
-      observer.disconnect();
-      map.remove();
-      mapRef.current = null;
-    };
-  }, []); // The map instance stays mounted; the effect below moves it between circuits.
-
-  useEffect(() => {
-    mapRef.current?.easeTo({ center: [lon, lat], zoom: 13, duration: 650 });
-  }, [lat, lon]);
-
-  return <div ref={containerRef} className="schedule-vector-map" aria-hidden="true" />;
 };
 
 const SchedulePage: React.FC<SchedulePageProps> = ({
@@ -140,7 +98,14 @@ const SchedulePage: React.FC<SchedulePageProps> = ({
   };
 
   const moveMapRail = (direction: -1 | 1) => {
-    mapRailRef.current?.scrollBy({ left: direction * 360, behavior: 'smooth' });
+    const index = races.findIndex((race) => race.round === activeRace?.round);
+    const target = races[(index + direction + races.length) % races.length];
+    if (!target) return;
+    setActiveRound(target.round);
+    const card = mapRailRef.current?.children[(index + direction + races.length) % races.length] as HTMLElement | undefined;
+    if (card && mapRailRef.current) {
+      mapRailRef.current.scrollTo({ left: Math.max(0, card.offsetLeft - 12), behavior: 'smooth' });
+    }
   };
 
   return (
@@ -211,16 +176,6 @@ const SchedulePage: React.FC<SchedulePageProps> = ({
                 </a>
               </div>
 
-              <div key={`track-${activeRace.season}-${activeRace.round}`} className="schedule-map-track" aria-hidden="true">
-                {TRACK_PATHS[activeRace.Circuit.circuitId || ''] ? (
-                  <svg viewBox={TRACK_VIEWBOX} fill="none" preserveAspectRatio="xMidYMid meet">
-                    <path className="schedule-map-track-shadow" d={TRACK_PATHS[activeRace.Circuit.circuitId || '']} vectorEffect="non-scaling-stroke" />
-                    <path className="schedule-map-track-line" d={TRACK_PATHS[activeRace.Circuit.circuitId || '']} vectorEffect="non-scaling-stroke" />
-                  </svg>
-                ) : null}
-                <span className="schedule-map-pin"><i /></span>
-              </div>
-
               <div className="schedule-map-coordinates">
                 <span>{Math.abs(Number(activeRace.Circuit.Location.lat)).toFixed(4)}°{Number(activeRace.Circuit.Location.lat) >= 0 ? 'N' : 'S'}</span>
                 <span>{Math.abs(Number(activeRace.Circuit.Location.long)).toFixed(4)}°{Number(activeRace.Circuit.Location.long) >= 0 ? 'E' : 'W'}</span>
@@ -271,6 +226,8 @@ const SchedulePage: React.FC<SchedulePageProps> = ({
                 <a href="https://openmaptiles.org" target="_blank" rel="noopener noreferrer">OpenMapTiles</a>
                 <span>· Data from</span>
                 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>
+                <span>·</span>
+                <a href="https://github.com/bacinger/f1-circuits" target="_blank" rel="noopener noreferrer">Circuits: bacinger (ODbL)</a>
               </div>
             </div>
           </section>

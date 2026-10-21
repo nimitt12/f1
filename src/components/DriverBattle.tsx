@@ -147,51 +147,63 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
   const [comparisonLoading, setComparisonLoading] = useState(true);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [draft, setDraft] = useState<string[]>([]);
+  const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     const fetchDrivers = async () => {
       setLoading(true);
+      setError(false);
       try {
         const response = await fetchStandings('drivers');
         const data: ApiDriverRanking[] = await response.json();
+        if (!Array.isArray(data) || data.length < 2) throw new Error('Not enough drivers available');
+        data.forEach((driver) => { driver.driver_id = String(driver.driver_id); driver.season = String(driver.season); });
         setAllDrivers(data);
         if (data.length >= 2) {
           setSeason(data[0].season);
           const availableIds = new Set(data.map((driver) => driver.driver_id));
           const requestedIds = initialDriverIdsRef.current;
           setSelected(
-            requestedIds && requestedIds.every((id) => availableIds.has(id))
+            requestedIds && requestedIds[0] !== requestedIds[1] && requestedIds.every((id) => availableIds.has(id))
               ? requestedIds
               : [data[0].driver_id, data[1].driver_id]
           );
         }
       } catch (err) {
         console.error('Battle data fetch failed', err);
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
     fetchDrivers();
-  }, []);
+  }, [retry]);
 
   useEffect(() => {
     if (!season || !selected) return;
+    const controller = new AbortController();
     const fetchComparison = async () => {
       setComparisonLoading(true);
+      setError(false);
       try {
-        const response = await fetch(`${BACKEND_URL}/drivers/compare/${season}/${selected[0]}/${selected[1]}`);
+        const response = await fetch(`${BACKEND_URL}/drivers/compare/${season}/${selected[0]}/${selected[1]}`, { signal: controller.signal });
         if (!response.ok) throw new Error('Comparison fetch failed');
         const data: ComparisonResponse = await response.json();
-        setComparison(data);
+        if (!Array.isArray(data.drivers) || data.drivers.length !== 2 || !data.h2h) throw new Error('Invalid comparison response');
+        if (!controller.signal.aborted) setComparison(data);
       } catch (err) {
+        if (controller.signal.aborted) return;
+        setError(true);
         console.error('Driver comparison fetch failed', err);
         setComparison(null);
       } finally {
-        setComparisonLoading(false);
+        if (!controller.signal.aborted) setComparisonLoading(false);
       }
     };
     fetchComparison();
-  }, [season, selected]);
+    return () => controller.abort();
+  }, [season, selected, retry]);
 
   useEffect(() => {
     if (selected) onSelectionChange?.(selected);
@@ -230,6 +242,8 @@ const DriverBattle: React.FC<DriverBattleProps> = ({
       setPickerOpen(false);
     }
   };
+
+  if (error) return <section className="driver-battle-section battle-premium"><div className="battle-error" role="alert"><span>COMPARISON UNAVAILABLE</span><h2>A brief pit stop.</h2><p>We couldn’t load the driver comparison. Try connecting again.</p><button className="battle-pick-btn" onClick={() => setRetry((value) => value + 1)}>Try again <span aria-hidden="true">↻</span></button></div></section>;
 
   if (loading || comparisonLoading || !comparison) {
     return (

@@ -285,7 +285,7 @@ const DriverRow: React.FC<RowProps> = ({ line, driver, stints, car, isRace, sess
       </td>
       <td className="lt-driver">
         <span className="lt-team-bar" style={{ background: color }} />
-        <span className="lt-tla" style={{ color }}>{driver?.Tla || line.RacingNumber}</span>
+        <span className="lt-driver-identity"><span className="lt-tla" style={{ color }}>{driver?.Tla || line.RacingNumber}</span><small>{driver?.LastName || driver?.FullName || `#${driver?.RacingNumber || line.RacingNumber || '—'}`}</small></span>
         <span className="lt-flag-slot">
           {status && <span className={`lt-flag-chip lt-chip-${status.replace(' ', '').toLowerCase()}`}>{status}</span>}
         </span>
@@ -357,14 +357,14 @@ const LiveSkeleton: React.FC = () => (
           <tr>
             <th className="lt-pos">P</th>
             <th className="lt-driver-h">Driver</th>
-            <th>Int</th>
+            <th title="Interval to the car ahead">Interval</th>
             <th>Gap</th>
             <th>Tyre</th>
             <th>Sector 1</th>
             <th>Sector 2</th>
             <th>Sector 3</th>
             <th>Last Lap</th>
-            <th>Best</th>
+            <th>Best lap</th>
             <th>Pit</th>
             <th>Telemetry</th>
           </tr>
@@ -765,14 +765,14 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
                   <tr>
                     <th className="lt-pos">P</th>
                     <th className="lt-driver-h">Driver</th>
-                    <th>Int</th>
+                    <th title="Interval to the car ahead">Interval</th>
                     <th>Gap</th>
                     <th>Tyre</th>
                     <th>Sector 1</th>
                     <th>Sector 2</th>
                     <th>Sector 3</th>
                     <th>Last Lap</th>
-                    <th>Best</th>
+                    <th>Best lap</th>
                     <th>Pit</th>
                     <th>Telemetry</th>
                   </tr>

@@ -148,7 +148,7 @@ const SeasonStatisticsPage: React.FC<SeasonStatisticsPageProps> = ({
 
   return (
     <div className="season-stats-page">
-      <div className="season-stats-header">
+      <header className="season-stats-header">
         <SiteHeader
           user={user}
           setUser={setUser}
@@ -156,18 +156,17 @@ const SeasonStatisticsPage: React.FC<SeasonStatisticsPageProps> = ({
           onHomeNavigate={onHomeNavigate}
           leftSlot={<button className="rd-back-btn season-stats-back" onClick={onBack}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Dashboard</button>}
         />
-      </div>
+      </header>
 
       <main className="season-stats-main">
-        <section className="season-stats-hero">
-          <div className="season-stats-hero-copy">
+        <header className="stats-page-heading">
+          <div>
             <span className="season-stats-kicker"><i /> Pitwall data lab</span>
-            <h1>Every finish in <em>F1 history.</em></h1>
-            <p>The complete record of how drivers reached—or failed to reach—the chequered flag, from 1950 to today.</p>
+            <h1>All-time statistics</h1>
+            <p>Race finishes, retirements and outcomes across Formula 1 history.</p>
           </div>
-          <div className="season-stats-era"><span>Archive coverage</span><strong>1950 — TODAY</strong><small>All World Championship races</small></div>
-          <div className="season-stats-hero-year" aria-hidden="true">ALL TIME</div>
-        </section>
+          <span className="stats-coverage">1950 — TODAY<small>World Championship archive</small></span>
+        </header>
 
         {error && (
           <section className="season-stats-error" role="status">
