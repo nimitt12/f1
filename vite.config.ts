@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         // Per-route HTML entry points so /live and /privacy get their own
-        // titles, descriptions and canonicals (served via vercel.ts rewrites).
+        // titles, descriptions and canonicals (served via config/deployment-routes.json rewrites).
         input: {
           main: resolve(__dirname, 'index.html'),
           live: resolve(__dirname, 'live.html'),

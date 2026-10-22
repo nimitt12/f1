@@ -1,17 +1,5 @@
-// Evaluated by Vercel at deployment time; the upstream stays out of browser code.
-const backendUrl = process.env.VITE_BACKEND_URL;
-if (!backendUrl) throw new Error('VITE_BACKEND_URL is required');
-const upstream = new URL(backendUrl);
-if (upstream.protocol !== 'https:' || upstream.username || upstream.password || upstream.search || upstream.hash) {
-  throw new Error('VITE_BACKEND_URL must be an HTTPS URL without credentials, query or fragment');
-}
-
-export const config = {
+{
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": `${upstream.href.replace(/\/$/, '')}/:path*`
-    },
     {
       "source": "/f1-news",
       "destination": "https://www.formula1.com/en/latest/all.xml"
@@ -160,4 +148,4 @@ export const config = {
       ]
     }
   ]
-};
+}

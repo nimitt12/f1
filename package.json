@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:security": "node --test tests/security.test.mjs",
-    "audit:security": "npm audit --audit-level=low"
+    "audit:security": "npm audit --audit-level=low",
+    "build:vercel": "npm run build && node scripts/generate-vercel-output.mjs"
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
@@ -24,6 +25,7 @@
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vercel/routing-utils": "^6.6.0",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -32,5 +34,10 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.9"
+  },
+  "overrides": {
+    "@vercel/routing-utils": {
+      "path-to-regexp": "6.3.0"
+    }
   }
 }

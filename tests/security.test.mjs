@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { deploymentConfig as createDeploymentConfig, buildOutputConfig } from '../scripts/generate-vercel-output.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -171,10 +172,7 @@ test('article proxy is scoped to news paths and upstream documents are sandboxed
 });
 
 function deploymentConfig() {
-  const source = readFileSync(new URL('../vercel.ts', import.meta.url), 'utf8');
-  const context = { exports: {}, URL, process: { env: { VITE_BACKEND_URL: 'https://api.example.com/' } } };
-  vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, context);
-  return context.exports.config;
+  return createDeploymentConfig('https://api.example.com/');
 }
 
 test('same-origin API authentication preserves tokens and confines them to the API path', async () => {
@@ -200,4 +198,24 @@ test('API rewrite precedes the SPA fallback and strips the public prefix', () =>
   const config = deploymentConfig();
   assert.equal(config.rewrites[0].source, '/api/:path*');
   assert.equal(config.rewrites[0].destination, 'https://api.example.com/:path*');
+});
+
+test('deployment output serializes concrete API routes and retains filesystem priority', () => {
+  const config = JSON.parse(JSON.stringify(buildOutputConfig('https://api.example.com/base/')));
+  assert.equal(config.version, 3);
+  const api = config.routes.find(route => route.dest?.startsWith('https://api.example.com'));
+  assert.ok(api);
+  assert.equal('/api/live/stream'.replace(new RegExp(api.src), api.dest), 'https://api.example.com/base/live/stream');
+  assert.equal('/api/drivers/rankings'.replace(new RegExp(api.src), api.dest), 'https://api.example.com/base/drivers/rankings');
+  assert.ok(!new RegExp(api.src).test('/api-other'));
+  assert.ok(config.routes.findIndex(route => route.handle === 'filesystem') < config.routes.indexOf(api));
+  assert.ok(config.routes.some(route => route.headers?.['Content-Security-Policy']));
+  assert.ok(config.routes.some(route => route.dest === '/'));
+  assert.ok(config.routes.some(route => route.dest === '/live.html'));
+  for (const value of [undefined, '/api', 'http://api.example.com', 'https://user:pass@api.example.com', 'https://api.example.com?x=1']) {
+    assert.throws(() => buildOutputConfig(value));
+  }
+  const rootConfig = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+  assert.equal(rootConfig.buildCommand, 'npm run build:vercel');
+  assert.equal(rootConfig.framework, null);
 });
