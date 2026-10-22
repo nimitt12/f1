@@ -1,45 +1,40 @@
 import React from 'react';
+import { flushSync } from 'react-dom';
 import LogoMark from './LogoMark';
 import { COMMUNITY_URL } from '../lib/links';
 
 const Footer: React.FC = () => {
-  // SPA-navigate to the privacy policy: push the URL and fire a synthetic
-  // popstate so App's existing history listener swaps the view, regardless of
-  // which page (dashboard / race details) this footer is rendered from.
-  const openPrivacy = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const navigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
-    window.history.pushState({}, '', '/privacy');
-    window.dispatchEvent(new PopStateEvent('popstate'));
-    window.scrollTo(0, 0);
-  };
-
-  // Same SPA-navigation pattern as openPrivacy, for the account deletion page.
-  const openAccountDeletion = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    window.history.pushState({}, '', '/account-deletion');
-    window.dispatchEvent(new PopStateEvent('popstate'));
-    window.scrollTo(0, 0);
-  };
-
-  const openSchedule = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    window.history.pushState({}, '', '/schedule');
-    window.dispatchEvent(new PopStateEvent('popstate'));
-    window.scrollTo(0, 0);
+    window.history.pushState({}, '', e.currentTarget.getAttribute('href')!);
+    flushSync(() => window.dispatchEvent(new PopStateEvent('popstate')));
+    const section = window.location.hash.slice(1);
+    if (section) document.getElementById(section)?.scrollIntoView();
+    else window.scrollTo(0, 0);
   };
 
   return (
     <div className="footer-wrap">
       <footer className="footer">
+        <div className="footer-finale">
+          <div>
+            <span className="f-eyebrow"><span className="f-grid-mark" aria-hidden="true" /> THE RACE NEVER ENDS</span>
+            <h2>Every second.<br /><span>Closer to the race.</span></h2>
+          </div>
+          <div className="f-finale-action">
+            <p>Your seat on the pit wall. Every session,<br />every battle, every defining moment.</p>
+            <a href="/live" onClick={navigate} className="f-live-link">Explore live timing <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
         <div className="footer-main">
           <div className="f-col about">
-            <div className="f-logo">
+            <a href="/" onClick={navigate} className="f-logo" aria-label="My Pitwall home">
               <LogoMark className="f-logo-mark" aria-hidden="true" />
               <span className="f-logo-text">MY <span>PITWALL</span></span>
-            </div>
+            </a>
             <p className="f-desc">
-              The ultimate high-performance telemetry dashboard for Formula 1 enthusiasts.
-              Real-time data, deep analytics, and the pulse of the paddock, delivered with precision.
+              Built for those who feel every lap. Race timing, deep analytics, and stories from the paddock, all in one place.
             </p>
             <div className="f-socials">
               <a href="https://x.com/mypitwallin" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
@@ -65,42 +60,39 @@ const Footer: React.FC = () => {
             </div>
           </div>
           
-          <div className="f-col links">
-            <h4 className="f-h">NAVIGATE</h4>
+          <nav className="f-col links" aria-label="Footer race navigation">
+            <h3 className="f-h"><span>01</span> THE GRID</h3>
             <ul>
-              <li><a href="#drivers">Drivers</a></li>
-              <li><a href="#constructors">Constructors</a></li>
-              <li><a href="/schedule" onClick={openSchedule}>Schedule</a></li>
-              <li><a href="#paddock">Paddock Intel</a></li>
-              <li><a href={COMMUNITY_URL} target="_blank" rel="noopener noreferrer" aria-label="Feedback & Community (opens in a new tab)">Feedback & Community <span aria-hidden="true">↗</span></a></li>
-              <li><a href="/privacy" onClick={openPrivacy}>Privacy Policy</a></li>
-              <li><a href="/account-deletion" onClick={openAccountDeletion}>Delete My Account</a></li>
+              <li><a href="/standings" onClick={navigate}>Driver standings <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/constructor-standings" onClick={navigate}>Constructors <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/schedule" onClick={navigate}>Race calendar <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/results" onClick={navigate}>Race results <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/statistics" onClick={navigate}>Season statistics <span aria-hidden="true">↗</span></a></li>
             </ul>
-          </div>
+          </nav>
 
-          <div className="f-col data">
-            <h4 className="f-h">ENGINE ROOM</h4>
-            <div className="data-source">
-              <span className="source-label">Source</span>
-              <span className="source-val">Official FIA Feed</span>
-            </div>
-            <div className="data-source">
-              <span className="source-label">API</span>
-              <span className="source-val">PitWall Internal</span>
-            </div>
-            <div className="data-source">
-              <span className="source-label">Refresh</span>
-              <span className="source-val">Live Sync 2026</span>
-            </div>
-          </div>
+          <nav className="f-col links" aria-label="Footer explore navigation">
+            <h3 className="f-h"><span>02</span> GO DEEPER</h3>
+            <ul>
+              <li><a href="/live" onClick={navigate}>Live timing <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/clash" onClick={navigate}>Driver comparison <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/#paddock" onClick={navigate}>Paddock intel <span aria-hidden="true">↗</span></a></li>
+              <li><a href="mailto:mypitwall@gmail.com">Get in touch <span aria-hidden="true">↗</span></a></li>
+            </ul>
+          </nav>
 
-          <div className="f-col legal">
-            <h4 className="f-h">PIT STOP</h4>
-            <p className="f-legal-text">
-              Not affiliated with the Formula One group of companies.
-              F1, FORMULA ONE, and related marks are trademarks of Formula One Licensing BV.
-            </p>
+          <div className="f-community">
+            <span className="f-eyebrow">PADDOCK PASS / ALL ACCESS</span>
+            <span className="f-community-icon" aria-hidden="true">↗</span>
+            <h3>Better with<br />the whole grid.</h3>
+            <p>Share your takes. Shape what’s next. There’s a place for you in our paddock.</p>
+            <a href={COMMUNITY_URL} target="_blank" rel="noopener noreferrer">Join the community <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a>
           </div>
+        </div>
+
+        <div className="f-fineprint">
+          <p>Independent by design. Driven by passion.<span>Not affiliated with the Formula One group of companies. F1, FORMULA ONE, and related marks are trademarks of Formula One Licensing BV.</span></p>
+          <div><a href="/privacy" onClick={navigate}>Privacy policy</a><a href="/account-deletion" onClick={navigate}>Delete my account</a></div>
         </div>
 
         <div className="footer-wordmark" aria-hidden="true">
@@ -112,11 +104,9 @@ const Footer: React.FC = () => {
             <span className="f-dot"></span>Lights out and away we go<span className="f-dot"></span>
           </div>
           <div className="f-copyright">
-            © 2026 MY PITWALL <em>•</em> OPTIMIZED FOR PERFORMANCE
+            © {new Date().getFullYear()} MY PITWALL <em> / </em> MADE FOR THE RACE
           </div>
-          <div className="f-brand">
-            My <em>PitWall</em>
-          </div>
+          <button className="f-back-top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}>Back to top <span aria-hidden="true">↑</span></button>
         </div>
       </footer>
     </div>

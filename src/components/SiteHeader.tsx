@@ -7,6 +7,19 @@ import LogoMark from './LogoMark';
 import { COMMUNITY_URL } from '../lib/links';
 import { raceSlug, type Race } from '../data/races';
 
+const menuIconPaths = [
+  'M7 3v4M17 3v4M4 10h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM8 14h2M14 14h2M8 17h2',
+  'M8 3h8v5a4 4 0 0 1-8 0V3ZM8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4M12 12v6M8 21v-3h8v3',
+  'M3 20h18M5 20v-8h4v8M10 20V4h4v16M15 20V8h4v12',
+  'M4 4v16h16M7 15l4-5 4 2 5-7M16 5h4v4',
+  'M5 4h14v16H5V4ZM8 8h8M8 12h3M8 16h8M14 11h2v2h-2z',
+  'M4 4h16v12H9l-5 4V4ZM8 8h8M8 12h5',
+];
+
+function MenuIcon({ index }: { index: number }) {
+  return <span className="menu-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d={menuIconPaths[index]} /></svg></span>;
+}
+
 interface SiteHeaderProps {
   user: AuthUser | null;
   setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
@@ -291,15 +304,15 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
             <div className="menu-header">
               <span className="menu-kicker">
                 <LogoMark className="menu-kicker-mark" aria-hidden="true" />
-                <span><b>MyPitWall</b> Navigation</span>
+                <span><b>MyPitWall</b> The inside line</span>
               </span>
               <button className="close-menu-btn" onClick={() => setIsMenuOpen(false)} aria-label="Close menu">×</button>
             </div>
 
             <nav className="menu-nav-links" aria-label="Primary navigation">
-              <span className="menu-nav-label">Race control</span>
+              <span className="menu-nav-label"><span>Explore the paddock</span><span>01 — 06</span></span>
               <a href="/schedule" onClick={openSchedule} style={{ '--menu-i': 0 } as React.CSSProperties}>
-                <span className="menu-link-index">01</span>
+                <MenuIcon index={0} />
                 <span className="menu-link-body">
                   <span className="menu-link-label">Schedule</span>
                   <span className="menu-link-desc">Every race, sprint and session</span>
@@ -307,7 +320,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                 <span className="menu-link-arrow" aria-hidden="true">→</span>
               </a>
               <a href="/standings" onClick={openStandings} style={{ '--menu-i': 1 } as React.CSSProperties}>
-                <span className="menu-link-index">02</span>
+                <MenuIcon index={1} />
                 <span className="menu-link-body">
                   <span className="menu-link-label">Driver Standings</span>
                   <span className="menu-link-desc">Points and ranking evolution</span>
@@ -315,7 +328,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                 <span className="menu-link-arrow" aria-hidden="true">→</span>
               </a>
               <a href="/constructor-standings" onClick={openConstructorStandings} style={{ '--menu-i': 2 } as React.CSSProperties}>
-                <span className="menu-link-index">03</span>
+                <MenuIcon index={2} />
                 <span className="menu-link-body">
                   <span className="menu-link-label">Constructor Standings</span>
                   <span className="menu-link-desc">Team championship analytics</span>
@@ -323,7 +336,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                 <span className="menu-link-arrow" aria-hidden="true">→</span>
               </a>
               <a href="/statistics" onClick={openStatistics} style={{ '--menu-i': 3 } as React.CSSProperties}>
-                <span className="menu-link-index">04</span>
+                <MenuIcon index={3} />
                 <span className="menu-link-body">
                   <span className="menu-link-label">All-Time Statistics</span>
                   <span className="menu-link-desc">Every race outcome from 1950 to today</span>
@@ -339,7 +352,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                   onClick={(e) => handleSectionLink(e, item.hash)}
                   style={{ '--menu-i': i + 4 } as React.CSSProperties}
                 >
-                  <span className="menu-link-index">{String(i + 5).padStart(2, '0')}</span>
+                  <MenuIcon index={4} />
                   <span className="menu-link-body">
                     <span className="menu-link-label">{item.label}</span>
                     <span className="menu-link-desc">{item.desc}</span>
@@ -355,10 +368,10 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
                 style={{ '--menu-i': 5 } as React.CSSProperties}
                 aria-label="Feedback & Community (opens in a new tab)"
               >
-                <span className="menu-link-index">06</span>
+                <MenuIcon index={5} />
                 <span className="menu-link-body">
                   <span className="menu-link-label">Feedback & Community</span>
-                  <span className="menu-link-desc">Share ideas, report bugs and join the conversation</span>
+                  <span className="menu-link-desc">Ideas, feedback & the F1 conversation</span>
                 </span>
                 <span className="menu-link-arrow" aria-hidden="true">↗</span>
               </a>
@@ -367,6 +380,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
             <div className="menu-divider"></div>
 
             <div className="menu-user-section">
+              {user && <div className="menu-account-heading"><span className="menu-account-monogram" aria-hidden="true">{(user.name || 'P').charAt(0)}</span><span><strong>{user.name || 'Your account'}</strong><small>Your personal pitwall</small></span><span className="menu-account-badge">Member</span></div>}
               {user ? (
                 <>
                   {user.is_admin && (
