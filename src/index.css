@@ -4817,181 +4817,212 @@ body {
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
 }
 
-/* Theme Switcher Premium UI */
-.theme-switcher {
+/* Livery studio — brushed metal, team colour and circuit-inspired striping. */
+/* Full-screen broadcast sting, rendered at the document root. */
+.livery-reveal {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  background: rgba(10, 10, 12, 0.72);
-  backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 40px;
-  padding: 6px 18px 6px 6px;
-  box-shadow:
-    0 12px 34px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition: border-color 0.35s var(--ease), box-shadow 0.35s var(--ease), transform 0.35s var(--ease);
-  cursor: pointer;
-  user-select: none;
-}
-
-.theme-switcher:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--racing) 60%, rgba(255, 255, 255, 0.2));
-  box-shadow:
-    0 18px 42px rgba(0, 0, 0, 0.55),
-    0 0 0 1px color-mix(in srgb, var(--racing) 30%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* Live active-theme colour disc on the trigger */
-.ts-trigger-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    0 0 16px var(--ts-active, var(--racing));
-  flex-shrink: 0;
-  transition: transform 0.45s var(--ease);
-}
-.theme-switcher:hover .ts-trigger-swatch {
-  transform: rotate(20deg) scale(1.06);
-}
-.theme-switcher.open .ts-trigger-swatch {
-  transform: rotate(135deg) scale(1.06);
-}
-
-.ts-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
+  inset: 0;
+  z-index: 10000;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
   color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
 }
-
-.ts-menu {
+.livery-reveal-panel {
   position: absolute;
-  bottom: calc(100% + 14px);
-  right: 0;
-  width: 268px;
-  background: linear-gradient(180deg, rgba(20, 20, 24, 0.96) 0%, rgba(8, 8, 10, 0.97) 100%);
-  backdrop-filter: blur(24px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  box-shadow:
-    0 30px 70px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  padding: 14px;
-  transform-origin: bottom right;
-  animation: tsMenuIn 0.34s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: default;
+  inset: 0 calc(-35% - 20vh);
+  will-change: transform;
+  animation: liveryPanelSweep 1400ms cubic-bezier(.76, 0, .24, 1) both;
 }
-
-@keyframes tsMenuIn {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.livery-reveal-panel-back { background: var(--reveal-paint); }
+.livery-reveal-panel-front {
+  background: repeating-linear-gradient(115deg, transparent 0 90px, #ffffff04 90px 91px),
+    radial-gradient(ellipse at 80% 30%, color-mix(in srgb, var(--reveal-colour) 35%, transparent), transparent 65%), #0c0c12;
+  border-right: 18px solid var(--reveal-colour);
+  animation-name: liveryPanelFront;
 }
-
-.ts-menu-head {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.42);
-  padding: 2px 4px 13px;
+.livery-reveal-grain {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, #ffffff03 3px 4px);
+  animation: liveryTitleReveal 1400ms ease both;
 }
-
-.ts-swatch-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.ts-swatch {
-  --sw: var(--racing);
-  appearance: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  padding: 9px;
+.livery-reveal-title {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  cursor: pointer;
-  text-align: left;
-  transition: transform 0.25s var(--ease), background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  padding: 24px;
+  text-align: center;
+  animation: liveryTitleReveal 1400ms ease both;
 }
-
+.livery-reveal-kicker, .livery-reveal-caption { font-family: var(--font-mono); font-size: clamp(9px, 1.2vw, 12px); letter-spacing: .26em; }
+.livery-reveal-kicker { color: #c2becb; }
+.livery-reveal-title strong {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 9vw, 120px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.04em;
+  text-transform: uppercase;
+  font-style: italic;
+  text-shadow: 0 4px 35px #0005;
+}
+.livery-reveal-caption { display: flex; align-items: center; gap: 12px; color: #dedbe6; letter-spacing: .13em; }
+.livery-reveal-caption i { width: 28px; height: 3px; background: var(--reveal-paint); }
+.livery-reveal-number {
+  position: absolute;
+  right: 4vw;
+  bottom: -5vw;
+  font-family: var(--font-display);
+  font-size: 36vw;
+  line-height: 1;
+  font-style: italic;
+  color: #ffffff05;
+  -webkit-text-stroke: 1px #ffffff12;
+  animation: liveryTitleReveal 1400ms ease both;
+}
+@keyframes liveryPanelSweep {
+  0% { transform: translateX(-110%) skewX(-16deg); }
+  27%, 65% { transform: translateX(0) skewX(-16deg); }
+  100% { transform: translateX(110%) skewX(-16deg); }
+}
+@keyframes liveryPanelFront {
+  0%, 5% { transform: translateX(-110%) skewX(-16deg); }
+  30%, 62% { transform: translateX(0) skewX(-16deg); }
+  96%, 100% { transform: translateX(110%) skewX(-16deg); }
+}
+@keyframes liveryTitleReveal {
+  0%, 25% { opacity: 0; transform: translateY(14px); }
+  38%, 65% { opacity: 1; transform: translateY(0); }
+  82%, 100% { opacity: 0; transform: translateY(-10px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .livery-reveal { display: none; }
+  .livery-reveal * { animation: none; }
+}
+.theme-switcher {
+  position: fixed;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  right: 24px;
+  z-index: 2000;
+  color: #f4f3f7;
+}
+.ts-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 15px 8px 8px;
+  border: 1px solid #ffffff26;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #29292fe8, #101014f5 65%);
+  backdrop-filter: blur(20px);
+  color: inherit;
+  box-shadow: 0 8px 28px #0008, inset 0 1px #ffffff12;
+  cursor: pointer;
+  transition: border-color .2s, transform .2s;
+}
+.ts-trigger:hover, .open .ts-trigger { border-color: color-mix(in srgb, var(--ts-active) 60%, #ffffff20); }
+.ts-trigger:hover { transform: translateY(-2px); }
+.ts-trigger-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #ffffff66, transparent 45%, #0006), var(--ts-chip);
+  border: 1px solid #ffffff40;
+  box-shadow: inset 0 1px 3px #ffffff40, 0 3px 8px #0006;
+  position: relative;
+  overflow: hidden;
+}
+.ts-trigger-swatch::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(120deg, transparent 0 9px, #10101866 9px 12px); }
+.ts-trigger-copy { display: grid; gap: 3px; text-align: left; }
+.ts-eyebrow { font-family: var(--font-mono); font-size: 8px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #a5a3af; }
+.ts-label { font-size: 12px; font-weight: 650; letter-spacing: .02em; }
+.ts-chevron { margin-left: 9px; color: #b5b2c0; transition: transform .25s; }
+.open .ts-chevron { transform: rotate(180deg); }
+.ts-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: 356px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 112px - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #55515f transparent;
+  padding: 22px;
+  border: 1px solid #ffffff24;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--ts-active) 12%, transparent), transparent 48%), linear-gradient(145deg, #222127fa, #101014fc 65%);
+  backdrop-filter: blur(28px);
+  box-shadow: 0 24px 80px #000a, inset 0 1px #ffffff14;
+  transform-origin: bottom right;
+  animation: tsMenuIn .25s cubic-bezier(.16, 1, .3, 1);
+}
+@keyframes tsMenuIn { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+.ts-menu-head { display: flex; justify-content: space-between; align-items: center; }
+.ts-menu-head h2 { font-family: var(--font-display); font-size: 27px; line-height: 1.2; font-weight: 500; letter-spacing: -.04em; margin: 7px 0 0; color: #f5f3fa; }
+.ts-menu-head h2 span { color: var(--ts-active); }
+.ts-studio-mark { font-size: 28px; font-style: italic; font-weight: 900; letter-spacing: -5px; color: var(--ts-active); padding-right: 5px; }
+.ts-intro { color: #a5a3af; font-size: 11px; margin: 9px 0 20px; }
+.ts-swatch-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ts-swatch {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  appearance: none;
+  min-width: 0;
+  border: 1px solid #ffffff12;
+  border-radius: 11px;
+  background: linear-gradient(115deg, #ffffff06, #ffffff02);
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, transform .2s;
+}
 .ts-swatch-chip {
   position: relative;
-  height: 30px;
-  border-radius: 8px;
-  background: var(--chip, var(--sw));
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
-    inset 0 -7px 14px rgba(0, 0, 0, 0.28);
-}
-
-.ts-swatch-name {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: rgba(255, 255, 255, 0.62);
-  white-space: nowrap;
+  display: block;
+  height: 35px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  background: linear-gradient(110deg, #05050922, #050509aa), var(--chip);
+  border-bottom: 1px solid #ffffff0d;
 }
-
-.ts-swatch:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: color-mix(in srgb, var(--sw) 45%, transparent);
-}
-
-.ts-swatch.active {
-  background: color-mix(in srgb, var(--sw) 14%, transparent);
-  border-color: var(--sw);
-  box-shadow:
-    0 0 0 1px var(--sw),
-    0 8px 24px color-mix(in srgb, var(--sw) 35%, transparent);
-}
-.ts-swatch.active .ts-swatch-name {
-  color: #fff;
-  font-weight: 800;
-}
-
-/* Always-legible check badge on the active swatch (works on light + dark chips) */
-.ts-swatch.active .ts-swatch-chip::after {
-  content: "✓";
+.ts-swatch-chip::before {
+  content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 900;
-  display: grid;
-  place-items: center;
-  backdrop-filter: blur(2px);
+  inset: 0;
+  background: linear-gradient(120deg, transparent 43%, #ffffff50 43% 44%, transparent 44% 52%, #08080d80 52% 58%, transparent 58% 61%, #08080d80 61% 65%, transparent 65%), linear-gradient(180deg, #ffffff18, transparent);
+}
+.ts-tile-number { position: absolute; right: 9px; top: 3px; font-family: var(--font-display); font-size: 24px; font-style: italic; line-height: 1.2; color: #ffffff80; }
+.ts-swatch-copy { display: grid; gap: 3px; padding: 9px 28px 10px 10px; }
+.ts-swatch-name { font-size: 11px; font-weight: 650; color: #e4e1eb; white-space: nowrap; }
+.ts-swatch-detail { font-family: var(--font-mono); font-size: 7px; letter-spacing: .1em; text-transform: uppercase; color: #97939f; }
+.ts-selection { position: absolute; right: 9px; bottom: 17px; width: 12px; height: 12px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #ffffff30; font-size: 8px; line-height: 1; color: #fff; }
+.ts-swatch:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--sw) 65%, #ffffff20); background: color-mix(in srgb, var(--sw) 10%, #151519); }
+.ts-swatch.active { border-color: color-mix(in srgb, var(--sw) 75%, white); background: color-mix(in srgb, var(--sw) 12%, #151519); box-shadow: inset 0 0 0 1px #ffffff08; }
+.ts-swatch.active .ts-selection { background: #f2edf9; color: #17131f; border-color: #f2edf9; }
+.ts-signature { grid-column: 1 / -1; min-height: 68px; display: flex; align-items: center; }
+.ts-signature .ts-swatch-chip { width: 96px; height: 68px; flex-shrink: 0; border: 0; mask-image: linear-gradient(90deg, #000 65%, transparent); }
+.ts-signature .ts-tile-number { left: 12px; top: 19px; font-size: 25px; color: #fff; }
+.ts-signature .ts-swatch-copy { padding-left: 8px; }
+.ts-signature .ts-swatch-name { font-size: 13px; }
+.ts-signature .ts-selection { bottom: calc(50% - 6px); right: 13px; }
+.ts-menu-footer { display: flex; align-items: center; gap: 6px; margin-top: 17px; padding-top: 13px; border-top: 1px solid #ffffff12; color: #aaa6b3; font-size: 9px; }
+.ts-status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ts-active); }
+.ts-menu-footer > span:last-child { margin-left: auto; color: #777381; font-style: italic; }
+.ts-trigger:focus-visible, .ts-swatch:focus-visible { outline: 2px solid #e3d9ff; outline-offset: 3px; }
+@media (max-width: 480px) {
+  .theme-switcher { right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); }
+  .ts-menu { padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ts-menu { animation: none; }
+  .ts-trigger, .ts-swatch, .ts-chevron { transition: none; }
 }
 .season-progress-container {
   max-width: var(--container-width);
@@ -7008,433 +7039,117 @@ body {
 
 /* --- BOOT LOADER SYSTEM --- */
 .boot-loader {
+  --boot-accent: color-mix(in srgb, var(--racing) 65%, #dcd7e5);
   position: fixed;
   inset: 0;
   z-index: 999999;
-  background:
-    radial-gradient(90% 70% at 50% 30%, color-mix(in srgb, var(--racing) 16%, transparent) 0%, transparent 60%),
-    radial-gradient(120% 90% at 50% 38%, #16131f 0%, #0a0810 45%, #050406 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  transition:
-    opacity 0.65s cubic-bezier(0.7, 0, 0.84, 0),
-    visibility 0.65s ease;
-}
-
-.boot-loader.fade-out {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-/* Clean "launch forward" exit once the lights are out */
-.boot-loader.fade-out .boot-content {
-  animation: bootLaunch 0.65s cubic-bezier(0.6, 0, 0.2, 1) forwards;
-}
-
-@keyframes bootLaunch {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-10px) scale(1.14);
-    filter: blur(8px);
-  }
-}
-
-/* Ambient layers ease away for a clean clear-out */
-.boot-loader.fade-out .boot-aura,
-.boot-loader.fade-out .boot-grid,
-.boot-loader.fade-out .boot-vignette {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-/* Ambient color blooms drifting behind the content */
-.boot-aura {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.55;
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-.boot-aura-a {
-  width: 60vmax;
-  height: 60vmax;
-  top: -20vmax;
-  left: 50%;
-  background: radial-gradient(circle, var(--racing) 0%, transparent 68%);
-  transform: translateX(-60%);
-  animation: bootAuraA 9s ease-in-out infinite alternate;
-}
-
-.boot-aura-b {
-  width: 50vmax;
-  height: 50vmax;
-  bottom: -18vmax;
-  left: 50%;
-  background: radial-gradient(circle, var(--racing-hot) 0%, transparent 68%);
-  opacity: 0.4;
-  transform: translateX(-40%);
-  animation: bootAuraB 11s ease-in-out infinite alternate;
-}
-
-@keyframes bootAuraA {
-  from { transform: translateX(-62%) translateY(0) scale(1); }
-  to { transform: translateX(-52%) translateY(4vmax) scale(1.12); }
-}
-
-@keyframes bootAuraB {
-  from { transform: translateX(-44%) translateY(0) scale(1.05); }
-  to { transform: translateX(-34%) translateY(-3vmax) scale(0.95); }
-}
-
-/* Subtle perspective grid for that telemetry feel */
-.boot-grid {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 54px 54px;
-  mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 72%);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 72%);
-  opacity: 0.6;
-}
-
-.boot-vignette {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.75) 100%);
-}
-
-/* Full-screen flash when the lights go out */
-.boot-flash {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.9) 0%, color-mix(in srgb, var(--racing) 38%, transparent) 30%, transparent 60%);
-}
-
-.boot-loader.go .boot-flash {
-  animation: bootFlash 0.7s ease-out forwards;
-}
-
-@keyframes bootFlash {
-  0% { opacity: 0; }
-  18% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.boot-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  animation: bootContentIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes bootContentIn {
-  from { opacity: 0; transform: translateY(14px) scale(0.985); filter: blur(6px); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
-
-/* Logo medallion: glowing halo + twin counter-rotating theme rings */
-.boot-logo-wrap {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 26px;
   display: grid;
   place-items: center;
+  overflow: hidden;
+  color: #eeedf0;
+  background: radial-gradient(ellipse at 50% 40%, #19171f 0%, #0c0c10 45%, #08090b 85%);
+  transition: opacity 0.65s ease, visibility 0.65s;
 }
-
-.boot-logo-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 18px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--racing) 30%, transparent) 0%, transparent 70%);
-  filter: blur(6px);
-  animation: bootHaloPulse 2.4s ease-in-out infinite;
-}
-
-.boot-logo-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    color-mix(in srgb, var(--racing) 85%, transparent) 18%,
-    color-mix(in srgb, var(--racing-hot) 75%, transparent) 32%,
-    transparent 52%,
-    transparent 100%
-  );
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
-  animation: bootRingSpin 5s linear infinite;
-}
-
-.boot-logo-ring-2 {
-  inset: 13px;
-  background: conic-gradient(
-    from 180deg,
-    transparent 0%,
-    color-mix(in srgb, var(--racing-hot) 70%, transparent) 14%,
-    transparent 40%,
-    transparent 100%
-  );
-  animation: bootRingSpin 7s linear infinite reverse;
-  opacity: 0.7;
-}
-
-@keyframes bootRingSpin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes bootHaloPulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
-}
-
-.boot-logo {
-  position: relative;
-  z-index: 1;
-  width: 88px;
-  height: 88px;
-  display: block;
-  color: var(--racing);
-  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--racing) 55%, transparent));
-  animation: bootLogoPulse 2.4s ease-in-out infinite;
-}
-
-@keyframes bootLogoPulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 28px color-mix(in srgb, var(--racing) 45%, transparent)); }
-  50% { transform: scale(1.04); filter: drop-shadow(0 0 40px color-mix(in srgb, var(--racing) 70%, transparent)); }
-}
-
-.boot-title {
-  position: relative;
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  font-family: var(--font-alt);
-  font-size: 72px;
-  line-height: 1;
-  color: #fff;
-  margin-bottom: 48px;
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  text-shadow: 0 0 38px rgba(255, 255, 255, 0.18);
-}
-
-.boot-title .boot-my {
-  margin-right: 0.18em;
-}
-
-.boot-title .boot-word {
-  display: inline-block;
-}
-
-.boot-title .boot-pit {
-  font-style: italic;
-  font-weight: 800;
-  background: linear-gradient(120deg, var(--racing-hot) 0%, var(--racing) 55%, var(--racing-deep) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 26px color-mix(in srgb, var(--racing) 55%, transparent));
-}
-
-.boot-title .dot {
-  color: var(--racing);
-  filter: drop-shadow(0 0 16px var(--racing));
-}
-
-/* Sheen sweep across the wordmark */
-.boot-title::after {
+.boot-loader::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.7) 50%, transparent 62%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  mix-blend-mode: screen;
-  background-size: 250% 100%;
-  animation: bootSheen 3.4s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0.12;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, #ffffff09 3px 4px);
+}
+.boot-frame {
+  position: absolute;
+  inset: 26px;
+  border: 1px solid #ffffff0b;
   pointer-events: none;
 }
-
-@keyframes bootSheen {
-  0% { background-position: 180% 0; }
-  55%, 100% { background-position: -80% 0; }
+.boot-frame::before, .boot-frame::after {
+  content: '+';
+  position: absolute;
+  color: #727079;
+  font: 16px var(--font-mono);
+  background: #0b0b0e;
+  padding: 0 4px;
 }
-
-.starting-lights {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 34px;
-}
-
-/* The gantry rail holding the five light pods */
-.lights-gantry {
-  display: flex;
-  gap: 14px;
-  padding: 14px 18px;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #1a1a1d 0%, #0c0c0e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -8px 18px rgba(0, 0, 0, 0.7);
-}
-
-.light-pod {
-  position: relative;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, #1c1c1f 0%, #050505 75%);
-  box-shadow:
-    inset 0 2px 8px rgba(0, 0, 0, 0.9),
-    inset 0 -1px 2px rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.boot-frame::before { top: -10px; left: -9px; }
+.boot-frame::after { bottom: -10px; right: -9px; }
+.boot-masthead, .boot-footer {
+  position: absolute;
+  left: 54px;
+  right: 54px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  font: 9px var(--font-mono);
+  letter-spacing: 0.18em;
+  color: #92909c;
 }
-
-/* The little hood/visor above each light */
-.light-hood {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 38px;
-  height: 12px;
-  border-radius: 38px 38px 6px 6px;
-  background: linear-gradient(180deg, #2a2a2e 0%, #131315 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+.boot-masthead { top: 48px; }
+.boot-brand { display: flex; align-items: center; gap: 10px; color: #d2d0d8; font-weight: 600; }
+.boot-brand svg { width: 25px; height: 25px; color: var(--boot-accent); }
+.boot-footer { bottom: 48px; font-size: 8px; }
+.boot-footer-mark { color: var(--boot-accent); font-size: 16px; letter-spacing: -0.15em; }
+.boot-content { position: relative; width: min(560px, 100% - 48px); text-align: center; animation: bootReveal 0.65s ease both; }
+.boot-instrument { position: relative; width: clamp(170px, 25vh, 250px); aspect-ratio: 1; margin: 0 auto 30px; display: grid; place-items: center; }
+.boot-dial { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.boot-dial-track { stroke: #ffffff15; stroke-width: 1; }
+.boot-dial-ticks { stroke: #9e98ac; stroke-width: 4; stroke-dasharray: 1 11; opacity: 0.35; }
+.boot-dial-inner { stroke: #ffffff09; stroke-width: 1; }
+.boot-dial-cross { stroke: #a29aaa; stroke-width: 1; }
+.boot-dial-sweep { stroke: var(--boot-accent); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transform: rotate(-90deg); transform-origin: center; animation: bootDialFill 1.85s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; }
+.boot-logo { width: 38%; height: 38%; color: var(--boot-accent); }
+.boot-dial-label, .boot-dial-caption, .boot-instrument-index { position: absolute; font: 8px var(--font-mono); letter-spacing: 0.22em; color: #8e889a; }
+.boot-dial-label { top: 24%; }
+.boot-dial-caption { bottom: 24%; font-size: 6px; }
+.boot-instrument-index { right: -48px; top: 50%; font-size: 7px; writing-mode: vertical-rl; transform: translateY(-50%); }
+.boot-eyebrow { font: 8px var(--font-mono); letter-spacing: 0.32em; color: var(--boot-accent); margin-bottom: 18px; }
+.boot-title { margin: 0; font-family: var(--font-alt); font-size: clamp(38px, 6.2vw, 70px); line-height: 1.05; letter-spacing: -0.065em; font-weight: 600; }
+.boot-my { font-weight: 300; color: #b6b2c0; }
+.boot-pit { font-style: italic; }
+.boot-dot { color: var(--boot-accent); }
+.boot-subtitle { margin-top: 15px; color: #96929f; font-size: 12px; letter-spacing: 0.08em; }
+.boot-launch { width: min(280px, 100%); margin: 40px auto 0; }
+.boot-sequence-heading { display: flex; justify-content: space-between; font: 8px var(--font-mono); letter-spacing: 0.15em; color: #9994a4; }
+.boot-sequence-heading span:last-child { color: var(--boot-accent); font-variant-numeric: tabular-nums; }
+.boot-lights { display: flex; justify-content: space-between; margin: 16px 0 18px; gap: 12px; }
+.boot-light-bank { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 10px 0 7px; background: linear-gradient(#ffffff05, #ffffff01); border: 1px solid #ffffff0e; border-radius: 3px; transition: border-color 0.15s; }
+.boot-lamp { width: 13px; height: 13px; border-radius: 50%; background: #242128; border: 1px solid #ffffff0a; transition: background 0.12s, box-shadow 0.12s; }
+.boot-light-bank.is-lit { border-color: #ed665e30; }
+.boot-light-bank.is-lit .boot-lamp { background: #f16c64; box-shadow: 0 0 12px #f16c6440, inset 0 1px 2px #ffffff55; }
+.boot-bank-number { font: 6px var(--font-mono); letter-spacing: 0.12em; color: #8e8799; margin-top: 3px; }
+.boot-progress { height: 1px; background: #ffffff12; overflow: hidden; }
+.boot-progress span { display: block; height: 100%; background: var(--boot-accent); transform-origin: left; animation: bootProgressFill 1.85s linear both; }
+.boot-status { margin-top: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; font: 9px var(--font-mono); color: #aca6b6; letter-spacing: 0.02em; }
+.boot-status-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--boot-accent); }
+.boot-loader.go .boot-status { color: #e2dce9; }
+.boot-loader.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+@keyframes bootReveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bootDialFill { to { stroke-dashoffset: 0; } }
+@keyframes bootProgressFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (max-width: 540px) {
+  .boot-frame { inset: 14px; }
+  .boot-masthead, .boot-footer { left: 30px; right: 30px; }
+  .boot-masthead { top: max(30px, env(safe-area-inset-top)); }
+  .boot-edition { font-size: 6px; letter-spacing: 0.1em; }
+  .boot-footer { bottom: max(32px, env(safe-area-inset-bottom)); font-size: 6px; letter-spacing: 0.07em; }
+  .boot-instrument-index { right: -24px; }
 }
-
-.light {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #3a1010 0%, #1a0606 70%);
-  transition:
-    background 0.18s ease,
-    box-shadow 0.25s ease;
+@media (max-height: 700px) {
+  .boot-instrument { width: 150px; margin-bottom: 18px; }
+  .boot-launch { margin-top: 25px; }
+  .boot-title { font-size: 42px; }
+  .boot-eyebrow { margin-bottom: 12px; }
 }
-
-.light.on {
-  background: radial-gradient(circle at 38% 32%, #ffd9d3 0%, #ff3b22 38%, #ff1801 70%);
-  box-shadow:
-    0 0 16px 2px rgba(255, 24, 1, 0.85),
-    0 0 38px 6px rgba(255, 24, 1, 0.45),
-    inset 0 0 8px rgba(255, 255, 255, 0.6);
-  animation: bootLightPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+@media (max-height: 520px) {
+  .boot-instrument { display: none; }
+  .boot-masthead { top: 24px; }
+  .boot-footer { bottom: 24px; }
+  .boot-launch { margin-top: 18px; }
 }
-
-@keyframes bootLightPop {
-  0% { transform: scale(0.7); }
-  60% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
-/* Thin telemetry progress bar */
-.boot-progress {
-  position: relative;
-  width: 320px;
-  max-width: 70vw;
-  height: 3px;
-  margin: 0 auto 22px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-}
-
-.boot-progress-bar {
-  position: relative;
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--racing-deep), var(--racing), var(--racing-hot));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--racing) 70%, transparent);
-  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  overflow: hidden;
-}
-
-/* Telemetry shimmer sweeping along the fill */
-.boot-progress-bar::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
-  background-size: 50% 100%;
-  background-repeat: no-repeat;
-  animation: bootProgressShine 1.4s ease-in-out infinite;
-}
-
-@keyframes bootProgressShine {
-  0% { background-position: -60% 0; }
-  100% { background-position: 160% 0; }
-}
-
-.boot-status {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.34em;
-  color: rgba(255, 255, 255, 0.45);
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.boot-status.go-text {
-  color: #ff1801;
-  letter-spacing: 0.5em;
-  font-weight: 800;
-  text-shadow: 0 0 22px rgba(255, 24, 1, 0.7);
-  animation: bootGoText 0.5s ease-out;
-}
-
-@keyframes bootGoText {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.boot-caret {
-  display: inline-block;
-  margin-left: 2px;
-  animation: bootCaret 1s steps(1) infinite;
-}
-
-@keyframes bootCaret {
-  50% { opacity: 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .boot-aura,
-  .boot-title::after,
-  .boot-caret,
-  .light.on,
-  .boot-logo,
-  .boot-logo-ring,
-  .boot-logo-wrap::before,
-  .boot-progress-bar::after {
-    animation: none;
-  }
+  .boot-loader, .boot-loader *, .boot-loader *::before, .boot-loader *::after { animation: none; transition: none; }
+  .boot-dial-sweep { stroke-dashoffset: 0; }
 }
 
 /* --- HAMBURGER MENU & OVERLAY --- */

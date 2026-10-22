@@ -2,6 +2,7 @@ import { getToken } from './lib/auth';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { lazy, Suspense, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Ticker from './components/Ticker';
 import Hero from './components/Hero';
 import RaceLive from './components/RaceLive';
@@ -56,10 +57,36 @@ const themes = [
 
 const ThemeSwitcher: React.FC = () => {
   const [theme, setTheme] = React.useState(() => {
-    return localStorage.getItem('f1_theme') || 'default';
+    const saved = localStorage.getItem('f1_theme');
+    return themes.some(t => t.id === saved) ? saved! : 'default';
   });
   const [isOpen, setIsOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const panelId = React.useId();
+  const [revealTheme, setRevealTheme] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!revealTheme) return;
+    // Change the page while the full-screen panels cover it.
+    const applyTimer = window.setTimeout(() => setTheme(revealTheme), 420);
+    const finishTimer = window.setTimeout(() => setRevealTheme(null), 1400);
+    return () => {
+      window.clearTimeout(applyTimer);
+      window.clearTimeout(finishTimer);
+    };
+  }, [revealTheme]);
+
+  const selectTheme = (nextTheme: string) => {
+    setIsOpen(false);
+    triggerRef.current?.focus({ preventScroll: true });
+    if (nextTheme === theme || revealTheme) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTheme(nextTheme);
+    } else {
+      setRevealTheme(nextTheme);
+    }
+  };
 
   React.useEffect(() => {
     document.body.className = `theme-${theme}`;
@@ -67,64 +94,90 @@ const ThemeSwitcher: React.FC = () => {
   }, [theme]);
 
   React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    if (!isOpen) return;
+    containerRef.current?.querySelector<HTMLButtonElement>('.ts-swatch.active')?.focus();
+    const handleClickOutside = (event: PointerEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
+  }, [isOpen]);
 
-  const currentTheme = themes.find(t => t.id === theme);
-
-  // The "default" theme has no single livery colour, so we render it as a
-  // multi-colour spectrum chip; every team maps to its own CSS custom prop.
-  const chipFor = (id: string) =>
-    id === 'default'
-      ? 'conic-gradient(from 140deg, #a855f7, #ef4444, #f59e0b, #22c55e, #3b82f6, #a855f7)'
-      : `var(--${id})`;
-  const accentFor = (id: string) => (id === 'default' ? '#a855f7' : `var(--${id})`);
+  const currentTheme = themes.find(t => t.id === theme)!;
+  const chipFor = (id: string) => id === 'default'
+    ? 'linear-gradient(115deg, #ffbf69, #f46c89 30%, #b087ff 58%, #63c9ed 82%, #9cddbd)'
+    : `var(--${id})`;
+  const accentFor = (id: string) => id === 'default' ? '#bca0ff' : `var(--${id})`;
 
   return (
     <div
       className={`theme-switcher ${isOpen ? 'open' : ''}`}
-      onClick={() => setIsOpen(!isOpen)}
+      style={{ '--ts-active': accentFor(theme), '--ts-chip': chipFor(theme) } as React.CSSProperties}
       ref={containerRef}
+      onKeyDown={event => {
+        if (event.key === 'Escape') {
+          setIsOpen(false);
+          triggerRef.current?.focus();
+        }
+      }}
+      onBlur={event => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false);
+      }}
     >
-      <div
-        className="ts-trigger-swatch"
-        style={{ background: chipFor(theme), '--ts-active': accentFor(theme) } as React.CSSProperties}
-      ></div>
-      <span className="ts-label">{currentTheme?.label}</span>
-      <div className="ts-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.688-1.688h1.906c3.106 0 5.64-2.534 5.64-5.64 0-4.75-4.03-8.72-8.703-8.72Z"/>
-        </svg>
-      </div>
+      {revealTheme && createPortal(
+        <div className="livery-reveal" aria-hidden="true" style={{ '--reveal-colour': accentFor(revealTheme), '--reveal-paint': chipFor(revealTheme) } as React.CSSProperties}>
+          <div className="livery-reveal-panel livery-reveal-panel-back" />
+          <div className="livery-reveal-panel livery-reveal-panel-front" />
+          <div className="livery-reveal-grain" />
+          <div className="livery-reveal-title">
+            <span className="livery-reveal-kicker">PITWALL / LIVERY STUDIO</span>
+            <strong>{revealTheme === 'default' ? 'Signature' : themes.find(t => t.id === revealTheme)?.label}</strong>
+            <span className="livery-reveal-caption"><i />Your colours. On track.</span>
+          </div>
+          <span className="livery-reveal-number">{String(themes.findIndex(t => t.id === revealTheme)).padStart(2, '0')}</span>
+        </div>, document.body
+      )}
+      <button
+        type="button"
+        className="ts-trigger"
+        ref={triggerRef}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        aria-label={`Choose appearance. Current theme: ${currentTheme.label}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="ts-trigger-swatch" aria-hidden="true" />
+        <span className="ts-trigger-copy"><span className="ts-eyebrow">Your livery</span><span className="ts-label">{currentTheme.label}</span></span>
+        <svg className="ts-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m7 14 5-5 5 5" /></svg>
+      </button>
 
       {isOpen && (
-        <div className="ts-menu" onClick={(e) => e.stopPropagation()}>
-          <div className="ts-menu-head">Season Palette</div>
-          <div className="ts-swatch-grid">
-            {themes.map(t => (
+        <section className="ts-menu" id={panelId} aria-labelledby={`${panelId}-title`}>
+          <div className="ts-menu-head">
+            <div><span className="ts-eyebrow">Pitwall / Personalise</span><h2 id={`${panelId}-title`}>Livery studio<span>.</span></h2></div>
+            <span className="ts-studio-mark" aria-hidden="true">///</span>
+          </div>
+          <p className="ts-intro">Your team. Your colours. Your pitwall.</p>
+          <div className="ts-swatch-grid" role="group" aria-label="Colour theme">
+            {themes.map((t, index) => (
               <button
                 key={t.id}
                 type="button"
-                className={`ts-swatch ${theme === t.id ? 'active' : ''}`}
+                aria-pressed={theme === t.id}
+                className={`ts-swatch ${t.id === 'default' ? 'ts-signature' : ''} ${theme === t.id ? 'active' : ''}`}
                 style={{ '--sw': accentFor(t.id), '--chip': chipFor(t.id) } as React.CSSProperties}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setTheme(t.id);
-                  setIsOpen(false);
-                }}
+                onClick={() => selectTheme(t.id)}
               >
-                <span className="ts-swatch-chip"></span>
-                <span className="ts-swatch-name">{t.label}</span>
+                <span className="ts-swatch-chip" aria-hidden="true"><span className="ts-tile-number">{index === 0 ? 'PW' : String(index).padStart(2, '0')}</span></span>
+                <span className="ts-swatch-copy"><span className="ts-swatch-name">{t.id === 'default' ? 'Pitwall signature' : t.label}</span><span className="ts-swatch-detail">{t.id === 'default' ? 'The full spectrum' : 'Team edition'}</span></span>
+                <span className="ts-selection" aria-hidden="true">{theme === t.id ? '✓' : ''}</span>
               </button>
             ))}
           </div>
-        </div>
+          <div className="ts-menu-footer"><span className="ts-status-dot" />{currentTheme.label} applied<span>Make it yours</span></div>
+        </section>
       )}
     </div>
   );
