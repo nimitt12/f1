@@ -3,6 +3,7 @@ import { COUNTRY_FLAGS, fetchRaces, type Race } from '../data/races';
 import type { AuthUser } from './Hero';
 import SiteHeader from './SiteHeader';
 import Footer from './Footer';
+import './DriverStandingsPage.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -432,7 +433,7 @@ const DriverStandingsPage: React.FC<DriverStandingsPageProps> = ({
   };
 
   return (
-    <div className="dsp-page">
+    <div className="dsp-page dsp-premium">
       <div className="dsp-page-header">
         <SiteHeader pageTitle="Driver Standings" user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate}
           leftSlot={<button className="rd-back-btn dsp-back" onClick={onBack}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Dashboard</button>} />
@@ -441,18 +442,46 @@ const DriverStandingsPage: React.FC<DriverStandingsPageProps> = ({
       <main className="dsp-main">
         <section className="dsp-hero">
           <div>
-            <span className="dsp-kicker"><i /> Championship telemetry · {season}</span>
+            <span className="dsp-kicker"><i /> The championship / {season}</span>
             <h1>Driver <em>Standings</em></h1>
-            <p>Follow every point scored and every position gained across the Formula 1 season.</p>
+            <p>Every point. Every position. The story of the season, in motion.</p>
           </div>
-          <div className="dsp-meta">
-            <span><small>Season</small><strong>{season}</strong></span><i />
-            <span><small>Rounds</small><strong>{String(roundsComplete).padStart(2, '0')}<b> / {String(races.length).padStart(2, '0')}</b></strong></span><i />
-            <span><small>Drivers</small><strong>{String(standings.length).padStart(2, '0')}</strong></span>
+          <div className="dsp-season-card">
+            <div className="dsp-season-caption"><span>Season intelligence</span><span>{season}</span></div>
+            <div className="dsp-meta">
+              <span><small>Rounds tracked</small><strong>{String(roundsComplete).padStart(2, '0')}<b> / {String(races.length).padStart(2, '0')}</b></strong></span>
+              <span><small>On the grid</small><strong>{String(standings.length).padStart(2, '0')}<b> drivers</b></strong></span>
+            </div>
+            <div className="dsp-season-track" aria-label={`${roundsComplete} of ${races.length} rounds tracked`}>
+              {races.map((race) => <i key={race.round} className={Number(race.round) <= roundsComplete ? 'complete' : ''} />)}
+            </div>
+            <small className="dsp-season-footnote">{races.length ? `${Math.max(0, races.length - roundsComplete)} rounds remaining` : 'Awaiting calendar'}<span>World championship ↗</span></small>
           </div>
         </section>
 
         {error && <div className="dsp-alert" role="status">Some championship data could not be loaded. Try refreshing the page.</div>}
+
+        {!loading && standings.length > 0 && (
+          <section className="dsp-contenders" aria-label="Championship top three">
+            {series.slice(0, 3).map((driver, index) => {
+              const id = driverIdentity(driver);
+              const gap = leaderPoints - Number(driver.points);
+              return (
+                <button type="button" key={id} className={`dsp-contender ${index === 0 ? 'dsp-contender-leader' : ''} ${selectedDriver === id ? 'selected' : ''}`}
+                  style={{ '--driver-color': driver.color } as React.CSSProperties}
+                  aria-pressed={selectedDriver === id} onClick={() => setSelectedDriver(selectedDriver === id ? null : id)}>
+                  <span className="dsp-contender-top"><span>{index === 0 ? 'Championship leader' : `The chase / P0${index + 1}`}</span><span className="dsp-contender-arrow">↗</span></span>
+                  <span className="dsp-contender-number" aria-hidden="true">{String(driver.position).padStart(2, '0')}</span>
+                  <span className="dsp-contender-name"><small>{driver.given_name}</small><strong>{driver.family_name}</strong></span>
+                  <span className="dsp-contender-team"><i />{driver.constructor_name}</span>
+                  <span className="dsp-contender-footer"><span><strong>{driver.points}</strong> PTS</span><span>{index === 0 ? `${driver.wins} victories` : `${gap === 0 ? 'Level with leader' : `−${gap} to leader`}`}</span></span>
+                </button>
+              );
+            })}
+          </section>
+        )}
+
+        <div className="dsp-section-heading"><div><span className="dsp-kicker">Inside the championship</span><h2>The full picture.</h2></div><span>Select a driver to explore their season <span aria-hidden="true">↙</span></span></div>
 
         <div className="dsp-layout">
           <section className="dsp-standings" aria-labelledby="dsp-table-title">
@@ -462,12 +491,13 @@ const DriverStandingsPage: React.FC<DriverStandingsPageProps> = ({
             </header>
             <div className="dsp-table-head"><span>Pos.</span><span>Driver</span><span>Points</span></div>
             <div className="dsp-table-body">
+              {!loading && standings.length === 0 && <div className="dsp-chart-empty">Standings will appear when available.</div>}
               {loading ? Array.from({ length: 10 }).map((_, index) => <div className="dsp-row dsp-row-skeleton" key={index}><i /><span /><b /></div>) : standings.map((driver) => {
                 const id = driverIdentity(driver);
                 const difference = leaderPoints - Number(driver.points);
                 const color = TEAM_COLORS[teamKey(driver.constructor_name)] || '#9aa8bd';
                 return (
-                  <button key={id} type="button" className={`dsp-row ${selectedDriver === id ? 'selected' : ''}`} style={{ '--driver-color': color } as React.CSSProperties}
+                  <button key={id} type="button" className={`dsp-row ${selectedDriver === id ? 'selected' : ''}`} aria-pressed={selectedDriver === id} style={{ '--driver-color': color, '--points-fraction': leaderPoints ? Number(driver.points) / leaderPoints : 0 } as React.CSSProperties}
                     onClick={() => setSelectedDriver(selectedDriver === id ? null : id)}>
                     <span className="dsp-position">{String(driver.position).padStart(2, '0')}</span>
                     <span className="dsp-driver"><i>{driver.code || driver.family_name.slice(0, 3).toUpperCase()}</i><span><strong>{driver.given_name} <b>{driver.family_name}</b></strong><small>{driver.constructor_name}</small></span></span>
@@ -484,7 +514,7 @@ const DriverStandingsPage: React.FC<DriverStandingsPageProps> = ({
               <div className="dsp-visual-actions">
                 {selectedStanding && <a className="dsp-profile-cta" href={`/driver/${season}/${encodeURIComponent(selectedStanding.driver_id)}`} onClick={(event) => { event.preventDefault(); window.history.pushState({}, '', event.currentTarget.href); window.dispatchEvent(new PopStateEvent('popstate')); window.scrollTo(0, 0); }}>View {selectedStanding.code || selectedStanding.family_name} profile <span>↗</span></a>}
                 <div className="dsp-count-control" aria-label="Number of drivers shown">
-                  {([5, 10, 99] as DriverCount[]).map((count) => <button key={count} className={driverCount === count ? 'active' : ''} onClick={() => setDriverCount(count)}>{count === 99 ? 'All' : `Top ${count}`}</button>)}
+                  {([5, 10, 99] as DriverCount[]).map((count) => <button key={count} className={driverCount === count ? 'active' : ''} aria-pressed={driverCount === count} onClick={() => setDriverCount(count)}>{count === 99 ? 'All' : `Top ${count}`}</button>)}
                 </div>
               </div>
             </header>
@@ -499,7 +529,7 @@ const DriverStandingsPage: React.FC<DriverStandingsPageProps> = ({
             ))}
             <div className="dsp-legend">
               {visibleSeries.map((driver) => { const id = driverIdentity(driver); return <button key={id} className={selectedDriver && selectedDriver !== id ? 'muted' : ''} onClick={() => setSelectedDriver(selectedDriver === id ? null : id)}><i style={{ background: driver.color }} />{driver.code || driver.family_name.slice(0, 3).toUpperCase()}</button>; })}
-              <span>Tap a driver to isolate</span>
+              <span>{selectedDriver ? <button onClick={() => setSelectedDriver(null)}>Reset selection ×</button> : 'Tap a driver to isolate'}</span>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { COUNTRY_FLAGS, fetchRaces, type Race } from '../data/races';
 import type { AuthUser } from './Hero';
 import SiteHeader from './SiteHeader';
 import Footer from './Footer';
+import './DriverStandingsPage.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -234,14 +235,53 @@ const ConstructorStandingsPage: React.FC<ConstructorStandingsPageProps> = ({ use
   const leaderPoints = standings[0]?.points || 0;
   const selectedConstructor = teams.find((team) => team.key === selectedTeam);
 
-  return <div className="dsp-page csp-page"><div className="dsp-page-header"><SiteHeader pageTitle="Constructor Standings" user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate} leftSlot={<button className="rd-back-btn dsp-back" onClick={onBack}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Dashboard</button>}/></div>
-    <main className="dsp-main"><section className="dsp-hero"><div><span className="dsp-kicker"><i/>Constructor telemetry · {season}</span><h1>Constructor <em>Standings</em></h1><p>Track every team’s championship campaign, race-by-race scoring and performance across the season.</p></div><div className="dsp-meta"><span><small>Season</small><strong>{season}</strong></span><i/><span><small>Rounds</small><strong>{String(roundsComplete).padStart(2,'0')}<b> / {String(races.length).padStart(2,'0')}</b></strong></span><i/><span><small>Teams</small><strong>{String(standings.length).padStart(2,'0')}</strong></span></div></section>
+  return <div className="dsp-page csp-page dsp-premium"><div className="dsp-page-header"><SiteHeader pageTitle="Constructor Standings" user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate} leftSlot={<button className="rd-back-btn dsp-back" onClick={onBack}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Dashboard</button>}/></div>
+    <main className="dsp-main">
+      <section className="dsp-hero">
+        <div>
+          <span className="dsp-kicker"><i />The constructors’ championship / {season}</span>
+          <h1>Constructor <em>Standings</em></h1>
+          <p>Two cars. One ambition. Every team’s pursuit of the championship.</p>
+        </div>
+        <div className="dsp-season-card">
+          <div className="dsp-season-caption"><span>Season intelligence</span><span>{season}</span></div>
+          <div className="dsp-meta">
+            <span><small>Rounds tracked</small><strong>{String(roundsComplete).padStart(2, '0')}<b> / {String(races.length).padStart(2, '0')}</b></strong></span>
+            <span><small>On the grid</small><strong>{String(standings.length).padStart(2, '0')}<b> teams</b></strong></span>
+          </div>
+          <div className="dsp-season-track" aria-label={`${roundsComplete} of ${races.length} rounds tracked`}>
+            {races.map((race) => <i key={race.round} className={Number(race.round) <= roundsComplete ? 'complete' : ''} />)}
+          </div>
+          <small className="dsp-season-footnote">{races.length ? `${Math.max(0, races.length - roundsComplete)} rounds remaining` : 'Awaiting calendar'}<span>World championship ↗</span></small>
+        </div>
+      </section>
       {error&&<div className="dsp-alert" role="status">Some constructor data could not be loaded. Try refreshing the page.</div>}
+      {!loading && teams.length > 0 && (
+        <section className="dsp-contenders" aria-label="Championship top three constructors">
+          {teams.slice(0, 3).map((team, index) => {
+            const gap = leaderPoints - team.points;
+            return (
+              <button type="button" key={team.key} className={`dsp-contender ${index === 0 ? 'dsp-contender-leader' : ''} ${selectedTeam === team.key ? 'selected' : ''}`}
+                style={{ '--driver-color': team.color } as React.CSSProperties}
+                aria-pressed={selectedTeam === team.key} onClick={() => setSelectedTeam(selectedTeam === team.key ? null : team.key)}>
+                <span className="dsp-contender-top"><span>{index === 0 ? 'Championship leader' : `The chase / P0${index + 1}`}</span><span className="dsp-contender-arrow">↗</span></span>
+                <span className="dsp-contender-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <span className="dsp-contender-name"><small>Constructor / {TEAM_CODES[team.key] || team.name.slice(0, 3).toUpperCase()}</small><strong>{team.name}</strong></span>
+                <span className="dsp-contender-team"><i />{team.wins} {Number(team.wins) === 1 ? 'race victory' : 'race victories'}</span>
+                <span className="dsp-contender-footer"><span><strong>{team.points}</strong> PTS</span><span>{index === 0 ? 'Setting the pace' : gap === 0 ? 'Level with leader' : `−${gap} to leader`}</span></span>
+              </button>
+            );
+          })}
+        </section>
+      )}
+      <div className="dsp-section-heading"><div><span className="dsp-kicker">Inside the championship</span><h2>The full picture.</h2></div><span>Select a team to explore their season <span aria-hidden="true">↙</span></span></div>
+
       <div className="dsp-layout"><section className="dsp-standings" aria-labelledby="csp-table-title"><header className="dsp-panel-head"><div><span>01 / Classification</span><h2 id="csp-table-title">{season} constructors</h2></div><button className="dsp-download" disabled={!standings.length} onClick={()=>downloadCsv(`pitwall-${season}-constructor-standings.csv`,[['Position','Constructor','Points','Wins'],...standings.map((team,index)=>[index+1,team.name,team.points,team.wins])])} aria-label="Download constructor standings as CSV">{downloadIcon}</button></header><div className="dsp-table-head"><span>Pos.</span><span>Constructor</span><span>Points</span></div><div className="dsp-table-body">
-        {loading?Array.from({length:10}).map((_,index)=><div className="dsp-row dsp-row-skeleton" key={index}><i/><span/><b/></div>):teams.map((team,index)=><button key={team.key} className={`dsp-row ${selectedTeam===team.key?'selected':''}`} style={{'--driver-color':team.color} as React.CSSProperties} onClick={()=>setSelectedTeam(selectedTeam===team.key?null:team.key)}><span className="dsp-position">{String(index+1).padStart(2,'0')}</span><span className="dsp-driver"><i>{TEAM_CODES[team.key]||team.name.slice(0,3).toUpperCase()}</i><span><strong><b>{team.name}</b></strong><small>{team.wins} wins</small></span></span><span className="dsp-points"><strong>{team.points}</strong><small>{index?`−${leaderPoints-team.points}`:'Leader'}</small></span></button>)}
+        {!loading && teams.length === 0 && <div className="dsp-chart-empty">Standings will appear when available.</div>}
+        {loading?Array.from({length:10}).map((_,index)=><div className="dsp-row dsp-row-skeleton" key={index}><i/><span/><b/></div>):teams.map((team,index)=><button key={team.key} className={`dsp-row ${selectedTeam===team.key?'selected':''}`} aria-pressed={selectedTeam === team.key} style={{'--driver-color':team.color, '--points-fraction': leaderPoints ? team.points / leaderPoints : 0} as React.CSSProperties} onClick={()=>setSelectedTeam(selectedTeam===team.key?null:team.key)}><span className="dsp-position">{String(index+1).padStart(2,'0')}</span><span className="dsp-driver"><i>{TEAM_CODES[team.key]||team.name.slice(0,3).toUpperCase()}</i><span><strong><b>{team.name}</b></strong><small>{team.wins} wins</small></span></span><span className="dsp-points"><strong>{team.points}</strong><small>{index?`−${leaderPoints-team.points}`:'Leader'}</small></span></button>)}
       </div></section><div className="dsp-visuals"><header className="dsp-visual-tools"><div><span className="dsp-live-dot"/> {historyLoading?'Building race history':'Constructor progression'}</div><div className="dsp-visual-actions">{selectedConstructor&&<a className="dsp-profile-cta" href={`/constructor/${season}/${selectedConstructor.key}`} onClick={(event)=>{event.preventDefault();window.history.pushState({},'',event.currentTarget.href);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo(0,0);}}>View {TEAM_CODES[selectedConstructor.key]||selectedConstructor.name} profile <span>↗</span></a>}<div className="csp-team-count">{teams.length} teams</div></div></header>
         {(['points','rank'] as ChartMode[]).map((mode,index)=><section className="dsp-chart-panel" key={mode}><header className="dsp-panel-head"><div><span>0{index+2} / Evolution</span><h2>Constructor {mode==='points'?'points':'ranking'} evolution</h2></div><small>{selectedTeam?'Focused team':`${teams.length} teams shown`}</small></header>{historyLoading?<div className="dsp-chart-loading"><span/>Loading round data…</div>:roundsComplete===0?<div className="dsp-chart-empty">Evolution data will appear after the first completed round.</div>:<ConstructorEvolutionChart mode={mode} teams={teams} races={races.filter((race)=>Number(race.round)<=roundsComplete)} selected={selectedTeam} onSelect={setSelectedTeam}/>}</section>)}
-        <div className="dsp-legend">{teams.map((team)=><button key={team.key} className={selectedTeam&&selectedTeam!==team.key?'muted':''} onClick={()=>setSelectedTeam(selectedTeam===team.key?null:team.key)}><i style={{background:team.color}}/>{TEAM_CODES[team.key]||team.name.slice(0,3).toUpperCase()}</button>)}<span>Tap a team to isolate</span></div>
+        <div className="dsp-legend">{teams.map((team)=><button key={team.key} className={selectedTeam&&selectedTeam!==team.key?'muted':''} aria-pressed={selectedTeam === team.key} onClick={()=>setSelectedTeam(selectedTeam===team.key?null:team.key)}><i style={{background:team.color}}/>{TEAM_CODES[team.key]||team.name.slice(0,3).toUpperCase()}</button>)}<span>{selectedTeam ? <button type="button" onClick={() => setSelectedTeam(null)}>Reset selection ×</button> : 'Tap a team to isolate'}</span></div>
       </div></div>
       <div className="dsp-secondary-charts">{historyLoading?<div className="dsp-chart-panel dsp-wide-panel"><div className="dsp-chart-loading"><span/>Loading performance data…</div></div>:<><ConstructorStatsChart teams={teams} rounds={roundData} selected={selectedTeam} onSelect={setSelectedTeam} season={season}/><ConstructorRacePoints teams={teams} races={races} rounds={roundData} season={season}/></>}</div>
     </main><Footer/></div>;
