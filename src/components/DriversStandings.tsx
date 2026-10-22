@@ -212,12 +212,13 @@ const DriversStandings: React.FC<DriversStandingsProps> = ({ onDriverSelect }) =
   const leaderPoints = standings.length > 0 ? parseFloat(standings[0].points) : 0;
 
   return (
-    <div id="drivers" className="col">
+    <div id="drivers" className="col championship-card">
       <div className="col-head">
-        <div className="col-name">
+        <div className="standings-eyebrow"><span>World championship</span><span>{season}</span></div>
+        <h2 className="col-name">
           Drivers' <em>Championship</em>
-        </div>
-        <div className="col-sub">After {round} Rounds</div>
+        </h2>
+        <div className="standings-header-meta"><div className="col-sub">After {round} rounds</div><span>Season standings</span></div>
       </div>
 
       {loading && (
@@ -254,14 +255,11 @@ const DriversStandings: React.FC<DriversStandingsProps> = ({ onDriverSelect }) =
               >
                 <div className="driver-pos">{item.position.padStart(2, '0')}</div>
                 <div className="driver-info">
+                  {isLeader && <span className="standings-leader-label">Championship leader</span>}
                   <div className="driver-line">
                     <span className="driver-name">{driverName}</span>
                     <span 
-                      className="driver-code" 
-                      style={{ 
-                        background: teamColor, 
-                        color: constructorId === 'mercedes' ? '#000' : '#fff' 
-                      }}
+                      className="driver-code"
                     >
                       {item.Driver.code || item.Driver.familyName.substring(0, 3).toUpperCase()}/{item.Driver.permanentNumber}
                     </span>
@@ -283,7 +281,7 @@ const DriversStandings: React.FC<DriversStandingsProps> = ({ onDriverSelect }) =
                 </div>
                 <div className="driver-pts-wrap">
                   <div className="driver-pts">{item.points}</div>
-                  <div className="driver-pts-sub" style={{ color: 'var(--paper)' }}>pts</div>
+                  <div className="driver-pts-sub">pts</div>
                   {ptsDiff > 0 && <div className="driver-pts-sub">-{ptsDiff}</div>}
                   <span className="driver-profile-link">Profile <b aria-hidden="true">↗</b></span>
                 </div>

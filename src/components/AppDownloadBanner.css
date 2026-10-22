@@ -1,0 +1,60 @@
+.app-download { padding: var(--section-gap) var(--gutter) 0; }
+.app-download-card { position: relative; isolation: isolate; display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; overflow: hidden; min-height: 360px; border: 1px solid color-mix(in srgb, var(--racing) 32%, transparent); border-radius: 24px; background: radial-gradient(ellipse at 85% 65%, color-mix(in srgb, var(--racing) 22%, transparent), transparent 60%), #121016; }
+.app-download-card::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .16; background-image: linear-gradient(#ffffff18 1px, transparent 1px), linear-gradient(90deg, #ffffff18 1px, transparent 1px); background-size: 44px 44px; mask-image: linear-gradient(90deg, transparent, #000); }
+.app-download-copy { padding: 44px clamp(24px, 4vw, 64px); }
+.app-download-eyebrow { display: flex; align-items: center; gap: 10px; color: var(--racing-hot); font: 600 10px/1.5 var(--font-mono); letter-spacing: .16em; }
+.app-download-eyebrow > span { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 14px currentColor; }
+.app-download-copy h2 { margin: 18px 0 16px; color: #f5f0fa; font: 700 clamp(25px, 3vw, 43px)/1.22 var(--font-display); letter-spacing: -.035em; }
+.app-download-copy h2 em { color: var(--racing-hot); }
+.app-download-copy p { max-width: 420px; margin-bottom: 26px; color: #b5acbf; font: 400 14px/1.75 var(--font-body); }
+.app-download-link { display: inline-flex; align-items: center; gap: 12px; min-height: 64px; padding: 11px 18px; color: #fff; background: #08080a; border: 1px solid #ffffff45; border-radius: 11px; text-decoration: none; transition: border-color .2s, background .2s; }
+.app-download-link:hover { border-color: var(--racing-hot); background: #211a29; }
+.app-download-link:focus-visible { outline: 3px solid var(--racing-hot); outline-offset: 5px; }
+.app-download-link small { display: block; font: 500 9px/1.5 var(--font-body); letter-spacing: .08em; }
+.app-download-link strong { display: block; font: 500 22px/1.2 var(--font-body); letter-spacing: -.04em; }
+.app-download-arrow { margin-left: 20px; color: #b5acbf; font-size: 23px; }
+.app-download-art { position: relative; isolation: isolate; display: grid; place-items: center; align-self: stretch; padding: 20px 32px; min-width: 0; }
+.app-download-telemetry { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.app-download-telemetry::before { content: ''; position: absolute; inset: 8%; background: radial-gradient(ellipse, color-mix(in srgb, var(--racing) 24%, transparent), transparent 68%); }
+.app-download-circuit { position: absolute; width: 100%; height: 100%; color: var(--racing-hot); }
+.app-download-circuit > circle { stroke: currentColor; stroke-opacity: .09; }
+.app-download-crosshair { stroke: currentColor; stroke-opacity: .1; stroke-dasharray: 3 10; }
+.app-download-circuit-line { stroke: currentColor; stroke-width: 2; stroke-opacity: .25; }
+.app-download-circuit-highlight { stroke: currentColor; stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 7px var(--racing)); opacity: .85; }
+.app-download-circuit .app-download-signal-halo { fill: currentColor; fill-opacity: .15; stroke: none; }
+.app-download-circuit .app-download-signal { fill: #f6eeff; stroke: none; }
+.app-download-leader-line { stroke: currentColor; stroke-opacity: .35; }
+.app-download-circuit text { fill: #b0a1bf; font: 10px var(--font-mono); letter-spacing: 2px; }
+.app-download-team-widget, .app-download-race-widget { position: absolute; overflow: hidden; width: 174px; padding: 15px; border: 1px solid #ffffff25; border-radius: 16px; box-shadow: 0 16px 32px #0005; color: #fff; }
+.app-download-team-widget { top: 15%; left: 2%; transform: rotate(-12deg); background: linear-gradient(135deg, #956026, #593711); }
+.app-download-widget-title { position: relative; display: block; font: 700 14px/1.3 var(--font-display); letter-spacing: -.04em; }
+.app-download-widget-subtitle { position: relative; display: block; margin-top: 4px; color: #ffffff90; font: 500 7px/1.5 var(--font-mono); letter-spacing: .04em; }
+.app-download-widget-watermark { position: absolute; right: -12px; top: 42px; color: #ffffff10; font: 800 64px/1 var(--font-display); }
+.app-download-widget-position { position: relative; display: flex; align-items: center; gap: 9px; margin: 17px 0 12px; }
+.app-download-widget-position > strong { font: 700 29px/1 var(--font-display); }
+.app-download-widget-position b { color: #ff9b28; font: 700 20px/1 var(--font-display); }
+.app-download-widget-position small { display: block; margin-top: 4px; color: #ffffffa0; font: 500 6px var(--font-mono); letter-spacing: .1em; }
+.app-download-widget-stats { display: flex; gap: 4px; }
+.app-download-widget-stats > span { flex: 1; padding: 7px 5px; border-radius: 6px; background: #20120040; color: #ffffffa0; font: 500 5px var(--font-mono); }
+.app-download-widget-stats b { display: block; margin-bottom: 3px; color: #fff; font-size: 10px; }
+.app-download-race-widget { bottom: 9%; right: 3%; transform: rotate(8deg); background: linear-gradient(135deg, #367c72, #103b36); }
+.app-download-widget-tag { display: inline-block; padding: 4px 7px; border-radius: 12px; background: #002e2b55; color: #bee9df; font: 600 7px var(--font-mono); letter-spacing: .09em; }
+.app-download-widget-round { display: block; margin: 7px 0 3px; color: #ffffff18; font: 800 43px/1 var(--font-display); letter-spacing: -.08em; }
+.app-download-widget-countdown { margin: 12px -15px -15px; padding: 10px 15px; background: #00292490; }
+.app-download-widget-countdown > span { display: block; margin-bottom: 6px; color: #89bcb1; font: 500 6px var(--font-mono); letter-spacing: .12em; }
+.app-download-widget-countdown strong { font: 600 16px var(--font-display); }
+.app-download-widget-countdown small { margin-right: 5px; color: #a4cbc1; font: 500 5px var(--font-mono); }
+.app-download-preview { display: block; width: auto; height: auto; max-width: 100%; max-height: 440px; object-fit: contain; clip-path: polygon(53% 7.3%, 87% 6.2%, 92% 7%, 95.5% 9%, 97.5% 12%, 97% 16%, 70.5% 91%, 68% 95%, 64% 97.2%, 59% 97.3%, 14% 91%, 9% 88%, 7.4% 85%, 8% 81%, 41% 14%, 44% 10%, 48% 8%); }
+@media (max-width: 700px) {
+  .app-download-card { grid-template-columns: 1fr; }
+  .app-download-copy { padding: 30px 24px; }
+  .app-download-copy h2 { font-size: clamp(25px, 5.8vw, 38px); }
+  .app-download-art { padding: 0 24px 28px; }
+  .app-download-preview { max-height: 360px; }
+  .app-download-team-widget { top: 7%; left: 2%; width: 145px; padding: 12px; }
+  .app-download-race-widget { right: 2%; bottom: 8%; width: 145px; padding: 12px; }
+  .app-download-widget-title { font-size: 12px; }
+  .app-download-widget-position > strong { font-size: 24px; }
+  .app-download-widget-position b { font-size: 17px; }
+  .app-download-widget-countdown { margin: 10px -12px -12px; padding: 10px 12px; }
+}

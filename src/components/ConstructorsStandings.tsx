@@ -169,12 +169,13 @@ const ConstructorsStandings: React.FC<ConstructorsStandingsProps> = ({ onConstru
   const maxPoints = standings.length > 0 ? parseFloat(standings[0].points) : 1;
 
   return (
-    <div id="constructors" className="col">
+    <div id="constructors" className="col championship-card">
       <div className="col-head">
-        <div className="col-name">
+        <div className="standings-eyebrow"><span>World championship</span><span>{season}</span></div>
+        <h2 className="col-name">
           Constructors' <em>Cup</em>
-        </div>
-        <div className="col-sub">After {round} Rounds</div>
+        </h2>
+        <div className="standings-header-meta"><div className="col-sub">After {round} rounds</div><span>Season standings</span></div>
       </div>
 
       {loading && (
@@ -190,7 +191,7 @@ const ConstructorsStandings: React.FC<ConstructorsStandingsProps> = ({ onConstru
           {standings.map((item, index) => {
         const isLeader = index === 0;
         const teamColor = teamColors[item.Constructor.constructorId] || 'var(--ink-3)';
-        const percentage = (parseFloat(item.points) / maxPoints) * 100;
+        const percentage = maxPoints > 0 ? (parseFloat(item.points) / maxPoints) * 100 : 0;
         const delay = 4.5 + index * 0.08;
         const barDelay = 5.5 + index * 0.05;
 
@@ -213,6 +214,7 @@ const ConstructorsStandings: React.FC<ConstructorsStandingsProps> = ({ onConstru
             <div className="con-top">
               <div className="con-pos">{item.position.padStart(2, '0')}</div>
               <div>
+                {isLeader && <span className="standings-leader-label">Championship leader</span>}
                 <div className="con-name">{item.Constructor.name}</div>
                 <div className="con-engine" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Flag code={NATIONALITY_ISO[item.Constructor.nationality]} />
@@ -225,7 +227,7 @@ const ConstructorsStandings: React.FC<ConstructorsStandingsProps> = ({ onConstru
                   )}
                 </div>
               </div>
-              <div className="con-pts">{item.points}<span className="con-profile-link">Profile ↗</span></div>
+              <div className="con-pts">{item.points}<span className="standings-points-label">pts</span><span className="con-profile-link">Profile ↗</span></div>
             </div>
             <div className="con-bar">
               <div 

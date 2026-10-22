@@ -16,6 +16,7 @@ import ConstructorsStandings from './components/ConstructorsStandings';
 import NewsIntel from './components/NewsIntel';
 import Footer from './components/Footer';
 import DriverBattle from './components/DriverBattle';
+import AppDownloadBanner from './components/AppDownloadBanner';
 import AccountPage from './components/AccountPage';
 import LoginModal from './components/LoginModal';
 import BootLoader from './components/BootLoader';
@@ -600,6 +601,7 @@ const App: React.FC = () => {
               <Calendar onRaceSelect={openRaceDetails} />
             </Parallax>
             <Parallax speed={0.05}>
+              <AppDownloadBanner />
               <DriverBattle onOpenClash={openClash} />
             </Parallax>
 

@@ -158,19 +158,21 @@ const NewsIntel: React.FC = () => {
   }, []);
 
   const formatDate = (dateStr: string) => {
-      return dateStr.replace(/\s\+\d+$/, '').toUpperCase();
+      const date = new Date(dateStr);
+      return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
   return (
     <>
       <div className="intel-head">
-        <div className="col-name">
+        <div><span className="intel-eyebrow">Beyond the timing screen</span><h2 className="col-name">
           Paddock <em>Intel</em>
-        </div>
-        <div className="col-sub">Live Formula 1 Feed · Top 10 Stories</div>
+        </h2><p className="intel-description">The stories shaping the grid. Straight from Formula 1.</p></div>
+        <div className="col-sub">Formula 1 feed · Latest stories</div>
       </div>
 
-      <div className="col">
+      <div className="col intel-board">
+      <div className="intel-board-header"><span><i /> Paddock briefing</span><span>{loading ? 'Loading stories' : `${news.length.toString().padStart(2, '0')} stories`}<b> / FORMULA1.COM</b></span></div>
       <div className="news-block">
         {loading && (
           <Loader label="Streaming paddock intel" size={36} />
@@ -180,29 +182,27 @@ const NewsIntel: React.FC = () => {
           <article 
             key={item.id} 
             className={`news-item ${index === 0 ? 'lead' : 'neutral'}`}
-            onClick={() => setSelectedId(item.id)}
-            style={{ cursor: 'pointer' }}
           >
-            {item.image && (
-              <div className="news-thumb">
+            <div className={`news-thumb ${!item.image ? 'news-thumb-placeholder' : ''}`} aria-hidden="true">
+                <span className="news-artwork-label">PADDOCK / INTEL</span>
+                {item.image && (
                 <img
                   src={item.image}
                   alt=""
                   loading="lazy"
                   onError={(e) => {
-                    const wrap = e.currentTarget.closest('.news-thumb') as HTMLElement | null;
-                    if (wrap) wrap.style.display = 'none';
+                    e.currentTarget.style.display = 'none';
                   }}
                 />
+                )}
               </div>
-            )}
             <div className="news-meta">
-              <span className="news-kicker">{item.category}</span>
+              <span className="news-kicker">{index === 0 ? 'Top story' : item.category}</span>
               <span className="news-date">{formatDate(item.pubDate)}</span>
               <span className="news-num">{(index + 1).toString().padStart(2, '0')}</span>
             </div>
             <div className="news-content-wrap">
-              <h3 className="news-headline">{item.title}</h3>
+              <h3 className="news-headline"><button className="news-story-button" onClick={() => setSelectedId(item.id)} aria-haspopup="dialog">{item.title}</button></h3>
               <p className="news-body">{item.summary}</p>
               <span className="news-go" aria-hidden="true">Read Story →</span>
             </div>

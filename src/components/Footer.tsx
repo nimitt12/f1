@@ -104,7 +104,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="footer-wordmark" aria-hidden="true">
-          MY <span>PITWALL</span>
+          MY<span>PITWALL</span>
         </div>
 
         <div className="footer-bottom">
