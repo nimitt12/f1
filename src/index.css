@@ -403,7 +403,8 @@ body.theme-cadillac {
   pointer-events: none;
   background: linear-gradient(180deg, transparent, #0b0e16 26%, #0b0e16 100%);
 }
-.schedule-vector-map {
+/* Outrank MapLibre's position: relative, including when its lazy CSS loads last. */
+.schedule-map-canvas .schedule-vector-map {
   position: absolute;
   inset: 0 0 200px;
   z-index: 0;
@@ -712,7 +713,7 @@ body.theme-cadillac {
   .schedule-map-heading > a { padding: 10px; }
   .schedule-map-heading > a > span:first-child { display: none; }
   .schedule-map-track { top: 42%; width: min(72vw, 360px); }
-  .schedule-vector-map { bottom: 180px; }
+  .schedule-map-canvas .schedule-vector-map { bottom: 180px; }
   .schedule-map-status { top: 125px; left: 20px; font-size: 10px; }
   .schedule-map-controls { left: 16px; bottom: 199px; }
   .schedule-map-controls button { width: 39px; height: 39px; }

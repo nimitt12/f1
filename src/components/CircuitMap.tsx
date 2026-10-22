@@ -39,8 +39,10 @@ export default function CircuitMap({ race }: { race: Race }) {
     }
     mapRef.current = map;
     map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right');
-    map.on('load', () => setReady(true));
+    map.on('load', () => { setReady(true); setFailed(false); });
     map.on('error', () => { if (!map.isStyleLoaded()) setFailed(true); });
+    map.on('webglcontextlost', () => setFailed(true));
+    map.on('webglcontextrestored', () => { map.resize(); setFailed(false); });
     const observer = new ResizeObserver(() => map.resize());
     observer.observe(container.current);
     return () => {
@@ -81,7 +83,7 @@ export default function CircuitMap({ race }: { race: Race }) {
 
   return <>
     <div ref={container} className="schedule-vector-map" role="region" aria-label={`Interactive map of ${race.Circuit.circuitName}`} />
-    {!ready && <>
+    {(!ready || failed) && <>
       <div className="schedule-map-track" aria-hidden="true">
         <svg viewBox={TRACK_VIEWBOX} fill="none">
           <path className="schedule-map-track-shadow" d={TRACK_PATHS[race.Circuit.circuitId || '']} vectorEffect="non-scaling-stroke" />
