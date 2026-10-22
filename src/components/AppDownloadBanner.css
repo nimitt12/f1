@@ -1,4 +1,4 @@
-.app-download { padding: var(--section-gap) var(--gutter) 0; }
+.app-download { max-width: 1440px; margin: 0 auto; padding: var(--section-gap) var(--gutter) 0; }
 .app-download-card { position: relative; isolation: isolate; display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; overflow: hidden; min-height: 360px; border: 1px solid color-mix(in srgb, var(--racing) 32%, transparent); border-radius: 24px; background: radial-gradient(ellipse at 85% 65%, color-mix(in srgb, var(--racing) 22%, transparent), transparent 60%), #121016; }
 .app-download-card::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .16; background-image: linear-gradient(#ffffff18 1px, transparent 1px), linear-gradient(90deg, #ffffff18 1px, transparent 1px); background-size: 44px 44px; mask-image: linear-gradient(90deg, transparent, #000); }
 .app-download-copy { padding: 44px clamp(24px, 4vw, 64px); }
