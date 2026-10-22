@@ -1,3 +1,25 @@
+# Pitwall
+
+## API proxy
+
+Set `VITE_BACKEND_URL` to the actual backend base URL in `.env` locally and in
+Vercel project environment variables for each deployment environment. Keep the
+existing HTTPS backend URL; do **not** change this variable to `/api`.
+
+Vite replaces `import.meta.env.VITE_BACKEND_URL` with `/api` in browser code.
+In development (and Vite preview), Vite proxies `/api/*` to the configured backend,
+stripping `/api`. In production, `vercel.ts` generates the same external rewrite
+before the page routes. For example, `/api/drivers/get-all-drivers-season-rankings`
+reaches `/drivers/get-all-drivers-season-rankings` on the backend. POST requests,
+authorization headers, query strings, and the live SSE endpoint use this route too.
+The SEO build script continues to fetch the backend directly.
+
+Deploy the changes to activate the production proxy. No additional environment
+variable is needed. The upstream hostname is absent from browser API requests and
+the JavaScript bundle, but the proxy does not make a publicly hosted backend private.
+Backend authentication and authorization still apply. Verify sign-in and live
+streaming after deployment; local checks cannot verify Vercel's streaming behavior.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

@@ -25,9 +25,12 @@ export const clearSession = () => {
 };
 
 export const authFetch = async (input: string, init: RequestInit = {}): Promise<Response> => {
-  const url = new URL(input);
-  const backend = new URL(BACKEND_URL);
-  if (url.origin !== backend.origin || url.username || url.password ||
+  const url = new URL(input, window.location.origin);
+  const backend = new URL(BACKEND_URL, window.location.origin);
+  const basePath = backend.pathname.replace(/\/$/, '');
+  if (url.origin !== backend.origin ||
+      (url.pathname !== basePath && !url.pathname.startsWith(`${basePath}/`)) ||
+      url.username || url.password ||
       (import.meta.env.PROD && url.protocol !== 'https:')) {
     throw new Error('Refusing to send credentials to an untrusted API');
   }
@@ -45,7 +48,7 @@ export const authFetch = async (input: string, init: RequestInit = {}): Promise<
 };
 
 export const signInWithGoogle = async (idToken: string): Promise<AuthUser> => {
-  const url = new URL(`${BACKEND_URL}/auth/google`);
+  const url = new URL(`${BACKEND_URL}/auth/google`, window.location.origin);
   if (import.meta.env.PROD && url.protocol !== 'https:') throw new Error('Authentication requires HTTPS');
   const response = await fetch(url.href, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },

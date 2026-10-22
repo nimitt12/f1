@@ -71,9 +71,9 @@ test('SEO generator confines paths and escapes closing script tags and replaceme
   assert.ok(JSON.parse(json)['@graph'][1].name.includes(race.raceName));
 });
 
-function authHarness() {
+function authHarness(backendUrl = 'https://api.example.com') {
   const source = readFileSync(new URL('../src/lib/auth.ts', import.meta.url), 'utf8')
-    .replaceAll('import.meta.env.VITE_BACKEND_URL', JSON.stringify('https://api.example.com'))
+    .replaceAll('import.meta.env.VITE_BACKEND_URL', JSON.stringify(backendUrl))
     .replaceAll('import.meta.env.PROD', 'true');
   const storage = () => {
     const values = new Map();
@@ -81,7 +81,7 @@ function authHarness() {
   };
   const calls = [];
   const context = { exports: {}, URL, Headers, AbortSignal, Event,
-    localStorage: storage(), sessionStorage: storage(), window: new EventTarget(),
+    localStorage: storage(), sessionStorage: storage(), window: Object.assign(new EventTarget(), { location: { origin: 'https://www.mypitwall.in' } }),
     fetch: async (...args) => { calls.push(args); return new Response('{}'); } };
   vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2023 } }).outputText, context);
   return { ...context, auth: context.exports, calls, context };
@@ -129,7 +129,7 @@ function workerHarness() {
 test('service worker bypasses private, proxy, cross-origin, authenticated and mutation requests', () => {
   const handle = workerHarness();
   for (const [path, init] of [
-    ['/admin-portal', {}], ['/account-deletion', {}], ['/profile/1', {}], ['/f1-news', {}],
+    ['/admin-portal', {}], ['/account-deletion', {}], ['/profile/1', {}], ['/api/profile/1', {}], ['/api/live/stream', {}], ['/f1-news', {}],
     ['/f1-article/en/latest/test', {}], ['/assets/test.js?token=x', {}],
     ['/assets/test.js', { method: 'POST' }], ['/assets/test.js', { headers: { Authorization: 'Bearer test' } }],
     ['https://www.mypitwall.in.evil.test/assets/test.js', {}],
@@ -141,7 +141,7 @@ test('service worker bypasses private, proxy, cross-origin, authenticated and mu
 });
 
 test('deployment policy blocks inline scripts and framing while retaining Google sign-in', () => {
-  const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const config = deploymentConfig();
   const headers = Object.fromEntries(config.headers[0].headers.map(({ key, value }) => [key, value]));
   const csp = headers['Content-Security-Policy'];
   assert.ok(csp.includes("frame-ancestors 'none'"));
@@ -159,7 +159,7 @@ test('deployment policy blocks inline scripts and framing while retaining Google
 
 
 test('article proxy is scoped to news paths and upstream documents are sandboxed', () => {
-  const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const config = deploymentConfig();
   const proxy = config.rewrites.find(rule => rule.source.startsWith('/f1-article'));
   assert.equal(proxy.source, '/f1-article/en/latest/:path*');
   assert.equal(proxy.destination, 'https://www.formula1.com/en/latest/:path*');
@@ -168,4 +168,36 @@ test('article proxy is scoped to news paths and upstream documents are sandboxed
     assert.ok(policy.value.startsWith("sandbox; default-src 'none'"));
   }
   assert.ok(readFileSync(new URL('../vite.config.ts', import.meta.url), 'utf8').includes("'/f1-article/en/latest/':"));
+});
+
+function deploymentConfig() {
+  const source = readFileSync(new URL('../vercel.ts', import.meta.url), 'utf8');
+  const context = { exports: {}, URL, process: { env: { VITE_BACKEND_URL: 'https://api.example.com/' } } };
+  vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, context);
+  return context.exports.config;
+}
+
+test('same-origin API authentication preserves tokens and confines them to the API path', async () => {
+  const h = authHarness('/api');
+  h.localStorage.setItem('f1_token', 'test-token');
+  for (const url of ['/profile/1', '/api-other/profile', '/api/../admin', '//evil.test/api/profile']) {
+    await assert.rejects(h.auth.authFetch(url));
+  }
+  assert.equal(h.calls.length, 0);
+  await h.auth.authFetch('/api/profile/1');
+  assert.equal(h.calls[0][0], 'https://www.mypitwall.in/api/profile/1');
+  assert.equal(h.calls[0][1].headers.get('Authorization'), 'Bearer test-token');
+  h.context.fetch = async (...args) => {
+    h.calls.push(args);
+    return new Response(JSON.stringify({ token: 'new-token', user: { id: 1, email: 'test@example.com' } }));
+  };
+  await h.auth.signInWithGoogle('google-token');
+  assert.equal(h.calls[1][0], 'https://www.mypitwall.in/api/auth/google');
+  assert.equal(h.calls[1][1].method, 'POST');
+});
+
+test('API rewrite precedes the SPA fallback and strips the public prefix', () => {
+  const config = deploymentConfig();
+  assert.equal(config.rewrites[0].source, '/api/:path*');
+  assert.equal(config.rewrites[0].destination, 'https://api.example.com/:path*');
 });
