@@ -113,8 +113,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose, onHomeNavigate, user
   return (
     <div className="ap-page">
       <header className="ap-header">
-        <SiteHeader user={user} setUser={setUser} onOpenSettings={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onHomeNavigate={onHomeNavigate}
-          leftSlot={<a className="ap-brand" href="/" onClick={e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; e.preventDefault(); onClose(); }}><LogoMark aria-hidden="true" /><span>My<span>PitWall.</span></span></a>} />
+        <SiteHeader pageTitle="My Account" user={user} setUser={setUser} onOpenSettings={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onHomeNavigate={onHomeNavigate}
+          leftSlot={<button className="rd-back-btn" onClick={onClose}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Back</button>} />
       </header>
       <main className="ap-content">
         <nav className="ap-breadcrumb" aria-label="Breadcrumb"><a href="/" onClick={e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; e.preventDefault(); onClose(); }}>← Back to Pitwall</a><span>/</span><span aria-current="page">My account</span></nav>

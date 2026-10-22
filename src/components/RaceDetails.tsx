@@ -227,7 +227,7 @@ const RaceDetails: React.FC<RaceDetailsProps> = ({ race, onBack, user, setUser, 
   return (
     <div className="race-details-page rd-premium">
       <div className="rd-site-header">
-        <SiteHeader
+        <SiteHeader pageTitle={race.raceName}
           user={user}
           setUser={setUser}
           onOpenSettings={onOpenSettings}

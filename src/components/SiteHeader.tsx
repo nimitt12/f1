@@ -18,6 +18,7 @@ interface SiteHeaderProps {
   // Replaces the default "Season 2026" badge on the left (e.g. the race details
   // page puts its Back button here so it doesn't need a redundant season tag).
   leftSlot?: React.ReactNode;
+  pageTitle?: string;
   stickyOnScroll?: boolean;
   upcomingRace?: Race | null;
 }
@@ -25,11 +26,20 @@ interface SiteHeaderProps {
 // The shared top bar used across the site (dashboard hero + race details).
 // Renders the season badge and the profile/menu card so every view has the
 // same header chrome.
-const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, onHomeNavigate, leftSlot, stickyOnScroll = false, upcomingRace }) => {
+const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, onHomeNavigate, leftSlot, pageTitle, stickyOnScroll = true, upcomingRace }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!pageTitle) return;
+    const onScroll = () => setHasScrolled(window.scrollY > 120);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [pageTitle]);
 
   useEffect(() => {
     if (!stickyOnScroll || !headerRef.current) return;
@@ -149,10 +159,17 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
     window.scrollTo(0, 0);
   };
 
+  const pageIdentity = leftSlot ? (
+    <div className="site-header-identity">
+      {leftSlot}
+      {pageTitle && (hasScrolled || showStickyHeader) && <span className="site-header-title">{pageTitle}</span>}
+    </div>
+  ) : null;
+
   return (
     <>
-      <div className="hero-top" ref={headerRef}>
-        {leftSlot ?? (
+      <div className={`hero-top ${pageTitle ? 'site-header-inner' : ''}`} ref={headerRef}>
+        {pageIdentity ?? (
           <div className="brand-eyebrow">
             <span className="live-badge">Season 2026</span>
             <a
@@ -224,9 +241,16 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
       </div>
 
       {stickyOnScroll && showStickyHeader && createPortal(
-        <header className="home-sticky-header">
-          <a className="home-sticky-brand" href="/" aria-label="MyPitWall — back to top" onClick={event => {
+        <header className={`home-sticky-header ${leftSlot ? 'site-sticky-inner' : ''}`}>
+          {pageIdentity ?? (<>
+          <a className="home-sticky-brand" href="/" aria-label={onHomeNavigate ? 'MyPitWall — dashboard' : 'MyPitWall — back to top'} onClick={event => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
+            if (onHomeNavigate) {
+              onHomeNavigate('');
+              window.scrollTo(0, 0);
+              return;
+            }
             window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
           }}>
             <LogoMark aria-hidden="true" />
@@ -252,6 +276,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ user, setUser, onOpenSettings, 
               </span>
             </a>
           ) : <span className="home-sticky-race-details">Next race to be announced</span>}
+          </>)}
           <button className="home-sticky-menu" onClick={() => setIsMenuOpen(true)} aria-label="Open menu" aria-expanded={isMenuOpen}>
             {user ? <img src={user.picture} alt="" /> : <span>Sign In</span>}
             <span className="hamburger-lines" aria-hidden="true"><span /><span /><span /></span>

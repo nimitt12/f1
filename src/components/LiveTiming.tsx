@@ -537,7 +537,7 @@ const LiveTiming: React.FC<LiveTimingProps> = ({ onBack, user, setUser, onOpenSe
   return (
     <div className="lt-page">
       <div className="lt-header-shell">
-        <SiteHeader
+        <SiteHeader pageTitle="Live Timing"
           user={user}
           setUser={setUser}
           onOpenSettings={onOpenSettings}

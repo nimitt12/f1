@@ -543,7 +543,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   return (
     <div className="results-page">
       <div className="rd-site-header results-page-header">
-        <SiteHeader
+        <SiteHeader pageTitle="Race Results"
           user={user}
           setUser={setUser}
           onOpenSettings={onOpenSettings}

@@ -65,7 +65,7 @@ const TrackDetailsPage: React.FC<Props> = ({ race, user, setUser, onBack, onOpen
   return (
     <div className="track-page">
       <header className="rd-site-header">
-        <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate}
+        <SiteHeader pageTitle={race.Circuit.circuitName} user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate}
           leftSlot={
             <div className="rd-header-left">
               <button className="rd-back-btn" type="button" onClick={onBack}>

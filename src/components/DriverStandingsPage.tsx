@@ -434,7 +434,7 @@ const DriverStandingsPage: React.FC<DriverStandingsPageProps> = ({
   return (
     <div className="dsp-page">
       <div className="dsp-page-header">
-        <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate}
+        <SiteHeader pageTitle="Driver Standings" user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate}
           leftSlot={<button className="rd-back-btn dsp-back" onClick={onBack}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Dashboard</button>} />
       </div>
 

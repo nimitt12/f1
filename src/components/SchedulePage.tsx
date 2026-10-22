@@ -111,7 +111,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({
   return (
     <div className="schedule-page">
       <div className="schedule-header">
-        <SiteHeader
+        <SiteHeader pageTitle="Race Schedule"
           user={user}
           setUser={setUser}
           onOpenSettings={onOpenSettings}

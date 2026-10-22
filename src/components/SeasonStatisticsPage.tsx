@@ -149,7 +149,7 @@ const SeasonStatisticsPage: React.FC<SeasonStatisticsPageProps> = ({
   return (
     <div className="season-stats-page">
       <header className="season-stats-header">
-        <SiteHeader
+        <SiteHeader pageTitle="All-Time Statistics"
           user={user}
           setUser={setUser}
           onOpenSettings={onOpenSettings}

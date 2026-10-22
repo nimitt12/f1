@@ -261,7 +261,7 @@ const DriverDetailPage: React.FC<DriverDetailPageProps> = ({
   return (
     <div className="ddp-page" style={{ '--driver-accent': accent } as React.CSSProperties}>
       <div className="ddp-page-header">
-        <SiteHeader user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate}
+        <SiteHeader pageTitle={driver ? `${driver.given_name} ${driver.family_name}` : 'Driver Profile'} user={user} setUser={setUser} onOpenSettings={onOpenSettings} onHomeNavigate={onHomeNavigate}
           leftSlot={<button className="rd-back-btn dsp-back" onClick={onBack}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Standings</button>} />
       </div>
 

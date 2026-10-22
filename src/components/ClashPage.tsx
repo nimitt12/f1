@@ -417,7 +417,7 @@ const ClashPage: React.FC<ClashPageProps> = ({ user, setUser, onBack, onOpenSett
   }, []);
   return <div className="clash-page">
     <div className="schedule-header">
-      <SiteHeader
+      <SiteHeader pageTitle="Driver Comparison"
         user={user}
         setUser={setUser}
         onOpenSettings={onOpenSettings}
