@@ -3,10 +3,17 @@ import type { AuthUser } from '../components/Hero';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 export const TOKEN_KEY = 'f1_token';
 
-// Tab-scoped storage remains readable by JavaScript. HttpOnly sessions need backend support.
+// Persist across browser closures; the backend remains responsible for token expiry.
 export const getToken = (): string | null => {
-  localStorage.removeItem(TOKEN_KEY);
-  return sessionStorage.getItem(TOKEN_KEY);
+  const previousToken = sessionStorage.getItem(TOKEN_KEY);
+  if (!localStorage.getItem(TOKEN_KEY) && previousToken) {
+    localStorage.setItem(TOKEN_KEY, previousToken);
+    const previousUser = sessionStorage.getItem('f1_user');
+    if (previousUser) localStorage.setItem('f1_user', previousUser);
+  }
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem('f1_user');
+  return localStorage.getItem(TOKEN_KEY);
 };
 
 export const clearSession = () => {
@@ -49,8 +56,9 @@ export const signInWithGoogle = async (idToken: string): Promise<AuthUser> => {
   const data = await response.json();
   if (typeof data.token !== 'string' || !data.token || !data.user?.id ||
       typeof data.user.email !== 'string') throw new Error('Invalid authentication response');
-  localStorage.removeItem(TOKEN_KEY);
-  sessionStorage.setItem(TOKEN_KEY, data.token);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem('f1_user');
+  localStorage.setItem(TOKEN_KEY, data.token);
   return {
     id: String(data.user.id), email: data.user.email,
     name: String(data.user.name || data.user.full_name || 'User'),

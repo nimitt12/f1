@@ -207,15 +207,14 @@ const App: React.FC = () => {
   const initialClashPath = window.location.pathname === '/clash' || window.location.pathname === '/clash/';
   const initialStatisticsPath = window.location.pathname === '/statistics' || window.location.pathname === '/statistics/';
   const [user, setUser] = useState<{id: string, email: string, name: string, picture: string} | null>(() => {
-    localStorage.removeItem('f1_user');
     if (!getToken()) return null;
-    const savedUser = sessionStorage.getItem('f1_user');
+    const savedUser = localStorage.getItem('f1_user');
     if (!savedUser) return null;
     try {
       const parsed = JSON.parse(savedUser);
       // If legacy session missing ID, clear it
       if (!parsed.id) {
-        sessionStorage.removeItem('f1_user');
+        localStorage.removeItem('f1_user');
         return null;
       }
       // Standardize the user object for existing sessions
@@ -226,7 +225,7 @@ const App: React.FC = () => {
       };
     } catch (e) {
       console.error("Error parsing user data:", e);
-      sessionStorage.removeItem('f1_user');
+      localStorage.removeItem('f1_user');
       return null;
     }
   });
@@ -514,9 +513,9 @@ const App: React.FC = () => {
   useEffect(() => {
     setShowGlobalLogin(!user);
     if (user && user.id) {
-      sessionStorage.setItem('f1_user', JSON.stringify(user));
+      localStorage.setItem('f1_user', JSON.stringify(user));
     } else {
-      sessionStorage.removeItem('f1_user');
+      localStorage.removeItem('f1_user');
     }
   }, [user]);
 
@@ -625,7 +624,12 @@ const App: React.FC = () => {
         ) : view === 'account' ? (
           <AccountPage
             user={user}
-            onClose={() => setView('dashboard')}
+            setUser={setUser}
+            onClose={goToDashboard}
+            onHomeNavigate={(hash) => {
+              goToDashboard();
+              setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 80);
+            }}
           />
         ) : view === 'privacy' ? (
           <PrivacyPolicy

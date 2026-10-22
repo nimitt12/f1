@@ -78,8 +78,9 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBack }) => {
             <p>
               To make the site work smoothly, we store some data locally in your browser
               (localStorage) — such as your chosen team theme, the last view you had open, and the
-              last race you looked at. Your sign-in token and cached profile use tab-scoped
-              sessionStorage and are cleared when you sign out or close the tab. The token is
+              last race you looked at. Your sign-in token and cached profile use
+              localStorage so you stay signed in across tab and browser closures. They are
+              cleared when you sign out or the API rejects your session. The token is
               sent to our API to authenticate account requests. We do not send these stored values
               to analytics services. You can clear preferences through your browser's site data settings.
             </p>

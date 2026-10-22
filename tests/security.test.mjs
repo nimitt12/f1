@@ -103,16 +103,19 @@ test('authenticated fetch fails closed and never sends credentials to a foreign 
   assert.ok(init.signal);
 });
 
-test('legacy persistent credentials are removed and expired sessions are cleared', async () => {
+test('sessions persist across tab closures and rejected sessions are cleared', async () => {
   const h = authHarness();
-  h.localStorage.setItem('f1_token', 'legacy');
-  assert.equal(h.auth.getToken(), null);
-  assert.equal(h.localStorage.getItem('f1_token'), null);
-  h.sessionStorage.setItem('f1_token', 'expired');
-  h.localStorage.setItem('f1_user', '{}');
+  h.sessionStorage.setItem('f1_token', 'saved-token');
+  h.sessionStorage.setItem('f1_user', '{"id":"1"}');
+  assert.equal(h.auth.getToken(), 'saved-token');
+  assert.equal(h.sessionStorage.getItem('f1_token'), null);
+  assert.equal(h.sessionStorage.getItem('f1_user'), null);
+  assert.equal(h.localStorage.getItem('f1_user'), '{"id":"1"}');
+  assert.equal(h.auth.getToken(), 'saved-token');
   h.context.fetch = async () => new Response('{}', { status: 401 });
   await h.auth.authFetch('https://api.example.com/admin/verify');
   assert.equal(h.sessionStorage.getItem('f1_token'), null);
+  assert.equal(h.localStorage.getItem('f1_token'), null);
   assert.equal(h.localStorage.getItem('f1_user'), null);
 });
 
