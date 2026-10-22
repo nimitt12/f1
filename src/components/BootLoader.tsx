@@ -29,10 +29,6 @@ const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
   return (
     <div className={`boot-loader ${phase >= 7 ? 'fade-out' : ''} ${ready ? 'go' : ''}`} role="status" aria-label="Loading My PitWall">
       <div className="boot-frame" aria-hidden="true" />
-      <header className="boot-masthead" aria-hidden="true">
-        <span className="boot-brand"><LogoMark /> MY PITWALL</span>
-        <span className="boot-edition">THE RACE, REFINED.</span>
-      </header>
 
       <div className="boot-content" aria-hidden="true">
         <div className="boot-instrument">
@@ -46,11 +42,10 @@ const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
           <span className="boot-dial-label">P / W</span>
           <LogoMark className="boot-logo" />
           <span className="boot-dial-caption">RACE SYSTEMS</span>
-          <span className="boot-instrument-index">01 — 05</span>
         </div>
 
         <p className="boot-eyebrow">YOUR FRONT ROW TO FORMULA 1</p>
-        <h1 className="boot-title"><span className="boot-my">My </span><span className="boot-pit">Pit</span>Wall<span className="boot-dot">.</span></h1>
+        <h1 className="boot-title"><span className="boot-my">My </span><span className="">Pit</span>Wall<span className="boot-dot">.</span></h1>
         <p className="boot-subtitle">Every fraction. Every finish.</p>
 
         <div className="boot-launch">
@@ -68,7 +63,6 @@ const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
         </div>
       </div>
 
-      <footer className="boot-footer" aria-hidden="true"><span>BUILT FOR THE OBSESSION.</span><span className="boot-footer-mark">///</span><span>PRECISION IN EVERY SECOND</span></footer>
     </div>
   );
 };

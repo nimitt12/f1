@@ -7119,22 +7119,6 @@ body {
 }
 .boot-frame::before { top: -10px; left: -9px; }
 .boot-frame::after { bottom: -10px; right: -9px; }
-.boot-masthead, .boot-footer {
-  position: absolute;
-  left: 54px;
-  right: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font: 9px var(--font-mono);
-  letter-spacing: 0.18em;
-  color: #92909c;
-}
-.boot-masthead { top: 48px; }
-.boot-brand { display: flex; align-items: center; gap: 10px; color: #d2d0d8; font-weight: 600; }
-.boot-brand svg { width: 25px; height: 25px; color: var(--boot-accent); }
-.boot-footer { bottom: 48px; font-size: 8px; }
-.boot-footer-mark { color: var(--boot-accent); font-size: 16px; letter-spacing: -0.15em; }
 .boot-content { position: relative; width: min(560px, 100% - 48px); text-align: center; animation: bootReveal 0.65s ease both; }
 .boot-instrument { position: relative; width: clamp(170px, 25vh, 250px); aspect-ratio: 1; margin: 0 auto 30px; display: grid; place-items: center; }
 .boot-dial { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -7144,10 +7128,9 @@ body {
 .boot-dial-cross { stroke: #a29aaa; stroke-width: 1; }
 .boot-dial-sweep { stroke: var(--boot-accent); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transform: rotate(-90deg); transform-origin: center; animation: bootDialFill 1.85s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; }
 .boot-logo { width: 38%; height: 38%; color: var(--boot-accent); }
-.boot-dial-label, .boot-dial-caption, .boot-instrument-index { position: absolute; font: 8px var(--font-mono); letter-spacing: 0.22em; color: #8e889a; }
+.boot-dial-label, .boot-dial-caption { position: absolute; font: 8px var(--font-mono); letter-spacing: 0.22em; color: #8e889a; }
 .boot-dial-label { top: 24%; }
 .boot-dial-caption { bottom: 24%; font-size: 6px; }
-.boot-instrument-index { right: -48px; top: 50%; font-size: 7px; writing-mode: vertical-rl; transform: translateY(-50%); }
 .boot-eyebrow { font: 8px var(--font-mono); letter-spacing: 0.32em; color: var(--boot-accent); margin-bottom: 18px; }
 .boot-title { margin: 0; font-family: var(--font-alt); font-size: clamp(38px, 6.2vw, 70px); line-height: 1.05; letter-spacing: -0.065em; font-weight: 600; }
 .boot-my { font-weight: 300; color: #b6b2c0; }
@@ -7174,11 +7157,6 @@ body {
 @keyframes bootProgressFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @media (max-width: 540px) {
   .boot-frame { inset: 14px; }
-  .boot-masthead, .boot-footer { left: 30px; right: 30px; }
-  .boot-masthead { top: max(30px, env(safe-area-inset-top)); }
-  .boot-edition { font-size: 6px; letter-spacing: 0.1em; }
-  .boot-footer { bottom: max(32px, env(safe-area-inset-bottom)); font-size: 6px; letter-spacing: 0.07em; }
-  .boot-instrument-index { right: -24px; }
 }
 @media (max-height: 700px) {
   .boot-instrument { width: 150px; margin-bottom: 18px; }
@@ -7188,8 +7166,6 @@ body {
 }
 @media (max-height: 520px) {
   .boot-instrument { display: none; }
-  .boot-masthead { top: 24px; }
-  .boot-footer { bottom: 24px; }
   .boot-launch { margin-top: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
